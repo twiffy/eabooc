@@ -145,6 +145,44 @@ class Student(BaseEntity):
     # Each of the following is a string representation of a JSON dict.
     scores = db.TextProperty(indexed=False)
 
+    # --- Additional fields for Assessment BOOC ---
+
+    # The user's profile picture
+    profile_pic = db.BlobProperty()
+
+    # The lat/longitude, and name, of the student's location
+    location = db.GeoPtProperty()
+    location_name = db.StringProperty(indexed=False)
+
+    # The user's education level.  Maximum or in-progress?
+    education_level = db.StringProperty(indexed=True)
+
+    # The student's primary role in the education system
+    # (instructor, administrator, researcher?)
+    role = db.StringProperty(indexed=True)
+
+    # Grade levels and subjects taught (for instructors)
+    grade_levels = db.StringListProperty()
+    subjects = db.StringListProperty()
+
+    # School size (for administrators)
+    # (1-20, 21-50, 51-100, 101-500, etc)
+    school_size = db.StringProperty(indexed=True)
+
+    # Research field (for researchers)
+    research_area = db.StringProperty(indexed=False)
+
+    # "Introduce yourself"
+    introduction = db.TextProperty()
+
+    # "I know I will have to buy a book"
+    will_buy_book = db.BooleanProperty(indexed=True)
+
+    # "How interested are you in completing the course?"
+    # TODO maybe use RatingProperty?  It wants from 0-100,
+    # does it have any advantages?
+    interest_level = db.IntegerProperty()
+
     @classmethod
     def _memcache_key(cls, key):
         """Makes a memcache key from primary key."""
