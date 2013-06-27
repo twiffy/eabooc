@@ -366,6 +366,7 @@ class RegisterHandler(BaseHandler):
         if not self.assert_xsrf_token_or_fail(self.request, 'register-post'):
             return
 
+        # TODO: Now that we don't display confirmation page, need more logic here.
         can_register = self.app_context.get_environ(
             )['reg_form']['can_register']
         if not can_register:
@@ -392,6 +393,24 @@ class RegisterHandler(BaseHandler):
 
             for field in regular_fields:
                 setattr(student, field, self.request.POST.get(field, ''))
+
+            lat_long_fields = ('location_latitude', 'location_longitude')
+            # POST.get(field)??
+            if all([field in self.request.POST for field in lat_long_fields]):
+                try:
+                    lat_long = [self.request.POST[field] for field in lat_long_fields]
+                    student.location = ','.join(lat_long)
+                except ValueError as e:
+                    # Don't worry, the point isn't important...
+                    # But maybe should log the error?
+                    print e
+
+            string_list_fields = ('grade_levels', 'subjects')
+            for field in string_list_fields:
+                raw = self.request.POST.get(field, '')
+                if len(raw) > 0:
+                    values = [s.strip() for s in raw.split(',')]
+                    setattr(student, field, values)
 
             student.put()
 
