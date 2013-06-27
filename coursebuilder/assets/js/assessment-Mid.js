@@ -22,7 +22,7 @@
 
 var assessment = {
   // HTML to display at the start of the page
-  preamble: '<b>This assessment addresses content in units 1, 2, and 3. You can try it as many times as you like. When you click "Check Answers," we will give you your score and give you a list of lessons to review. Please note that some of the assessment questions address functionality that does not work well on tablet computers.</b><br><br><p>You are getting a new puppy! Of course, you will have questions, and you\'ll probably turn to the web to look for answers.',
+  preamble: '<b>You are only allowed to take this quiz one time.  It has thirty items and each item is worth one half-point.  The 15 points count towards the 100 points possible in this class.<br><br>Directions:  Please read each of the statements presented below, then signify whether the statement is Accurate or Inaccurate.  A statement’s accuracy depends on whether it represents a verbatim or appropriately paraphrased rendition of statements drawn from Chapter 7’s (1) item-writing guidelines for short-answer items, (2) item-writing guidelines for essay items, (3) guidelines for scoring responses to essay items or, from Chapter 6, (4) the five general item-writing commandments.<Br>',
 
   // An ordered list of questions, with each question's type implicitly determined by the fields it possesses:
   //   choices              - multiple choice question (with exactly one correct answer)
@@ -31,37 +31,58 @@ var assessment = {
   //   correctAnswerNumeric - freetext numeric match
   questionsList: [
 
-    {questionHTML: 'You want to search exclusively within the Humane Society website (humanesociety.org) to find pages about puppy training.<br/><img src="assets/img/Image8.7.png" height="300" width="450" alt="search results for test question" title="search results for test question"><p>What would be the best query to type into the search box to see results like these?',
-     choices: [correct('[site:humanesociety.org puppy training]'),
-               '[humane society puppy training]',
-               '[puppy training pages in humansociety.org website]',
-               '[i need info about puppy training from humanesociety.org]',
-               "I don't know"],
+    {questionHTML: 'Directions regarding how students should respond to classroom assessments intended to be especially challenging should be somewhat opaque in order to increase the assessment’s difficulty.',
+     choices: ['Accurate',
+               correct('Inaccurate')],
+     // the (optional) lesson associated with this question, which is displayed as a suggestion
+     // for further study if the student answers this question incorrectly.
+     lesson: '3.1'},
+	 
+
+    {questionHTML: 'All student responses to essay tests should be first scored analytically, then scored holistically.',
+     choices: ['Accurate',
+               correct('Inaccurate')],
+     // the (optional) lesson associated with this question, which is displayed as a suggestion
+     // for further study if the student answers this question incorrectly.
+     lesson: '3.1'},
+	 
+	    {questionHTML: 'Short-answer items, especially those intended for young children, should employ direct questions rather than incomplete statements.',
+     choices: [correct('Accurate'),
+               'Inaccurate'],
+     // the (optional) lesson associated with this question, which is displayed as a suggestion
+     // for further study if the student answers this question incorrectly.
+     lesson: '3.1'},	 
+	 
+    {questionHTML: 'To best assess students’ ability to respond to essay items, allow students to choose among optional items.',
+     choices: ['Accurate',
+               correct('Inaccurate')],
+     // the (optional) lesson associated with this question, which is displayed as a suggestion
+     // for further study if the student answers this question incorrectly.
+     lesson: '3.1'},	
+	 
+    {questionHTML: 'Short-answer items, especially those intended for young children, should employ direct questions rather than incomplete statements.',
+     choices: [correct('Accurate'),
+               'Inaccurate'],
+     // the (optional) lesson associated with this question, which is displayed as a suggestion
+     // for further study if the student answers this question incorrectly.
+     lesson: '3.1'},	 
+
+    {questionHTML: 'When using blanks for short-answer incomplete statements, make sure the blanks for all items are equal in length.',
+     choices: [correct('Accurate'),
+               'Inaccurate'],
+     // the (optional) lesson associated with this question, which is displayed as a suggestion
+     // for further study if the student answers this question incorrectly.
+     lesson: '3.1'},	  
+ 
+
+    {questionHTML: 'Construct all essay items so a students task is explicitly described.',
+     choices: [correct('Accurate'),
+               'Inaccurate'],
      // the (optional) lesson associated with this question, which is displayed as a suggestion
      // for further study if the student answers this question incorrectly.
      lesson: '3.1'},
 
-    {questionHTML: 'You run two searches: [mountain dog] and [dog mountain]',
-     choices: ['The top results would be the same.',
-               correct('The top results would be different.'),
-               "I don't know"],
-     lesson: '1.5'},
-
-    {questionHTML: 'You are considering a Golden Retriever and want to find out its drawbacks. You do a search for [golden retriever breed cons], and get a lot of results. After a while, reading the pages from different kennel clubs becomes a bit redundant and you would like to get rid of those results and just see pages by other types of authors. What do you add to the query [golden retriever breed cons] to exclude those results with the word kennel in them?',
-     correctAnswerString: '-kennel',
-     lesson: '3.3'},
-
-    {questionHTML: 'You are talking to someone who has a dachshund that needs a home, and he describes it as being brindle. You wonder what that means. Which is the most efficient search to type into Google to help you find out?',
-     correctAnswerRegex: /define(:| )brindle/i,
-     lesson: '2.2'},
-
-    {questionHTML: 'Another dog up for adoption is described as having a black patch on her occiput. You understand from context that it is a body part. What type of media would be most efficient to look in to get a quick idea of where the occiput is?',
-     choices: ['Google Maps',
-               'Google Discussions',
-               'Google Blog Search',
-               correct('Google Images'),
-               "I don't know"],
-     lesson: '2.3'}
+   
   ],
 
   // The assessmentName key is deprecated in v1.3 of Course Builder, and no
@@ -69,6 +90,6 @@ var assessment = {
   // the course editor interface.
   assessmentName: 'Mid', // unique name submitted along with all of the answers
 
-  checkAnswers: true     // render a "Check your Answers" button to allow students to check answers prior to submitting?
+  checkAnswers: false     // render a "Check your Answers" button to allow students to check answers prior to submitting?
 }
 

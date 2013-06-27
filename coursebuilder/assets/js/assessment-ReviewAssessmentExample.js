@@ -22,17 +22,20 @@
 
 var assessment = {
   // HTML to display at the start of the page
-  preamble: 'Solve the problem below by using concepts from at least three Power Search lessons. Record your experience in a Google doc.<br><br><strong>Problem</strong>: Plan a 3-day trip to a destination you have never visited. Where will you go? Why?',
+  preamble: 'Your answers will be reviewed by five of your peers. ',
 
   questionsList: [
-    {questionHTML: 'Please write your response in a Google doc, and paste the link to the doc in the answer box below. You will need to ensure that your doc can be viewed by reviewers; please see this <a href="https://support.google.com/drive/bin/answer.py?hl=en&answer=2494822&topic=2816927&rd=1">help page</a> for instructions on how to do this.',
+    {questionHTML: 'Provide a short summary of your lesson and context from the first assignment for the benefit of your classmates and the instructor (so they don’t have to look back).  You should also add any new insights about the lesson that have emerged as you have thought about it more in the previous assignment(s).',
+	 multiLine: true,
      correctAnswerRegex: /.*/i
     },
 
-    {questionHTML: 'How many Power Search concepts did you use in your writeup?',
-     choices: ['0 - 2', '3', '4 -- 5', 'More than 5']},
+    {questionHTML: '<strong>Create two selected-response items</strong>.  Read about the four item types and decide which is most useful and relevant to you.  Make examples of two of the four.  Obviously the items should be related to your instructional activity and your standards, but it does not have to be perfectly aligned.  Remember that the main goal is just trying to apply the general item writing commandments and the specific guidelines for each of the item types',
+     multiLine: true,
+     correctAnswerRegex: /.*/i
+	},
 
-    {questionHTML: 'List the Power Search concepts you used.',
+    {questionHTML: '<strong>Summarize three or more relevant big ideas about selected-response items.</strong> Review the What Teacher Need to Know…. section and the chapter summary at the end.  List three or more big ideas that are most relevant to you. Your summary of the ideas should make it clear why they are the most relevant to you. These are the BIG ideas of the chapter, not the specific guidelines used above.',
      multiLine: true,
      correctAnswerRegex: /.*/i
     },

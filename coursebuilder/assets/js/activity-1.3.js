@@ -31,36 +31,21 @@
 
 var activity = [
 
-  '<table border="2"><tr><td><b>Search Tips:</b><p><ul><li>In the previous video, you learned how Google searches the web to find the results of your query. <li>Google looks for the word you typed in, but sometimes also looks for synonyms or related terms. Any words appearing in boldface type in your search results are terms Google associates with your search terms. For example, if you search for [kittens] you might see the word cats in boldface in your results.<li>Ads appear in response to some queries and are always labeled ads. <li>Aside from ads, website owners cannot pay to influence the placement of their website in the search results.</ul><p></tr></td></table><br>',
+  '<table border="2"><tr><td><b>Note:</b><p>These self-assessments are mainly intended for you to check your undersanding about the concepts covered on each unit. They do not affect your final grade.<p></tr></td></table><br>',
 
   'The next several questions explore what elements impact the order in which Google returns your results. Mark whether each statement is true or false, according to Matt Cutts:<p>',
 
   { questionType: 'multiple choice group',
-    questionsList: [{questionHTML: 'Pages that have the words you type in, or synonyms for those words, are listed higher.',
-                     choices: ['True', 'False'], correctIndex: 0},
-                    {questionHTML: 'Pages with font size the same as you type into Google get listed first.',
+    questionsList: [{questionHTML: 'Which of the following is NOT a reason for assessing, according to Yesteryears.',
+                     choices: ['Diagnosing student\'s strengths and weaknesses', 'Monitoring student\'s progress', 'Promoting competition among students','Assigning grades to students'], correctIndex: 2},
+					 
+                    {questionHTML: 'According to Yesteryears, teacher should not be concerned about knowing how to interpret standardized test results',
                      choices: ['True', 'False'], correctIndex: 1},
-                    {questionHTML: 'Pages where the words you typed in appear in the title or web address get listed higher.',
-                     choices: ['True', 'False'], correctIndex: 0},
-                    {questionHTML: 'Webmasters can get higher ranking in the results by paying Google money.',
-                     choices: ['True', 'False'], correctIndex: 1},
-                    {questionHTML: 'If the words you type in appear near each other on a page, it may get listed higher in your results.',
-                     choices: ['True', 'False'], correctIndex: 1},
-                    {questionHTML: 'Pages which are linked to by lots of other pages--especially other high quality pages--are listed higher.',
-                     choices: ['True', 'False'], correctIndex: 0}],
-    allCorrectOutput: 'Please scroll down for another activity.',
+                    ],
+    allCorrectOutput: 'Well done.',
     someIncorrectOutput: 'Please try again.'},
 
-  '<br><br><br>In the image below, identify the area(s) that are ads.<br><br><img src="assets/img/Image1.5.png" width="785" height="500" usemap="#Image1" border="0"><p>Where are the ads?<p>',
-
-  { questionType: 'multiple choice',
-    choices: [['A', false, 'Your answer is incorrect. Can you identify the two places where there are ads? Please try again.'],
-              ['B', false, 'Your answer is incorrect. Can you identify the two places where there are ads? Please try again.'],
-              ['C', false, 'Your answer is incorrect. Can you identify the two places where there are ads? Please try again.'],
-              ['D', false, 'Your answer is incorrect. Can you identify the two places where there are ads? Please try again.'],
-              ['A and B', false, 'Your answer is incorrect. Can you identify the two places where there are ads? Please try again.'],
-              ['B and C', true, 'Your answer is correct! You have completed this activity.'],
-              ['C and D', false, 'Your answer is incorrect. Can you identify the two places where there are ads? Please try again.']]}
+  
 
 ];
 
