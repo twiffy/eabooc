@@ -314,6 +314,24 @@ class PreviewHandler(BaseHandler):
         else:
             self.render('preview.html')
 
+"""Added by Miguel Lara"""
+class FAQHandler(BaseHandler):
+    """Handler for viewing course FAQ."""
+
+    def get(self):
+        """Handles GET requests."""
+        user = users.get_current_user()
+        if not user:
+            self.template_value['loginUrl'] = (
+                users.create_login_url(self.request.uri))
+        else:
+            self.template_value['email'] = user.email()
+            self.template_value['logoutUrl'] = (
+                users.create_logout_url(self.request.uri))
+
+        self.template_value['navbar'] = {'course': True}
+        self.template_value['units'] = self.get_units()
+        self.render('faq.html')
 
 class RegisterHandler(BaseHandler):
     """Handler for course registration."""

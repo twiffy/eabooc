@@ -10,6 +10,18 @@
 
 {% block main_content %}
 
+<script type="text/javascript">
+window.onload = function() {
+	resizeFrame(document.getElementById('contentFrame'));
+}
+
+//Added by Miguel Lara to resize iframe height on the fly
+//This ONLY works when iframe content is in the SAME server
+function resizeFrame(f) {
+    f.style.height = f.contentWindow.document.body.scrollHeight + "px";
+}
+</script>
+
 <div id="gcb-main">
   {% if is_read_write_course and is_course_admin %}
     <a href="dashboard?action=edit_unit&key={{ unit_id }}"
@@ -68,8 +80,19 @@
                 </h1>
 
                 {% if objectives %}
+<<<<<<< HEAD
                   <div class="gcb-lesson-content">
                     {{ objectives | gcb_tags}}
+=======
+                  <div class="lesson_objective">
+                   
+                      <iframe id="contentFrame" name="contentFrame"
+                        type="text/html" width="750" height="100" frameborder="0" 
+                        src="/assets/content/{{ objectives }} ">
+                      </iframe>
+                    {# { objectives | gcb_tags} #}
+                    
+>>>>>>> lara-merge
                   </div>
                 {% endif %}
 

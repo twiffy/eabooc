@@ -10,25 +10,22 @@
         <a href="announcements">{{ gettext('Announcements') }}</a>
       </li>
       -->
-      <li {% if navbar.course %}class='active'{% endif %}>
+      <li>
         {# I18N: Navbar tab. #}
         <a href="course">{{ gettext('Course') }}</a>
       </li>
-      <li {% if navbar.registration %}class='active'{% endif %}>
-        {# I18N: Navbar tab. #}
-        <a href="register">{{ gettext('Registration') }}</a>
-      </li>
-          <li {% if navbar.faq %}class='active'{% endif %}>
+
+          <li class='active'}>
             {# I18N: Navbar tab. #}
             <a href="faq">FAQ</a>
           </li>      
       {% if is_super_admin %}
-      <li class='gcb-pull-right'>
+      <li class='pull-right'>
         <a href="/admin">Admin</a>
       </li>
       {% endif %}
       {% if is_course_admin %}
-      <li class='gcb-pull-right'>
+      <li class='pull-right'>
         <a href="dashboard">Dashboard</a>
       </li>
       {% endif %}
