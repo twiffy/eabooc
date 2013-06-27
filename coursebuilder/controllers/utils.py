@@ -387,7 +387,8 @@ class RegisterHandler(BaseHandler):
             student.is_enrolled = True
 
             regular_fields = ('name', 'location_name', 'education_level', 'role',
-                    'school_size', 'research_area', 'introduction')
+                    'school_size', 'research_area', 'personal_intro',
+                    'professional_intro')
 
             for field in regular_fields:
                 setattr(student, field, self.request.POST.get(field, ''))

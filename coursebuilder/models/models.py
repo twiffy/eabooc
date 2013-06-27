@@ -173,7 +173,8 @@ class Student(BaseEntity):
     research_area = db.StringProperty(indexed=False)
 
     # "Introduce yourself"
-    introduction = db.TextProperty()
+    professional_intro = db.TextProperty()
+    personal_intro = db.TextProperty()
 
     # "I know I will have to buy a book"
     will_buy_book = db.BooleanProperty(indexed=True)
