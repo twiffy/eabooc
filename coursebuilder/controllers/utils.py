@@ -394,9 +394,8 @@ class RegisterHandler(BaseHandler):
 
             student.put()
 
-        # Render registration confirmation page
-        self.template_value['navbar'] = {'registration': True}
-        self.render('confirmation.html')
+        # Send the student to the front page of the course
+        self.redirect('/course')
 
 
 class ForumHandler(BaseHandler):
