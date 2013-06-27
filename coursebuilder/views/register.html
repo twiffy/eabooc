@@ -23,15 +23,15 @@
                 {# I18N: A question in the registration form. #}
                 {{ gettext('What name would you like other students to see?') }}
               </label>
-              <input name="name" id="name" type="text">
+              <input name="name" id="name" type="text" placeholder="Jane Lee">
             </li>
 
             <li>
               <label class="gcb-reg-form-label" for="location_name">
                 {# I18N: A question in the registration form. #}
-                {{ gettext('Please tell us where you are.  City, State, Country.') }}
+                {{ gettext('Please tell us where you are.') }}
               </label>
-              <input name="location_name" id="location_name" type="text">
+              <input name="location_name" id="location_name" type="text" placeholder="Bloomington, Indiana, USA">
             </li>
 
             <li>
@@ -94,17 +94,17 @@
             <li class="instructors">
               <label class="gcb-reg-form-label" for="grade_levels">
                 {# I18N: A question in the registration form. #}
-                {{ gettext('For instructors: What grade levels do you teach?  Enter a list separated by commas, for instance, "kindergarten, 1, 3, undergraduate"') }}
+                {{ gettext('For instructors: What grade levels do you teach?  Enter a list separated by commas.') }}
               </label>
-              <input name="grade_levels" id="grade_levels" type="text">
+              <input name="grade_levels" id="grade_levels" type="text" placeholder="kindergarten, 1, 2, 3">
             </li>
 
             <li class="instructors">
               <label class="gcb-reg-form-label" for="subjects">
                 {# I18N: A question in the registration form. #}
-                {{ gettext('For instructors: What subjects do you teach?  Enter a list separated by commas, for instance, "science, social studies"') }}
+                {{ gettext('For instructors: What subjects do you teach?  Enter a list separated by commas.') }}
               </label>
-              <input name="subjects" id="subjects" type="text">
+              <input name="subjects" id="subjects" type="text" placeholder="math, social studies">
             </li>
 
             <li class="administrators">
@@ -130,7 +130,7 @@
                 {# I18N: A question in the registration form. #}
                 {{ gettext('For researchers: What is your area of research?') }}
               </label>
-              <input name="research_area" id="research_area" type="text">
+              <input name="research_area" id="research_area" type="text" placeholder="socially-situated approaches to motivation and learning">
             </li>
 
             <hr>
