@@ -1,13 +1,16 @@
 id,type,unit_id,title,release_date,now_available
 1,A,Pre,Pre-course assessment,,True
-2,U,1,Introduction,available July 10,True
-3,U,2,Interpreting results,available July 11,True
-4,U,3,Advanced techniques,available July 12,True
-5,A,Mid,Mid-course assessment,,True
-6,U,4,Find facts faster,available July 17,True
-7,U,5,Checking your facts,available July 18,True
-8,U,6,Putting it all together,available July 19,True
-9,A,ReviewAssessmentExample,Sample peer review assignment,,True
-10,A,Fin,Post-course assessment,,True
-11,O,http://www.youtube.com/watch?v=ZhhiXxiAVtM&feature=player_embedded,Power Searching with Search Experts Video,,True
-12,O,http://www.youtube.com/watch?v=dwlpViuIYgU&feature=player_embedded,Hang Out with Search Experts Video,,True
+2,U,1,Lesson and Standard Selection,available September 10,True
+3,U,2,Selected Response Items,available September 11,True
+4,U,3,Constructed Response Items,available September 12,True
+5,U,4,Performance and Portfolio Assessment,available September 12,True
+6,U,5,Reliability and Bias,available September 17,True
+7,U,6,Validity,available September 18,True
+8,U,7,Formative Assessment,available September 19,True
+9,A,Mid,Mid-course assessment,,True
+10,U,8,Standardized Testing,available September 19,True
+11,U,9,Test Preparation,available September 19,True
+12,U,10,Evaluation of Instruction and Teachers,available September 19,True
+13,U,11,Assessment-Based Grading,available September 19,True
+14,A,Fin,Post-course assessment,,True
+15,A,ReviewAssessmentExample,Sample peer review assignment,,True

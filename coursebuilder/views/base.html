@@ -189,6 +189,10 @@
             {# I18N: Navbar tab. #}
             <a href="student/home">{{ gettext('My Profile') }}</a>
           </li>
+          <li {% if navbar.faq %}class='active'{% endif %}>
+            {# I18N: Navbar tab. #}
+            <a href="faq">FAQ</a>
+          </li>          
           {{course_info.base.before_navbar_ends | safe}}
           {% if is_super_admin %}
           <li class="pull-right">

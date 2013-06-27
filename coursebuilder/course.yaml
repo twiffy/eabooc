@@ -29,23 +29,21 @@ course:
   admin_user_emails: ''
 
   # Course title
-  title: 'Power Searching with Google'
+  title: 'Assessment in Education'
 
   # Main page blurb. (The '|' at the beginning enables multi-line input.)
   blurb: |
-    Google Search makes it amazingly easy to find information. Come learn about
-    the powerful advanced tools we provide to help you find just the right
-    information when the stakes are high.
+   This course is designed to help educators, administrators, and researchers understand and improve assessment of student learning. It covers Assessment Practices, Assessment Principles, and Assessment Policies.
 
   # Information about the instructor to display on the main page.
-  instructor_details: 'Daniel Russell <br> Senior Research Scientist <br> Google, Inc.'
+  instructor_details: 'Daniel Hickey, Ph.D.'
 
   # You can choose whether you want a video or an image on the main page.
   # If you specify both a video and an image link, then the video will take
   # priority. The image alt text allows the image to be understood by text-only
   # screen readers.
   main_video:
-    url: https://www.youtube.com/embed/Kdg2drcUjYI?rel=0
+    url: https://www.youtube.com/embed/c9NkgnFnOWo?rel=0
   main_image:
     url: /assets/img/banner1.png
     alt_text: Photo of Dan Russell
@@ -82,15 +80,15 @@ course:
 
 institution:
   # Name of your institution
-  name: 'Add Your Institution Here'
+  name: 'Indiana University'
 
   # URL of your institution's webpage
-  url: 'LINK_TO_YOUR_INSTITUTION_HERE'
+  url: 'http://www.iub.edu/'
 
   # Link and alt text for the logo of the course or your institution
   logo:
-    url: 'assets/img/your_logo_here.png'
-    alt_text: YOUR_LOGO_HERE
+    url: 'assets/img/iu_logo.png'
+    alt_text: Indiana University
 
 
 #########################################
@@ -117,7 +115,7 @@ base:
   show_gplus_button: True
 
   # Header phrase for the main navigation bar
-  nav_header: 'Search Education'
+  nav_header: 'Assessment in Education'
 
   # Link to your privacy policy and terms of service
   privacy_terms_url: 'PRIVACY_POLICY_AND_TERMS_OF_SERVICE'
