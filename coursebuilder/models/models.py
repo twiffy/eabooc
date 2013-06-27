@@ -175,9 +175,6 @@ class Student(BaseEntity):
     professional_intro = db.TextProperty()
     personal_intro = db.TextProperty()
 
-    # "I know I will have to buy a book"
-    will_buy_book = db.BooleanProperty(indexed=True)
-
     # "How interested are you in completing the course?"
     # TODO maybe use RatingProperty?  It wants from 0-100,
     # does it have any advantages?
