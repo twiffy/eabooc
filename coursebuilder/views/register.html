@@ -34,7 +34,7 @@
               <input name="location_name" id="location_name" type="text" placeholder="Bloomington, Indiana, USA">
             </li>
 
-            <li>
+            <li style="display: none">
               <label class="gcb-reg-form-label" for="location_latitude">
                 {# I18N: A question in the registration form. #}
                 {{ gettext('Latitude') }}
@@ -141,14 +141,6 @@
                 {{ gettext('Please introduce yourself.  Your colleagues will see this introduction on your profile page.') }}
               </label>
               <textarea name="introduction" id="introduction" rows="8" cols="50"></textarea>
-            </li>
-
-            <li>
-              <label class="gcb-reg-form-label" for="will_buy_book">
-                {# I18N: A question in the registration form. #}
-                {{ gettext('A textbook will be required in order to complete this course.  TODO: link.  Are you prepared to purchase this book?') }}
-              </label>
-              <input name="will_buy_book" id="will_buy_book" value="yes" type="checkbox">I will purchase the book.</input>
             </li>
 
             <li>
