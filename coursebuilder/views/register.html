@@ -16,6 +16,7 @@
       <form action="register" method='post' enctype="multipart/form-data">
         <input type="hidden" name="xsrf_token" value="{{ register_xsrf_token|escape }}">
         <fieldset>
+          <legend>Required Information</legend>
           <ol>
             <li>
               <label class="gcb-reg-form-label" for="name">
@@ -23,14 +24,6 @@
                 {{ gettext('What name would you like other students to see?') }}
               </label>
               <input name="name" id="name" type="text">
-            </li>
-
-            <li>
-              <label class="gcb-reg-form-label" for="profile_pic">
-                {# I18N: A question in the registration form. #}
-                {{ gettext('Please upload an image that students will see on your profile page.') }}
-              </label>
-              <input name="profile_pic" id="profile_pic" type="file">
             </li>
 
             <li>
@@ -68,6 +61,20 @@
                 <option value="master">Master's degree</option>
                 <option value="doctor">Doctorate</option>
               </select>
+            </li>
+
+          </ol>
+        </fieldset>
+        <fieldset>
+          <legend>Optional Information</legend>
+          <ol>
+
+            <li>
+              <label class="gcb-reg-form-label" for="profile_pic">
+                {# I18N: A question in the registration form. #}
+                {{ gettext('Please upload an image that students will see on your profile page.') }}
+              </label>
+              <input name="profile_pic" id="profile_pic" type="file">
             </li>
 
             <li>
