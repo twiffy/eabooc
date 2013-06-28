@@ -24,6 +24,7 @@ from counters import PerfCounter
 from entities import BaseEntity
 from google.appengine.api import memcache
 from google.appengine.api import users
+from google.appengine.api import images
 from google.appengine.ext import db
 
 
@@ -184,6 +185,15 @@ class Student(BaseEntity):
     def _memcache_key(cls, key):
         """Makes a memcache key from primary key."""
         return 'entity:student:%s' % key
+
+    def set_profile_pic(self, orig_filename, image_data):
+        """Set the user's profile picture."""
+        # TODO: maybe use the blobstore to work with images.
+        image = images.Image(image_data=image_data)
+        # TODO: maybe async. Maybe make an ImageProperty descriptor thing.
+        image.resize(width=100, height=100)
+        self.profile_pic = image.execute_transforms(
+                output_encoding=images.JPEG)
 
     def put(self):
         """Do the normal put() and also add the object to memcache."""

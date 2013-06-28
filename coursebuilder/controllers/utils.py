@@ -415,10 +415,14 @@ class RegisterHandler(BaseHandler):
                     setattr(student, field, values)
 
             try:
-                student.interest_level = int(self.request.POST.get('interest_level', None))
+                student.interest_level = int(self.request.POST.get('interest_level', ''))
             except ValueError:
                 # no worries.
                 pass
+
+            # TODO: also mayyyyybe use the Blobstore.
+            profile_pic_obj = self.request.POST['profile_pic']
+            student.set_profile_pic(profile_pic_obj.filename, profile_pic_obj.file.read(1000000))
 
             student.put()
 
@@ -609,3 +613,14 @@ class XsrfTokenManager(object):
             return False
         except Exception:  # pylint: disable-msg=broad-except
             return False
+
+class ProfilePictureHandler(webapp2.RequestHandler):
+    def get(self):
+        # TODO: this exposes the students' internal database IDs,
+        # should generate random strings for the image filenames.
+        student = db.get(self.request.get('id'))
+        if student.profile_pic:
+            self.response.headers['Content-Type'] = 'image/jpeg'
+            self.response.out.write(student.profile_pic)
+        else:
+            self.error(404)
