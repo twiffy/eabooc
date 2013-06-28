@@ -31,6 +31,7 @@ from models.roles import Roles
 import webapp2
 from google.appengine.api import namespace_manager
 from google.appengine.api import users
+from google.appengine.ext.db import BadValueError
 
 
 # The name of the template dict key that stores a course's base location.
@@ -400,7 +401,8 @@ class RegisterHandler(BaseHandler):
                 try:
                     lat_long = [self.request.POST[field] for field in lat_long_fields]
                     student.location = ','.join(lat_long)
-                except ValueError as e:
+                except (ValueError, BadValueError) as e:
+                    # Harrumph, "BadValueError" is not a "ValueError"
                     # Don't worry, the point isn't important...
                     # But maybe should log the error?
                     print e
