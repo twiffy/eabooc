@@ -414,6 +414,12 @@ class RegisterHandler(BaseHandler):
                     values = [s.strip() for s in raw.split(',')]
                     setattr(student, field, values)
 
+            try:
+                student.interest_level = int(self.request.POST.get('interest_level', None))
+            except ValueError:
+                # no worries.
+                pass
+
             student.put()
 
         # Send the student to the front page of the course
