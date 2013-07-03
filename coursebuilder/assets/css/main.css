@@ -25,7 +25,7 @@
 /* Wide-ranging styles. */
 
 html {
-  background: #fff;
+  background: #b8a18b;
   color: #444;
   font-size: 13px;
   line-height: 1.54;
@@ -38,6 +38,16 @@ html, input, textarea {
 
 body, table, fieldset {
   margin: 0;
+}
+
+fieldset legend {
+  font-size: 18px;
+  color: #633;
+  font-weight: bold;
+}
+
+fieldset {
+  border: 1px solid #ccc;
 }
 
 h1, h2, h3, h4, blockquote, q, .gcb-nav ul {
@@ -216,8 +226,9 @@ th, td {
 }
 
 .gcb-aside {
-  background: #f9f9f9;
-  border-color: #f2f2f2;
+  background: #f2eedf;
+  border-color: #333;
+  border-width: 2px;
 }
 
 #gcb-signature {

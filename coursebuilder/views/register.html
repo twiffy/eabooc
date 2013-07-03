@@ -13,7 +13,7 @@
         Welcome!  Please answer the following questions, and you will be enrolled in the course.
       </p>
 
-      <form action="register" method='post' enctype="multipart/form-data">
+      <form action="register" method='post' enctype="multipart/form-data" id="gcb-reg-form">
         <input type="hidden" name="xsrf_token" value="{{ register_xsrf_token|escape }}">
         <fieldset>
           <legend>Required Information</legend>
