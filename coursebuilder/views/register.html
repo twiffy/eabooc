@@ -9,163 +9,134 @@
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
 
-      <p>
-        Welcome!  Please answer the following questions, and you will be enrolled in the course.
-      </p>
+      <h1>Pre-Registration</h1>
+      <p>After you pre-register using this form, <strong>you will be able to access course content</strong>
+      - so please look around and find what interests you!
+      However, to participate in the course and receive a badge, <strong>you will have to 
+        formally enroll, starting August 26th.</strong>
+      Enrollment will be capped at 500 students.  The course itself starts September 9, 2013 and lasts
+      for 11 weeks.
 
       <form action="register" method='post' enctype="multipart/form-data" id="gcb-reg-form">
         <input type="hidden" name="xsrf_token" value="{{ register_xsrf_token|escape }}">
         <fieldset>
           <legend>Required Information</legend>
-          <ol>
-            <li>
-              <label class="gcb-reg-form-label" for="name">
-                What name would you like other students to see?
-              </label>
-              <input name="name" id="name" type="text" placeholder="Jane Lee">
-            </li>
+          <div>
+            <label class="gcb-reg-form-label" for="name">
+              What name would you like other students to see?
+            </label>
+            <input name="name" id="name" type="text" placeholder="e.g. Jane Lee" size="55">
+          </div>
 
-            <li>
-              <label class="gcb-reg-form-label" for="location_name">
-                Please tell us where you are.
-              </label>
-              <input name="location_name" id="location_name" type="text" placeholder="Bloomington, Indiana, USA">
-            </li>
+          <div>
+            <label class="gcb-reg-form-label" for="location_name">
+              Please tell us where you are.
+            </label>
+            <input name="location_name" id="location_name" type="text" placeholder="City, State, Country">
+          </div>
 
-            <li style="display: none">
-              <label class="gcb-reg-form-label" for="location_latitude">
-                Latitude
-              </label>
-                <input name="location_latitude" id="location_latitude" type="text">
-                <br>
-              <label class="gcb-reg-form-label" for="location_longitude">
-                Longitude
-              </label>
-              <input name="location_longitude" id="location_longitude" type="text">
-            </li>
+          <div style="display: none">
+            <label class="gcb-reg-form-label" for="location_latitude">
+              Latitude
+            </label>
+              <input name="location_latitude" id="location_latitude" type="text">
+              <br>
+            <label class="gcb-reg-form-label" for="location_longitude">
+              Longitude
+            </label>
+            <input name="location_longitude" id="location_longitude" type="text">
+          </div>
 
-            <li>
-              <label class="gcb-reg-form-label" for="education_level">
-                What is the highest level of education you have attained?
-              </label>
-              <select name="education_level" id="education_level">
-                <option value="" selected> --- </option>
-                <option value="highschool">High School or equivalent</option>
-                <option value="associate">Associate's degree</option>
-                <option value="bachelor">Bachelor's degree</option>
-                <option value="master">Master's degree</option>
-                <option value="doctor">Doctorate</option>
-              </select>
-            </li>
+          <div>
+            <label class="gcb-reg-form-label" for="education_level">
+              What is the highest level of education you have attained?
+            </label>
+            <select name="education_level" id="education_level">
+              <option value="" selected> --- </option>
+              <option value="highschool">High School or equivalent</option>
+              <option value="associate">Associate's degree</option>
+              <option value="bachelor">Bachelor's degree</option>
+              <option value="master">Master's degree</option>
+              <option value="doctor">Doctorate</option>
+            </select>
+          </div>
 
-          </ol>
-        </fieldset>
-        <fieldset>
-          <legend>Optional Information</legend>
-          <ol>
+          <div>
+            <label class="gcb-reg-form-label" for="role">
+              What is your primary role in the education system?
+            </label>
+            <select name="role" id="role">
+              <option value="" selected> --- </option>
+              <option value="instructor">Instructor</option>
+              <option value="administrator">Administrator</option>
+              <option value="researcher">Researcher</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
 
-            <li>
-              <label class="gcb-reg-form-label" for="profile_pic">
-                Please upload an image that students will see on your profile page.
-              </label>
-              <input name="profile_pic" id="profile_pic" type="file">
-            </li>
+          <div class="by-role instructor" style="display: none">
+            <label class="gcb-reg-form-label" for="grade_levels">
+              What grade levels do you teach?  Enter a list separated by commas.
+            </label>
+            <input name="grade_levels" id="grade_levels" type="text" placeholder="e.g. kindergarten, 1, 2, 3">
+          </div>
 
-            <li>
-              <label class="gcb-reg-form-label" for="role">
-                What is your primary role in the education system?
-              </label>
-              <select name="role" id="role">
-                <option value="" selected> --- </option>
-                <option value="instructor">Instructor</option>
-                <option value="administrator">Administrator</option>
-                <option value="researcher">Researcher</option>
-                <option value="other">Other</option>
-              </select>
-            </li>
+          <div class="by-role instructor" style="display: none">
+            <label class="gcb-reg-form-label" for="subjects">
+              What subjects do you teach?  Enter a list separated by commas.
+            </label>
+            <input name="subjects" id="subjects" type="text" placeholder="math, social studies">
+          </div>
 
-            <li class="instructors">
-              <label class="gcb-reg-form-label" for="grade_levels">
-                For instructors: What grade levels do you teach?  Enter a list separated by commas.
-              </label>
-              <input name="grade_levels" id="grade_levels" type="text" placeholder="kindergarten, 1, 2, 3">
-            </li>
+          <div class="by-role administrator" style="display: none">
+            <label class="gcb-reg-form-label" for="school_size">
+              How large is your school?
+            </label>
+            <select name="school_size" id="school_size">
+              <option value="" selected> --- </option>
+              <option value="1-20">1-20</option>
+              <option value="21-50">21-50</option>
+              <option value="51-100">51-100</option>
+              <option value="101-500">101-500</option>
+              <option value="501-1000">501-1,000</option>
+              <option value="1001-5000">1,001-5,000</option>
+              <option value="5001-20000">5,001-20,000</option>
+              <option value="20000+">More than 20,000</option>
+            </select>
+          </div>
 
-            <li class="instructors">
-              <label class="gcb-reg-form-label" for="subjects">
-                For instructors: What subjects do you teach?  Enter a list separated by commas.
-              </label>
-              <input name="subjects" id="subjects" type="text" placeholder="math, social studies">
-            </li>
+          <div class="by-role researcher" style="display: none">
+            <label class="gcb-reg-form-label" for="research_area">
+              What is your area of research?
+            </label>
+            <input name="research_area" id="research_area" type="text" placeholder="socially-situated approaches to motivation and learning">
+          </div>
 
-            <li class="administrators">
-              <label class="gcb-reg-form-label" for="school_size">
-                For administrators: How large is your school?
-              </label>
-              <select name="school_size" id="school_size">
-                <option value="" selected> --- </option>
-                <option value="1-20">1-20</option>
-                <option value="21-50">21-50</option>
-                <option value="51-100">51-100</option>
-                <option value="101-500">101-500</option>
-                <option value="501-1000">501-1,000</option>
-                <option value="1001-5000">1,001-5,000</option>
-                <option value="5001-20000">5,001-20,000</option>
-                <option value="20000+">More than 20,000</option>
-              </select>
-            </li>
+          <div class="radio">
+            <label class="gcb-reg-form-label">
+              How interested are you in completing this course?
+            </label>
+            <label>
+              <input type="radio" name="interest_level" value="1"> 1 - Just taking a look <br>
+            </label>
+            <label>
+              <input type="radio" name="interest_level" value="2"> 2 <br>
+            </label>
+            <label>
+              <input type="radio" name="interest_level" value="3"> 3 <br>
+            </label>
+            <label>
+              <input type="radio" name="interest_level" value="4"> 4 <br>
+            </label>
+            <label>
+              <input type="radio" name="interest_level" value="5"> 5 - I will definitely finish the course! <br>
+            </label>
+          </div>
 
-            <li class="researcher">
-              <label class="gcb-reg-form-label" for="research_area">
-                For researchers: What is your area of research?
-              </label>
-              <input name="research_area" id="research_area" type="text" placeholder="socially-situated approaches to motivation and learning">
-            </li>
-
-            <hr>
-
-            <li>
-              <label class="gcb-reg-form-label" for="professional_intro">
-                Please introduce yourself professionally.  Where do you work?  What are your interests?
-                Your colleagues in this course will be able to see this introduction.
-              </label>
-              <textarea name="professional_intro" id="professional_intro" rows="8" cols="50"></textarea>
-            </li>
-
-            <li>
-              <label class="gcb-reg-form-label" for="personal_intro">
-                Please introduce yourself personally.  What are your outside interests?
-                Your colleagues in this course will be able to see this introduction.
-              </label>
-              <textarea name="personal_intro" id="personal_intro" rows="8" cols="50"></textarea>
-            </li>
-
-            <li>
-              <label class="gcb-reg-form-label">
-                How interested are you in completing this course?
-              </label>
-              <label>
-                <input type="radio" name="interest_level" value="1"> 1 - Just taking a look <br>
-              </label>
-              <label>
-                <input type="radio" name="interest_level" value="2"> 2 <br>
-              </label>
-              <label>
-                <input type="radio" name="interest_level" value="3"> 3 <br>
-              </label>
-              <label>
-                <input type="radio" name="interest_level" value="4"> 4 <br>
-              </label>
-              <label>
-                <input type="radio" name="interest_level" value="5"> 5 - I will definitely finish the course! <br>
-              </label>
-            </li>
-
-          </ol>
         </fieldset>
 
         <button class="gcb-button" type="submit">
-          Enroll
+          Pre-Register
         </button>
       </form>
 
@@ -174,4 +145,16 @@
 </div>
 
 <script src="assets/lib/Placeholders.min.js"></script>
+<script>
+  $("div.by-role").hide();
+  $("select#role").change(function() {
+    $("div.by-role").hide(600);
+    var selected = $(this).children(":selected")[0];
+    if (selected) {
+      var selector = "div." + selected.value;
+      $(selector).show(600);
+    }
+  });
+</script>
+
 {% endblock %}
