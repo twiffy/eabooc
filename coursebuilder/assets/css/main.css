@@ -702,3 +702,10 @@ a.gcb-button-action, button.gcb-button-action {
 #gcb-reg-form div {
   margin: 5px;
 }
+
+div.faq:target {
+  font-size: 120%;
+  background: #fff;
+  color: #666;
+  border: 2px #633 solid;
+}
