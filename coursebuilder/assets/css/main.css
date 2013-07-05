@@ -88,6 +88,10 @@ th, td {
   float: left;
   margin: 0 0 120px;
   width: 14.1104296%;
+  border-width: 4px;
+  border-style: outset;
+  background-color: #333;
+  color: #ccc;
 }
 
 #gcb-nav-y ul {
@@ -96,7 +100,7 @@ th, td {
 }
 
 #gcb-nav-y ul ul {
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #666;
   margin: 8px 0 -8px;
   list-style: none;
 }
@@ -107,9 +111,9 @@ th, td {
 }
 
 #gcb-nav-y li {
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #666;
   font-size: 13px;
-  padding: 7px 0;
+  padding: 7px 8px;
 }
 
 #gcb-nav-y li, #gcb-nav-y li.active a, #gcb-nav-y li.active li, #gcb-nav-y li.active li.active a {
@@ -127,6 +131,10 @@ th, td {
 
 #gcb-nav-y + .gcb-article > :first-child {
   margin-top: 0;
+}
+
+ul#front-nav {
+  margin: 0 48px;
 }
 
 #gcb-main {
@@ -585,7 +593,7 @@ a.gcb-button-action, button.gcb-button-action {
 .gcb-schedule-headers {
   font-size: 20px;
   font-weight: normal;
-  margin: 10px 7px;
+  margin: 16px 24px;
 }
 
 /*
@@ -597,6 +605,10 @@ a.gcb-button-action, button.gcb-button-action {
   font-size: 16px;
   font-weight: 200;
   line-height: 20px;
+}
+
+#front-nav .gcb-top-content {
+  margin: 0px;
 }
 
 /* Styles for elements on a unit/lesson page. */
