@@ -408,24 +408,11 @@ class RegisterHandler(BaseHandler):
             student.user_id = user.user_id()
             student.is_enrolled = True
 
-            regular_fields = ('name', 'location_name', 'education_level', 'role',
-                    'school_size', 'research_area', 'personal_intro',
-                    'professional_intro')
+            string_fields = ('name', 'location_name', 'education_level', 'role',
+                    'school_size', 'research_area')
 
-            for field in regular_fields:
-                setattr(student, field, self.request.POST.get(field, ''))
-
-            lat_long_fields = ('location_latitude', 'location_longitude')
-            # POST.get(field)??
-            if all([field in self.request.POST for field in lat_long_fields]):
-                try:
-                    lat_long = [self.request.POST[field] for field in lat_long_fields]
-                    student.location = ','.join(lat_long)
-                except (ValueError, BadValueError) as e:
-                    # Harrumph, "BadValueError" is not a "ValueError"
-                    # Don't worry, the point isn't important...
-                    # But maybe should log the error?
-                    print e
+            for field in string_fields:
+                setattr(student, field, self.request.POST.get(field, None))
 
             string_list_fields = ('grade_levels', 'subjects')
             for field in string_list_fields:
@@ -439,11 +426,6 @@ class RegisterHandler(BaseHandler):
             except ValueError:
                 # no worries.
                 pass
-
-            # TODO: also mayyyyybe use the Blobstore.
-            profile_pic_obj = self.request.POST['profile_pic']
-            if hasattr(profile_pic_obj, 'file'):
-                student.set_profile_pic(profile_pic_obj.filename, profile_pic_obj.file.read(1000000))
 
             student.put()
 
