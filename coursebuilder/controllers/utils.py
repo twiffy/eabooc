@@ -373,6 +373,26 @@ class RegisterHandler(BaseHandler):
         if not can_register:
             self.template_value['course_status'] = 'full'
         else:
+            required_fields = ('name', 'location_name', 'education_level',
+                    'role', 'interest_level')
+
+            if not all(f in self.request.POST for f in required_fields):
+                self.template_value['navbar'] = {'registration': True}
+                self.template_value['content'] = '''
+                <div class="gcb-col-11 gcb-aside">
+                <h2>Something is missing...</h2>
+                <p>You didn't fill out all the required fields in the registration form.
+                Please use your browser's BACK button, and complete the form before
+                submitting.</p>
+
+                <p>Thanks!</p>
+                </div>
+                '''
+                self.render('bare.html')
+                return
+
+            # We accept the form.  Now populate the student model:
+
             # create new or re-enroll old student
             student = Student.get_by_email(user.email())
             if not student:
