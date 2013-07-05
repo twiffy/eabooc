@@ -138,11 +138,11 @@
 <script>
   $("div.by-role").hide();
   $("select#role").change(function() {
-    $("div.by-role").hide(600);
+    $("div.by-role").hide(300);
     var selected = $(this).children(":selected")[0];
     if (selected) {
       var selector = "div." + selected.value;
-      $(selector).show(600);
+      $(selector).show(300);
     }
   });
 </script>
