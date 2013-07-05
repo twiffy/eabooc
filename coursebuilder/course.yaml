@@ -42,8 +42,11 @@ course:
   # If you specify both a video and an image link, then the video will take
   # priority. The image alt text allows the image to be understood by text-only
   # screen readers.
-  main_video:
-    url: https://www.youtube.com/embed/c9NkgnFnOWo?rel=0
+  #main_video:
+    #url: https://www.youtube.com/embed/c9NkgnFnOWo?rel=0
+  main_image:
+    url: /assets/img/front_image.jpg
+    alt_text: Photo of Daniel Hickey
 
   # Course start date.
   start_date: 'September 9, 2013'
