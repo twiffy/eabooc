@@ -55,25 +55,41 @@
             </label>
             <select name="role" id="role">
               <option value="" selected> --- </option>
-              <option value="instructor">Instructor</option>
               <option value="administrator">Administrator</option>
               <option value="researcher">Researcher</option>
+              <option value="educator">Educator (K-12)</option>
+              <option value="faculty">Faculty (Post-secondary)</option>
+              <option value="student">Student</option>
               <option value="other">Other</option>
             </select>
           </div>
 
-          <div class="by-role instructor" style="display: none">
+          <div class="by-role educator" style="display: none">
             <label class="gcb-reg-form-label" for="grade_levels">
               What grade levels do you teach?  Enter a list separated by commas.
             </label>
             <input name="grade_levels" id="grade_levels" type="text" placeholder="e.g. kindergarten, 1, 2, 3">
           </div>
 
-          <div class="by-role instructor" style="display: none">
-            <label class="gcb-reg-form-label" for="subjects">
-              What subjects do you teach?  Enter a list separated by commas.
+          <div class="by-role faculty" style="display: none">
+            <label class="gcb-reg-form-label" for="faculty_area">
+              What subject or subjects do you teach?
             </label>
-            <input name="subjects" id="subjects" type="text" placeholder="math, social studies">
+            <input name="faculty_area" id="faculty_area" type="text">
+          </div>
+
+          <div class="by-role student" style="display: none">
+            <label class="gcb-reg-form-label" for="student_subject">
+              What are you studying?
+            </label>
+            <input name="student_subject" id="student_subject" type="text">
+          </div>
+
+          <div class="by-role other" style="display: none">
+            <label class="gcb-reg-form-label" for="other_role">
+              What is your role, if any?
+            </label>
+            <input name="other_role" id="other_role" type="text">
           </div>
 
           <div class="by-role administrator" style="display: none">

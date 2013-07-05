@@ -161,20 +161,13 @@ class Student(BaseEntity):
     # (instructor, administrator, researcher?)
     role = db.StringProperty(indexed=True)
 
-    # Grade levels and subjects taught (for instructors)
+    # Other registration questions
     grade_levels = db.StringListProperty()
-    subjects = db.StringListProperty()
-
-    # School size (for administrators)
-    # (1-20, 21-50, 51-100, 101-500, etc)
+    faculty_area = db.StringProperty()
+    student_subject = db.StringProperty()
     school_size = db.StringProperty(indexed=True)
-
-    # Research field (for researchers)
     research_area = db.StringProperty(indexed=False)
-
-    # "Introduce yourself"
-    professional_intro = db.TextProperty()
-    personal_intro = db.TextProperty()
+    other_role = db.StringProperty()
 
     # "How interested are you in completing the course?"
     # TODO maybe use RatingProperty?  It wants from 0-100,

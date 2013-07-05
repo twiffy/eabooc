@@ -409,12 +409,13 @@ class RegisterHandler(BaseHandler):
             student.is_enrolled = True
 
             string_fields = ('name', 'location_name', 'education_level', 'role',
-                    'school_size', 'research_area')
+                    'school_size', 'research_area', 'faculty_area',
+                    'student_subject', 'other_role')
 
             for field in string_fields:
                 setattr(student, field, self.request.POST.get(field, None))
 
-            string_list_fields = ('grade_levels', 'subjects')
+            string_list_fields = ('grade_levels',)
             for field in string_list_fields:
                 raw = self.request.POST.get(field, '')
                 if len(raw) > 0:
