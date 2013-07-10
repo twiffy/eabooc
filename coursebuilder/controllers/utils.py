@@ -356,6 +356,25 @@ class RegisterHandler(BaseHandler):
             XsrfTokenManager.create_xsrf_token('register-post'))
         self.render('register.html')
 
+    def validate_form(self, post):
+        required_fields = ('name', 'location_name', 'education_level',
+                'role', 'interest_level')
+
+        if not all(f in self.request.POST for f in required_fields):
+            return False
+
+        if not self.request.POST['role']:
+            return False
+
+        role_fields = {
+                'educator': 'grade_levels',
+                'faculty': 'faculty_area',
+                'administrator': 'title_and_setting',
+                'researcher': 'research_area',
+                'student': 'student_subject',
+                'other': 'other_role',
+                }
+
     def post(self):
         """Handles POST requests."""
         user = self.personalize_page_and_get_user()
@@ -372,10 +391,7 @@ class RegisterHandler(BaseHandler):
         if not can_register:
             self.template_value['course_status'] = 'full'
         else:
-            required_fields = ('name', 'location_name', 'education_level',
-                    'role', 'interest_level')
-
-            if not all(f in self.request.POST for f in required_fields):
+            if not self.validate_form(self.request.POST):
                 self.template_value['navbar'] = {'registration': True}
                 self.template_value['content'] = '''
                 <div class="gcb-col-11 gcb-aside">
