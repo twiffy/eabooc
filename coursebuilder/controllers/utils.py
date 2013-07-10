@@ -363,10 +363,7 @@ class RegisterHandler(BaseHandler):
         if not all(f in self.request.POST for f in required_fields):
             return False
 
-        if not self.request.POST['role']:
-            return False
-
-        role_fields = {
+        role_details = {
                 'educator': 'grade_levels',
                 'faculty': 'faculty_area',
                 'administrator': 'title_and_setting',
@@ -374,6 +371,15 @@ class RegisterHandler(BaseHandler):
                 'student': 'student_subject',
                 'other': 'other_role',
                 }
+
+        user_role = self.request.POST['role']
+
+        if not user_role in role_details:
+            return False
+
+        if not role_details[user_role] in self.request.POST:
+            return False
+
 
     def post(self):
         """Handles POST requests."""
