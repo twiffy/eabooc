@@ -164,9 +164,9 @@ class Student(BaseEntity):
     # Other registration questions
     grade_levels = db.StringListProperty()
     title_and_setting = db.StringListProperty()
-    faculty_area = db.StringProperty()
-    student_subject = db.StringProperty()
-    research_area = db.StringProperty(indexed=False)
+    faculty_area = db.StringListProperty()
+    student_subject = db.StringListProperty()
+    research_area = db.StringListProperty()
     other_role = db.StringProperty()
 
     # "How interested are you in completing the course?"
