@@ -367,7 +367,6 @@ class RegisterHandler(BaseHandler):
         if not self.assert_xsrf_token_or_fail(self.request, 'register-post'):
             return
 
-        # TODO: Now that we don't display confirmation page, need more logic here.
         can_register = self.app_context.get_environ(
             )['reg_form']['can_register']
         if not can_register:
