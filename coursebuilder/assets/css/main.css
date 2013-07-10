@@ -700,6 +700,10 @@ a.gcb-button-action, button.gcb-button-action {
   color: #444;
 }
 
+.gcb-reg-form-label small {
+  font-weight: normal;
+}
+
 #gcb-reg-form input, #gcb-reg-form select, #gcb-reg-form textarea {
   font-size: 15px;
   width: 60%;
