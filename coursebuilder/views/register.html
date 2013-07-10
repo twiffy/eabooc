@@ -142,14 +142,17 @@
 
 <script src="assets/lib/Placeholders.min.js"></script>
 <script>
-  $("div.by-role").hide();
-  $("select#role").change(function() {
+  update_role_details = function() {
     $("div.by-role").hide(300);
     var selected = $(this).children(":selected")[0];
-    if (selected) {
+    if (selected && selected.value) {
       var selector = "div." + selected.value;
       $(selector).show(300);
     }
+  };
+  $("select#role").change(update_role_details);
+  $(document).ready(function() {
+    $("select#role").change();
   });
 </script>
 
