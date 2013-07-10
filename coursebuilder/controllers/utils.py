@@ -356,12 +356,19 @@ class RegisterHandler(BaseHandler):
             XsrfTokenManager.create_xsrf_token('register-post'))
         self.render('register.html')
 
-    def validate_form(self, post):
+    def find_missing_fields(self, post):
         required_fields = ('name', 'location_name', 'education_level',
                 'role', 'interest_level')
 
-        if not all(f in self.request.POST for f in required_fields):
-            return False
+        missing = []
+
+        for f in required_fields:
+            if f not in post:
+                missing += [f]
+
+        # Don't want to deal with the rest of the validation yet.
+        if missing:
+            return missing
 
         role_details = {
                 'educator': 'grade_levels',
@@ -372,13 +379,14 @@ class RegisterHandler(BaseHandler):
                 'other': 'other_role',
                 }
 
-        user_role = self.request.POST['role']
+        user_role = post['role']
 
         if not user_role in role_details:
-            return False
+            missing += ['role']
+        elif not post.get(role_details[user_role], None):
+            missing += [role_details[user_role]]
 
-        if not role_details[user_role] in self.request.POST:
-            return False
+        return missing
 
 
     def post(self):
@@ -397,7 +405,8 @@ class RegisterHandler(BaseHandler):
         if not can_register:
             self.template_value['course_status'] = 'full'
         else:
-            if not self.validate_form(self.request.POST):
+            missing = self.find_missing_fields(self.request.POST)
+            if missing:
                 self.template_value['navbar'] = {'registration': True}
                 self.template_value['content'] = '''
                 <div class="gcb-col-11 gcb-aside">
@@ -406,9 +415,11 @@ class RegisterHandler(BaseHandler):
                 Please use your browser's BACK button, and complete the form before
                 submitting.</p>
 
+                <p>Missing: {0}</p>
+
                 <p>Thanks!</p>
                 </div>
-                '''
+                '''.format(", ".join(missing))
                 self.render('bare.html')
                 return
 
