@@ -414,7 +414,7 @@ class RegisterHandler(BaseHandler):
             for field in string_fields:
                 setattr(student, field, self.request.POST.get(field, None))
 
-            string_list_fields = ('grade_levels',)
+            string_list_fields = ('grade_levels', 'title_and_setting')
             for field in string_list_fields:
                 raw = self.request.POST.get(field, '')
                 if len(raw) > 0:

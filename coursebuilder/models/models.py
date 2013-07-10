@@ -163,9 +163,9 @@ class Student(BaseEntity):
 
     # Other registration questions
     grade_levels = db.StringListProperty()
+    title_and_setting = db.StringListProperty()
     faculty_area = db.StringProperty()
     student_subject = db.StringProperty()
-    school_size = db.StringProperty(indexed=True)
     research_area = db.StringProperty(indexed=False)
     other_role = db.StringProperty()
 
