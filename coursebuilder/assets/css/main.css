@@ -225,6 +225,10 @@ ul#front-nav {
   top: -1px;
 }
 
+.gcb-cols .gcb-aside {
+  margin-top: 10px;
+}
+
 .gcb-aside>:first-child {
   margin-top: 0;
 }
