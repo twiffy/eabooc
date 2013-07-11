@@ -33,8 +33,6 @@ var activity = [
 
   '<table border="2"><tr><td><b>Note:</b><p>These self-assessments are mainly intended for you to check your undersanding about the concepts covered on each unit. They do not affect your final grade.<p></tr></td></table><br>',
 
-  'The next several questions explore what elements impact the order in which Google returns your results. Mark whether each statement is true or false, according to Matt Cutts:<p>',
-
   { questionType: 'multiple choice group',
     questionsList: [{questionHTML: 'Which of the following is NOT a reason for assessing, according to Yesteryears.',
                      choices: ['Diagnosing student\'s strengths and weaknesses', 'Monitoring student\'s progress', 'Promoting competition among students','Assigning grades to students'], correctIndex: 2},
