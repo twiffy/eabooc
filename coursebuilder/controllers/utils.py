@@ -357,8 +357,8 @@ class RegisterHandler(BaseHandler):
         self.render('register.html')
 
     def find_missing_fields(self, post):
-        required_fields = ('name', 'location_name', 'education_level',
-                'role', 'interest_level')
+        required_fields = ('name', 'location_city', 'education_level',
+                'location_country', 'role', 'interest_level')
 
         missing = []
 
@@ -440,7 +440,9 @@ class RegisterHandler(BaseHandler):
             student.user_id = user.user_id()
             student.is_enrolled = True
 
-            string_fields = ('name', 'location_name', 'education_level', 'role',
+            string_fields = ('name', 'location_city',
+                    'location_state', 'location_country',
+                    'education_level', 'role',
                     'other_role')
 
             for field in string_fields:

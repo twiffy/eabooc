@@ -151,8 +151,9 @@ class Student(BaseEntity):
     profile_pic = db.BlobProperty()
 
     # The lat/longitude, and name, of the student's location
-    location = db.GeoPtProperty()
-    location_name = db.StringProperty(indexed=False)
+    location_city = db.StringProperty(indexed=False)
+    location_state = db.StringProperty()
+    location_country = db.StringProperty()
 
     # The user's education level.  Maximum or in-progress?
     education_level = db.StringProperty(indexed=True)
