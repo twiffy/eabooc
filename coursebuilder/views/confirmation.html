@@ -17,10 +17,16 @@
         </p>
 
       {% else %}
-        <p class="gcb-top-content">
-          {# I18N: Message shown to the student immediately after registration. #}
-          {{ gettext('Thank you for registering for %(course_title)s. Stay tuned for more information about the course which will start on %(start_date)s.', course_title=course_info.course.title, start_date=course_info.course.start_date) }}
-        </p>
+        <div class="gcb-top-content">
+          <p>Thank you for Pre-Registering for<br><strong>Educational Assessment: Practices, Principles and Policies.</strong></p>
+
+          <p>Your Pre-Registration does not guarantee a place in the course.<br>You must still complete Official Registration.</p>
+
+          <p>You will receive a reminder e-mail when Official Registration opens on August 26, 2013.<br>The course will
+          begin on September 9, 2013.</p>
+
+          <p><a href="/course" class="gcb-button">Go to Course Material!</a></p>
+        </div>
 
         <div style="text-align:left;">
           <ul>
