@@ -118,7 +118,7 @@ base:
   nav_header:  'Educational Assessment:<br>Practices, Principles, and Policies'
 
   # Link to your privacy policy and terms of service
-  privacy_terms_url: 'PRIVACY_POLICY_AND_TERMS_OF_SERVICE'
+  privacy_terms_url: 'assets/content/terms_of_use.html'
 
 
 ########################
