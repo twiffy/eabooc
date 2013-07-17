@@ -34,6 +34,7 @@ import modules.dashboard.dashboard
 import modules.oauth2.oauth2
 import modules.oeditor.oeditor
 import modules.review.review
+import modules.wikifolios.wikifolios
 
 
 # use this flag to control debug only features
@@ -46,6 +47,9 @@ modules.dashboard.dashboard.register_module().enable()
 modules.announcements.announcements.register_module().enable()
 modules.review.review.register_module().enable()
 modules.courses.courses.register_module().enable()
+
+# BOOC
+modules.wikifolios.wikifolios.register_module().enable()
 
 # register modules that are not enabled by default.
 modules.oauth2.oauth2.register_module()
