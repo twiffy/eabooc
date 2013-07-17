@@ -74,6 +74,7 @@ THIRD_PARTY_LIBS = [
     _Library('pyparsing-1.5.7.zip'),
     _Library('mailsnake-1.6.2.zip'),
     _Library('requests-1.2.3.zip'),
+    _Library('bleach-1.2.2.zip'),
 ]
 
 
