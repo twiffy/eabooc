@@ -2,14 +2,14 @@ id,type,unit_id,title,release_date,now_available
 1,A,Pre,Pre-course assessment,,False
 2,U,1,Lesson and Standard Selection,available September 10,True
 3,U,2,Selected Response Items,available September 11,True
-4,U,3,Constructed Response Items,available September 12,True
-5,U,4,Performance and Portfolio Assessment,available September 12,True
+4,U,3,Constructed Response Items,available September 12,False
+5,U,4,Performance and Portfolio Assessment,available September 12,False
 6,U,5,Reliability and Bias,available September 17,True
-7,U,6,Validity,available September 18,True
-8,U,7,Formative Assessment,available September 19,True
+7,U,6,Validity,available September 18,False
+8,U,7,Formative Assessment,available September 19,False
 9,A,Mid,Mid-course assessment,,False
 10,U,8,Standardized Testing,available September 19,True
-11,U,9,Test Preparation,available September 19,True
-12,U,10,Evaluation of Instruction and Teachers,available September 19,True
-13,U,11,Assessment-Based Grading,available September 19,True
+11,U,9,Test Preparation,available September 19,False
+12,U,10,Evaluation of Instruction and Teachers,available September 19,False
+13,U,11,Assessment-Based Grading,available September 19,False
 14,A,Fin,Post-course assessment,,False
