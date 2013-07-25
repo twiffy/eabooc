@@ -2,7 +2,7 @@
 #
 
 stage:
-	appcfg update . --email booc.class -V stage
+	appcfg update . --email booc.class -A booc-stage
 
 deploy:
 	appcfg update . --email booc.class
