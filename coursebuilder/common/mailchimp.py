@@ -16,7 +16,7 @@ MAILCHIMP_PRE_REG_LIST_ID = ConfigProperty(
         Set to None to disable this subscription.""",
         '')
 
-def subscribe_to_pre_reg(email):
+def subscribe_to_pre_reg(email, name):
     try:
         api_key = MAILCHIMP_API_KEY.value
         list_id = MAILCHIMP_PRE_REG_LIST_ID.value
@@ -34,7 +34,11 @@ def subscribe_to_pre_reg(email):
                 id=list_id,
                 email_address=email,
                 double_optin=False,
-                send_welcome=True)
+                update_existing=True,
+                merge_vars={
+                    'FNAME': name,
+                    },
+                )
         if not success:
             logging.warning(
                 'Failed to subscribe %s to mailchimp list', email)
