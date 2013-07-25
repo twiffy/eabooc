@@ -72,6 +72,8 @@ THIRD_PARTY_LIBS = [
     # need to find a better way of packaging this stuff.
     _Library('python-gflags-2.0.zip', relative_path='python-gflags-2.0'),
     _Library('pyparsing-1.5.7.zip'),
+    _Library('mailsnake-1.6.2.zip'),
+    _Library('requests-1.2.3.zip'),
 ]
 
 
