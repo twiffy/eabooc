@@ -358,7 +358,7 @@ class RegisterHandler(BaseHandler):
 
     def find_missing_fields(self, post):
         required_fields = ('name', 'location_city', 'education_level',
-                'location_country', 'role', 'interest_level')
+                'location_country', 'role')
 
         missing = []
 
@@ -456,12 +456,6 @@ class RegisterHandler(BaseHandler):
                 if len(raw) > 0:
                     values = [s.strip() for s in raw.split(',')]
                     setattr(student, field, values)
-
-            try:
-                student.interest_level = int(self.request.POST.get('interest_level', ''))
-            except ValueError:
-                # no worries.
-                pass
 
             student.put()
 
