@@ -22,7 +22,6 @@ import os
 import time
 import urlparse
 import appengine_config
-import logging
 from models import transforms
 from models.config import ConfigProperty
 from models.config import ConfigPropertyEntity
@@ -33,9 +32,7 @@ import webapp2
 from google.appengine.api import namespace_manager
 from google.appengine.api import users
 from google.appengine.ext.db import BadValueError
-
-import mailsnake
-import mailsnake.exceptions
+from common import mailchimp
 
 # The name of the template dict key that stores a course's base location.
 COURSE_BASE_KEY = 'gcb_course_base'
@@ -468,24 +465,7 @@ class RegisterHandler(BaseHandler):
 
             student.put()
 
-            try:
-                api_key = ApiKey.get_by_key_name('MailChimp')
-                if not api_key:
-                    logging.warning(
-                        'No MailChimp api key configured!')
-                else: 
-                    ms = mailsnake.MailSnake(api_key.the_key)
-                    success = ms.listSubscribe(
-                            id='88f15fc326',
-                            email_address=user.email(),
-                            double_optin=False,
-                            send_welcome=True)
-                    if not success:
-                        logging.warning(
-                            'Failed to subscribe %s to mailchimp list', user.email())
-            except mailsnake.exceptions.MailSnakeException:
-                logging.exception(
-                    'Failed to subscribe %s to mailchimp list, ', user.email())
+            mailchimp.subscribe_to_pre_reg(user.email())
 
         # Render registration confirmation page
         self.template_value['navbar'] = {'registration': True}
