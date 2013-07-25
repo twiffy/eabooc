@@ -465,7 +465,7 @@ class RegisterHandler(BaseHandler):
 
             student.put()
 
-            mailchimp.subscribe_to_pre_reg(user.email(), student.name)
+            mailchimp.subscribe_to_pre_reg(user.email(), student.name, self.request.remote_addr)
 
         # Render registration confirmation page
         self.template_value['navbar'] = {'registration': True}

@@ -2,6 +2,7 @@ from models.config import ConfigProperty
 import mailsnake
 import mailsnake.exceptions
 import logging
+import datetime
 
 MAILCHIMP_API_KEY = ConfigProperty(
         'mailchimp_api_key', str,
@@ -16,7 +17,7 @@ MAILCHIMP_PRE_REG_LIST_ID = ConfigProperty(
         Set to None to disable this subscription.""",
         '')
 
-def subscribe_to_pre_reg(email, name):
+def subscribe_to_pre_reg(email, name, ip):
     try:
         api_key = MAILCHIMP_API_KEY.value
         list_id = MAILCHIMP_PRE_REG_LIST_ID.value
@@ -37,6 +38,8 @@ def subscribe_to_pre_reg(email, name):
                 update_existing=True,
                 merge_vars={
                     'FNAME': name,
+                    'OPTIN_IP': ip,
+                    'OPTIN_TIME': datetime.datetime.now().isoformat(),
                     },
                 )
         if not success:
