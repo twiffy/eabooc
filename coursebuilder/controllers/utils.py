@@ -26,13 +26,13 @@ from models import transforms
 from models.config import ConfigProperty
 from models.config import ConfigPropertyEntity
 from models.courses import Course
-from models.models import Student
+from models.models import Student, ApiKey
 from models.roles import Roles
 import webapp2
 from google.appengine.api import namespace_manager
 from google.appengine.api import users
 from google.appengine.ext.db import BadValueError
-
+from common import mailchimp
 
 # The name of the template dict key that stores a course's base location.
 COURSE_BASE_KEY = 'gcb_course_base'
@@ -464,6 +464,8 @@ class RegisterHandler(BaseHandler):
                 pass
 
             student.put()
+
+            mailchimp.subscribe_to_pre_reg(user.email(), student.name)
 
         # Render registration confirmation page
         self.template_value['navbar'] = {'registration': True}
