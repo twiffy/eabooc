@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block top_content %}
+{% endblock %}
+{% block main_content %}
+<form action="wiki?action=save" method="POST">
+  <textarea name="text">{{ content | safe }}</textarea>
+  <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+  <input type="submit">
+</form>
+{% endblock %}

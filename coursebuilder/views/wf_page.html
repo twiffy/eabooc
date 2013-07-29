@@ -2,5 +2,8 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
-{{ content | safe }}
+{% if can_edit %}
+<a href="wiki?action=edit">edit</a>
+{% endif %}
+<div>{{ content | safe }}</div>
 {% endblock %}
