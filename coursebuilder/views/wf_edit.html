@@ -2,10 +2,9 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
-<form action="wiki?action=save" method="POST">
+<form action="{{ save_url }}" method="POST">
   <textarea name="text">{{ content | safe }}</textarea>
   <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
-  <input type="hidden" name="unit" value="{{ unit }}">
   <input type="submit">
 </form>
 {% endblock %}

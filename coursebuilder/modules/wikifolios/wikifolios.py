@@ -14,7 +14,6 @@ import wtforms as wtf
 
 class WikiNavForm(wtf.Form):
     unit = wtf.IntegerField('Unit number', [
-        wtf.validators.Optional(),
         wtf.validators.NumberRange(min=1, max=100),
         ])
     student = wtf.IntegerField('Student id', [
@@ -22,31 +21,31 @@ class WikiNavForm(wtf.Form):
         wtf.validators.NumberRange(min=1, max=100000000000),
         ])
 
-class WikiHandler(BaseHandler, ReflectiveRequestHandler):
+class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
     post_actions = ["save"]
 
-    def _set_nav(self):
+    def _get_query(self):
         form = WikiNavForm(self.request.params)
         if form.validate():
-            self.query = form.data
+            return form.data
         else:
-            self.query = {}
+            # TODO maybe log why it's not good
+            return None
 
-    def _find_page(self, student, create=False):
-        logging.info(self.query)
-        if 'student' in self.query:
-            page_student = (Student.all()
-                    .filter("wiki_id =", self.query['student'])
-                    .get())
-            # OK if that returns None, we want to 404.
-        else:
-            page_student = student
+    def _find_page(self, query, create=False):
+        logging.info(query)
+        assert query
+        # TODO don't have to do this query if it's your own page,
+        # optimize this.
+        student_model = (Student.all()
+                .filter("wiki_id =", query['student'])
+                .get())
+        if not student_model:
+            return None
 
-        logging.info('page student %s', page_student)
-
-        key = WikiPage.get_key(page_student, self.query.get('unit', None))
+        key = WikiPage.get_key(student_model, query['unit'])
         if not key:
             # Not only is there no page,
             # but the request is invalid too.
@@ -58,11 +57,11 @@ class WikiHandler(BaseHandler, ReflectiveRequestHandler):
 
         return page
 
-    def _create_action_url(self, action="view"):
-        unit = self.query.get('unit', '')
+    def _create_action_url(self, query, action="view"):
         params = {
                 'action': action,
-                'unit': unit,
+                'unit': query['unit'],
+                'student': query['student'],
                 }
         return '?'.join((
                 self.request.path,
@@ -70,54 +69,98 @@ class WikiHandler(BaseHandler, ReflectiveRequestHandler):
 
     def get_view(self):
         student = self.personalize_page_and_get_enrolled()
-        student.ensure_wiki_id()
-        self._set_nav()
-        content = None
+        query = self._get_query()
+        self.template_value['navbar'] = {'wiki': True}
+        self.template_value['content'] = ''
 
-        page = self._find_page(student)
-        if page:
-            content = page.text
-        if not content:
+        if not query:
+            logging.info("404: query is not legit.")
             content = "The page you requested could not be found."
             self.error(404)
+            # fall through
+        elif not query['student']:
+            query['student'] = student.wiki_id
+            self.redirect(self._create_action_url(query, 'view'))
+            return
+        else:
+            # Want the edit link even if the page doesn't exist, so they
+            # can create it.
+            # TODO if user is admin, it's ok after all
+            self.template_value['can_edit'] = query['student'] == student.wiki_id
+            self.template_value['edit_url'] = self._create_action_url(query, 'edit')
+
+            page = self._find_page(query)
+            if page:
+                content = page.text
+            else:
+                content = "The page you requested could not be found."
+                self.error(404)
+
         self.template_value['content'] = content
-        self.template_value['can_edit'] = True
-        self.template_value['edit_url'] = self._create_action_url('edit')
-        self.template_value['navbar'] = {'wiki': True}
+        # TODO put access check into model? or at least own function.
         self.render("wf_page.html")
 
     def get_edit(self):
         student = self.personalize_page_and_get_enrolled()
-        student.ensure_wiki_id()
-        self._set_nav()
-
-        # shit, don't want to consider the requested student here.
-        # have to think this through harder :(
-        page = self._find_page(student)
-        if page:
-            content = page.text
-        else:
-            content = ''
-        self.template_value['content'] = content
-        self.template_value['unit'] = self.query.get('unit', '')
+        query = self._get_query()
         self.template_value['navbar'] = {'wiki': True}
-        self.template_value['xsrf_token'] = self.create_xsrf_token('save')
-        self.render("wf_edit.html")
+        self.template_value['content'] = ''
+
+        if not query:
+            logging.info("404: query is not legit.")
+            content = "The page you requested could not be found."
+            self.error(404)
+            # fall through
+        elif not query['student']:
+            query['student'] = student.wiki_id
+            self.redirect(self._create_action_url(query, 'edit'))
+            return
+        elif query['student'] != student.wiki_id:
+            # TODO if user is admin, it's ok after all
+            content = "You are not allowed to edit this student's wiki."
+            self.error(403)
+        else:
+            page = self._find_page(query)
+            if page:
+                content = page.text
+            else:
+                content = ''
+            self.template_value['content'] = content
+            self.template_value['xsrf_token'] = self.create_xsrf_token('save')
+            self.template_value['save_url'] = self._create_action_url(query, 'save')
+            self.render("wf_edit.html")
+            return
+        self.template_value['content'] = content
+        self.render("wf_page.html")
 
     def post_save(self):
         student = self.personalize_page_and_get_enrolled()
-        student.ensure_wiki_id()
-        self._set_nav()
+        query = self._get_query()
 
-        page = self._find_page(student, create=True)
+        if not query:
+            logging.warning("POST is not legit")
+            content = "You can't do that."
+            self.error(403)
+        elif query['student'] != student.wiki_id:
+            # TODO if user is admin, it's ok
+            # (make sure to handle empty query['student'])
+            logging.warning("Attempt to edit someone else's wiki")
+            content = "You are not allowed to edit this student's wiki."
+            self.error(403)
+        else:
+            page = self._find_page(query, create=True)
 
-        page.text = bleach.clean(self.request.get('text', ''))
-        page.unit = self.query.get('unit', None)
+            page.text = bleach.clean(self.request.get('text', ''))
+            page.unit = query['unit']
 
-        page.put()
-        self.redirect(self._create_action_url('view'))
+            page.put()
+            self.redirect(self._create_action_url(query, 'view'))
+            return
+        self.render("wf_page.html")
 
 
+class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
+    pass
 
 module = None
 
@@ -125,7 +168,8 @@ def register_module():
     global module
 
     handlers = [
-            ('/wiki', WikiHandler),
+            ('/wiki', WikiPageHandler),
+            ('/wiki/profile', WikiProfileHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",
