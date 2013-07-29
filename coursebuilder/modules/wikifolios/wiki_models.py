@@ -7,6 +7,8 @@ class WikiPage(BaseEntity):
 
     @classmethod
     def get_key(cls, user, unit=None):
+        if not user:
+            return None
         if unit:
             return db.Key.from_path(
                     'Student', user.key().name(),
@@ -19,5 +21,7 @@ class WikiPage(BaseEntity):
     @classmethod
     def get_page(cls, user, unit=None):
         key = cls.get_key(user, unit)
+        if not key:
+            return None
         return cls.get(key)
 

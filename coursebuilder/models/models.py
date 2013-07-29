@@ -27,6 +27,7 @@ from google.appengine.api import users
 from google.appengine.api import images
 from google.appengine.ext import db
 
+import hashlib
 
 # We want to use memcache for both objects that exist and do not exist in the
 # datastore. If object exists we cache its instance, if object does not exist
@@ -141,6 +142,7 @@ class Student(BaseEntity):
     user_id = db.StringProperty(indexed=True)
     name = db.StringProperty(indexed=False)
     is_enrolled = db.BooleanProperty(indexed=False)
+    wiki_id = db.IntegerProperty()
 
     # Each of the following is a string representation of a JSON dict.
     scores = db.TextProperty(indexed=False)
@@ -174,6 +176,16 @@ class Student(BaseEntity):
     # TODO maybe use RatingProperty?  It wants from 0-100,
     # does it have any advantages?
     interest_level = db.IntegerProperty()
+
+    def __init__(self, *args, **kwargs):
+        super(Student, self).__init__(*args, **kwargs)
+        self.ensure_wiki_id()
+
+    def ensure_wiki_id(self):
+        if not self.wiki_id:
+            # Only has key, not necessarily anything else.
+            digest = hashlib.sha256(str(self.key())).hexdigest()
+            self.wiki_id = int(digest[0:4], 16)
 
     @classmethod
     def _memcache_key(cls, key):
