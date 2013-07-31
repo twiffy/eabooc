@@ -263,7 +263,15 @@ class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
 
         self.template_value['content'] = "(here is some <i>html</i>)"
 
-        self.template_value['wiki_pages'] = WikiPage.query_by_student(student_model).run(limit=100)
+        pages = WikiPage.query_by_student(student_model).run(limit=100)
+        def linkified(page):
+            page._link = "wiki?" + urllib.urlencode({
+                'student': student_model.wiki_id,
+                'action': 'view',
+                'unit': page.unit,
+                })
+            return page
+        self.template_value['wiki_pages'] = [linkified(p) for p in pages]
         self.render("wf_profile.html")
 
 module = None

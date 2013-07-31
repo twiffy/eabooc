@@ -11,7 +11,7 @@
   Pages by {{ author_name }}:
   <ul>
     {% for page in wiki_pages %}
-    <li>Unit {{ page.unit }}</li>
+    <li><a href="{{ page._link }}">Unit {{ page.unit }}</a></li>
     {% else %}
     <li><em>No pages found</em></li>
     {% endfor %}
