@@ -21,6 +21,14 @@ class WikiNavForm(wtf.Form):
         wtf.validators.NumberRange(min=1, max=100000000000),
         ])
 
+def get_student_by_wiki_id(wiki_id):
+    return (Student.all()
+            .filter("wiki_id =", wiki_id)
+            .get())
+
+def student_profile_link(wiki_id):
+    return "wikiprofile?" + urllib.urlencode({'student': wiki_id})
+
 class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
@@ -38,10 +46,8 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         logging.info(query)
         assert query
         # TODO don't have to do this query if it's your own page,
-        # optimize this.
-        student_model = (Student.all()
-                .filter("wiki_id =", query['student'])
-                .get())
+        # optimize this.  Also, cache.
+        student_model = get_student_by_wiki_id(query['student'])
         if not student_model:
             return None
 
@@ -92,6 +98,9 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             page = self._find_page(query)
             if page:
                 content = page.text
+                self.template_value['author_name'] = page.author.name
+                self.template_value['author_link'] = student_profile_link(
+                        query['student'])
             else:
                 content = "The page you requested could not be found."
                 self.error(404)
@@ -125,6 +134,9 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
                 content = page.text
             else:
                 content = ''
+            self.template_value['author_name'] = page.author.name
+            self.template_value['author_link'] = student_profile_link(
+                    query['student'])
             self.template_value['content'] = content
             self.template_value['xsrf_token'] = self.create_xsrf_token('save')
             self.template_value['save_url'] = self._create_action_url(query, 'save')
@@ -160,7 +172,42 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
 
 
 class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
-    pass
+    default_action = "view"
+    get_actions = [
+            "view",
+            #"edit",
+            ]
+    #post_actions = ["save"]
+
+    class _NavForm(wtf.Form):
+        student = wtf.IntegerField('Student id', [
+            wtf.validators.Optional(),
+            wtf.validators.NumberRange(min=1, max=100000000000),
+            ])
+
+    def _get_query(self):
+        form = self._NavForm(self.request.params)
+        if form.validate():
+            return form.data
+        else:
+            # TODO maybe log why it's not good
+            return None
+
+    def get_view(self):
+        student = self.personalize_page_and_get_enrolled()
+        query = self._get_query()
+        if not query['student']:
+            query['student'] = student.wiki_id
+
+        student_model = get_student_by_wiki_id(query['student'])
+
+        self.template_value['navbar'] = {'wiki': True}
+        self.template_value['author_name'] = student_model.name
+        self.template_value['author_link'] = student_profile_link(
+                query['student'])
+
+        self.template_value['content'] = "(here is some <i>html</i>)"
+        self.render("wf_profile.html")
 
 module = None
 
@@ -169,7 +216,7 @@ def register_module():
 
     handlers = [
             ('/wiki', WikiPageHandler),
-            ('/wiki/profile', WikiProfileHandler),
+            ('/wikiprofile', WikiProfileHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",

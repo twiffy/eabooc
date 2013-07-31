@@ -5,6 +5,10 @@ class WikiPage(BaseEntity):
     text = db.TextProperty()
     unit = db.IntegerProperty()
 
+    @property
+    def author(self):
+        return self.parent()
+
     @classmethod
     def get_key(cls, user, unit=None):
         if not user:

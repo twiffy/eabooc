@@ -2,6 +2,7 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
+<div>Page by <a href="{{ author_link }}">{{ author_name }}</a></div>
 <form action="{{ save_url }}" method="POST">
   <textarea name="text">{{ content | safe }}</textarea>
   <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">

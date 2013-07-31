@@ -2,7 +2,7 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
-<div>Page by <a href="{{ author_link }}">{{ author_name }}</a></div>
+<h1>{{ author_name }}</h1>
 {% if can_edit %}
 <a href="{{edit_url}}">edit</a>
 {% endif %}
