@@ -116,6 +116,8 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
 
     def get_view(self):
         student = self.personalize_page_and_get_enrolled()
+        if not student:
+            return
         query = self._get_query()
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
@@ -155,6 +157,8 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
 
     def get_edit(self):
         student = self.personalize_page_and_get_enrolled()
+        if not student:
+            return
         query = self._get_query()
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['ckeditor_allowed_content'] = (
@@ -194,6 +198,8 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
 
     def post_save(self):
         student = self.personalize_page_and_get_enrolled()
+        if not student:
+            return
         query = self._get_query()
 
         if not query:
@@ -242,6 +248,8 @@ class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
 
     def get_view(self):
         student = self.personalize_page_and_get_enrolled()
+        if not student:
+            return
         query = self._get_query()
         if not query['student']:
             query['student'] = student.wiki_id
