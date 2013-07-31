@@ -52,6 +52,7 @@ def bleach_entry(html):
                 'table': ['border', 'cellpadding', 'cellspacing', 'style',
                     'bordercolor'],
                 'th': ['scope'],
+                'p': ['style'],
                 },
             styles=(
                 # (Bleach's default is no styles allowed)
