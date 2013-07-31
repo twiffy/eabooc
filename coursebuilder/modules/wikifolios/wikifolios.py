@@ -29,6 +29,38 @@ def get_student_by_wiki_id(wiki_id):
 def student_profile_link(wiki_id):
     return "wikiprofile?" + urllib.urlencode({'student': wiki_id})
 
+def bleach_entry(html):
+    return bleach.clean(html,
+            tags=(
+                # bleach.ALLOWED_TAGS:
+                'a', 'abbr', 'acronym', 'b',
+                'blockquote', 'code', 'em', 'i',
+                'li', 'ol', 'strong', 'ul',
+                # more:
+                'p', 'strike', 'img', 'table',
+                'thead', 'tr', 'td', 'th',
+                'hr', 'caption', 'summary',
+                'tbody',
+                ),
+            attributes={
+                # bleach.ALLOWED_ATTRIBUTES:
+                'a': ['href', 'title'],
+                'abbr': ['title'],
+                'acronym': ['title'],
+                # more:
+                'img': ['src', 'alt', 'title'],
+                'table': ['border', 'cellpadding', 'cellspacing', 'style',
+                    'bordercolor'],
+                'th': ['scope'],
+                },
+            styles=(
+                # (Bleach's default is no styles allowed)
+                'color', 'width', 'height', 'background-color',
+                'border-collapse',
+                ),
+
+            )
+
 class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
@@ -162,7 +194,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         else:
             page = self._find_page(query, create=True)
 
-            page.text = bleach.clean(self.request.get('text', ''))
+            page.text = bleach_entry(self.request.get('text', ''))
             page.unit = query['unit']
 
             page.put()
