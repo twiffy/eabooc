@@ -29,37 +29,44 @@ def get_student_by_wiki_id(wiki_id):
 def student_profile_link(wiki_id):
     return "wikiprofile?" + urllib.urlencode({'student': wiki_id})
 
+ALLOWED_TAGS = (
+        # bleach.ALLOWED_TAGS:
+        'a', 'abbr', 'acronym', 'b',
+        'blockquote', 'code', 'em', 'i',
+        'li', 'ol', 'strong', 'ul',
+        # more:
+        'p', 'strike', 'img', 'table',
+        'thead', 'tr', 'td', 'th',
+        'hr', 'caption', 'summary',
+        'tbody',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'div', 'big', 'small', 'tt', 'pre',
+        )
+ALLOWED_ATTRIBUTES = {
+        # bleach.ALLOWED_ATTRIBUTES:
+        'a': ['href', 'title'],
+        'abbr': ['title'],
+        'acronym': ['title'],
+        # more:
+        'img': ['src', 'alt', 'title'],
+        'table': ['border', 'cellpadding', 'cellspacing', 'style',
+            'bordercolor'],
+        'th': ['scope'],
+        'p': ['style'],
+        'div': ['style'],
+        }
+ALLOWED_STYLES = (
+        # (Bleach's default is no styles allowed)
+        'color', 'width', 'height', 'background-color',
+        'border-collapse', 'padding', 'border',
+        'font-style',
+        )
+
 def bleach_entry(html):
     return bleach.clean(html,
-            tags=(
-                # bleach.ALLOWED_TAGS:
-                'a', 'abbr', 'acronym', 'b',
-                'blockquote', 'code', 'em', 'i',
-                'li', 'ol', 'strong', 'ul',
-                # more:
-                'p', 'strike', 'img', 'table',
-                'thead', 'tr', 'td', 'th',
-                'hr', 'caption', 'summary',
-                'tbody',
-                ),
-            attributes={
-                # bleach.ALLOWED_ATTRIBUTES:
-                'a': ['href', 'title'],
-                'abbr': ['title'],
-                'acronym': ['title'],
-                # more:
-                'img': ['src', 'alt', 'title'],
-                'table': ['border', 'cellpadding', 'cellspacing', 'style',
-                    'bordercolor'],
-                'th': ['scope'],
-                'p': ['style'],
-                },
-            styles=(
-                # (Bleach's default is no styles allowed)
-                'color', 'width', 'height', 'background-color',
-                'border-collapse',
-                ),
-
+            tags=ALLOWED_TAGS,
+            attributes=ALLOWED_ATTRIBUTES ,
+            styles=ALLOWED_STYLES,
             )
 
 class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
