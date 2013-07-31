@@ -4,10 +4,15 @@
 {% block main_content %}
 <div>Page by <a href="{{ author_link }}">{{ author_name }}</a></div>
 <form action="{{ save_url }}" method="POST">
-  <textarea name="text" class="ckeditor">{{ content | safe }}</textarea>
+  <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small>
+  <textarea name="text" id="editor">{{ content | safe }}</textarea>
   <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
   <input type="submit">
 </form>
-
 <script src="/assets/ckeditor/ckeditor.js"></script>
+<script>
+  CKEDITOR.replace('editor', {
+    allowedContent: '{{ ckeditor_allowed_content }}'
+  });
+</script>
 {% endblock %}

@@ -4,6 +4,7 @@ Wikifolios module for Google Course Builder
 
 from models import custom_modules
 from models.models import Student
+from common import ckeditor
 import bleach
 import webapp2
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
@@ -156,6 +157,9 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         student = self.personalize_page_and_get_enrolled()
         query = self._get_query()
         self.template_value['navbar'] = {'wiki': True}
+        self.template_value['ckeditor_allowed_content'] = (
+                ckeditor.allowed_content(ALLOWED_TAGS,
+                    ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
         self.template_value['content'] = ''
 
         if not query:
