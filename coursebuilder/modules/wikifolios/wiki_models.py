@@ -10,6 +10,12 @@ class WikiPage(BaseEntity):
         return self.parent()
 
     @classmethod
+    def query_by_student(cls, student):
+        # Encapsulate that the student->page relationship
+        # is by key path, not some other way.
+        return cls.all().ancestor(student.key())
+
+    @classmethod
     def get_key(cls, user, unit=None):
         if not user:
             return None

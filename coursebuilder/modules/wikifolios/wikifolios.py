@@ -254,6 +254,8 @@ class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
                 query['student'])
 
         self.template_value['content'] = "(here is some <i>html</i>)"
+
+        self.template_value['wiki_pages'] = WikiPage.query_by_student(student_model).run(limit=100)
         self.render("wf_profile.html")
 
 module = None

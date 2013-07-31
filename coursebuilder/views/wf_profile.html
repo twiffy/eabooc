@@ -7,4 +7,15 @@
 <a href="{{edit_url}}">edit</a>
 {% endif %}
 <div>{{ content | safe }}</div>
+<div id="wf-page-list">
+  Pages by {{ author_name }}:
+  <ul>
+    {% for page in wiki_pages %}
+    <li>Unit {{ page.unit }}</li>
+    {% else %}
+    <li><em>No pages found</em></li>
+    {% endfor %}
+  </ul>
+</div>
+
 {% endblock %}
