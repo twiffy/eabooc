@@ -33,7 +33,10 @@ course:
 
   # Main page blurb. (The '|' at the beginning enables multi-line input.)
   blurb: |
-   This course is designed to help educators, administrators, and researchers understand and improve assessment of student learning. It covers Assessment Practices, Assessment Principles, and Assessment Policies.
+   This course is designed to help educators, administrators, and researchers
+   understand and improve assessment of student learning. It covers Assessment
+   Practices, Assessment Principles, and Assessment Policies.  <a
+   href="http://www.indiana.edu/~booc/" target="_blank">Learn more...</a>
 
   # Information about the instructor to display on the main page.
   instructor_details: 'Daniel Hickey, Ph.D.'
