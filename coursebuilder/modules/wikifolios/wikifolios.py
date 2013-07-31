@@ -125,13 +125,16 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             # Want the edit link even if the page doesn't exist, so they
             # can create it.
             # TODO if user is admin, it's ok after all
-            self.template_value['can_edit'] = query['student'] == student.wiki_id
+            page_author_is_viewer = query['student'] == student.wiki_id
+            self.template_value['can_edit'] = page_author_is_viewer
             self.template_value['edit_url'] = self._create_action_url(query, 'edit')
 
             page = self._find_page(query)
             if page:
                 content = page.text
-                self.template_value['author_name'] = page.author.name
+                author_name = page.author.name + (
+                        " (you)" if page_author_is_viewer else "")
+                self.template_value['author_name'] = author_name
                 self.template_value['author_link'] = student_profile_link(
                         query['student'])
             else:
