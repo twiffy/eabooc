@@ -38,7 +38,7 @@
                              class="gcb-progress-circle"
                              id="progress-notstarted-{{unit.unit_id}}">
                       {% endif %}
-                      <a href="assessment?name={{ unit.unit_id }}">{{ unit.title }}</a>
+                      <a href="assessment?name={{ unit.unit_id }}">{{ unit.title | safe }}</a>
 
                       {% if unit.needs_human_grader %}
                         {% if not unit.now_available and is_course_admin %}
@@ -120,7 +120,11 @@
                     <li>
                       <p class="gcb-top-content">
                         <span class="gcb-progress-empty"></span>
-                        <a href="{{ unit.href }}"> {{ unit.title }} </a>
+                        {% if unit.href %}
+                          <a href="{{ unit.href }}"> {{ unit.title | safe }} </a>
+                        {% else %}
+                          {{ unit.title | safe}}
+                        {% endif %}
                   {% else %}
                     <li>
                       <p class="gcb-top-content">
@@ -137,7 +141,7 @@
                     <li>
                       <p class="gcb-top-content">
                         <span class="gcb-progress-empty"></span>
-                        {{ unit.title }}
+                        {{ unit.title | safe }}
                       </p>
                     </li>
                   {% elif unit.type == 'U' %}
