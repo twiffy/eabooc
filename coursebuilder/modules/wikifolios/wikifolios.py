@@ -9,7 +9,7 @@ from common import ckeditor
 import bleach
 import webapp2
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
-from modules.wikifolios.wiki_models import WikiPage
+from modules.wikifolios.wiki_models import WikiPage, WikiComment
 from google.appengine.api import users
 import logging
 import urllib
@@ -66,7 +66,7 @@ def bleach_entry(html):
 class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
-    post_actions = ["save"]
+    post_actions = ["save", "comment"]
 
     class _NavForm(wtf.Form):
         unit = wtf.IntegerField('Unit number', [
@@ -169,6 +169,10 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
                 self.template_value['author_link'] = student_profile_link(
                         query['student'])
                 self.template_value['comments'] = page.comments.order("added_time")
+                if self._can_comment(query, user):
+                    self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
+                    self.template_value['can_comment'] = True
+                    self.template_value['comment_url'] = self._create_action_url(query, 'comment')
             else:
                 content = "The page you requested could not be found."
                 self.error(404)
@@ -239,6 +243,36 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             self.redirect(self._create_action_url(query, 'view'))
             return
         self.render("wf_page.html")
+
+    def post_comment(self):
+        logging.warning("In comment handler")
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        query = self._get_query(user)
+
+        if not query:
+            logging.warning("POST is not legit")
+            content = "You can't do that."
+            self.error(403)
+            # fall through
+        elif not self._can_comment(query, user):
+            logging.warning("Attempt to comment illegally")
+            content = "You are not allowed to comment on this page."
+            self.error(403)
+            # fall through
+        else:
+            page = self._find_page(query)
+            comment = WikiComment(
+                    author=user,
+                    topic=page,
+                    text=bleach_entry(self.request.get('text', '')))
+            comment.put()
+
+            self.redirect(self._create_action_url(query, 'view'))
+            return
+        self.render("wf_page.html")
+
 
 
 class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):

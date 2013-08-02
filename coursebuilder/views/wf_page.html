@@ -18,5 +18,15 @@
   </ol>
 </div>
 
+{% if can_comment %}
+<div>
+  <form action="{{ comment_url }}" method="POST">
+    <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
+    <textarea name="text" id="editor" rows="10" cols="50"></textarea>
+    <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+    <input type="submit" value="Comment">
+  </form>
+</div>
+{% endif %}
 
 {% endblock %}
