@@ -146,6 +146,10 @@ ul#front-nav {
   max-width: 978px;
 }
 
+.gcb-aux th, .gcb-aux td {
+  border-color: #b8a18b;
+}
+
 #gcb-header, #gcb-footer {
   margin: 0 -15px;
 }

@@ -174,12 +174,15 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             self.error(404)
             # fall through
         elif not self._can_view(query, user):
+            # They may have already bounced off the login page
+            # from personalize_page_etc above
             content = "Sorry, you can't see this page."
             self.error(403)
             # fall through
         else:
             self.template_value['can_edit'] = self._can_edit(query, user)
             self.template_value['edit_url'] = self._create_action_url(query, 'edit')
+            self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
 
             page = self._find_page(query)
             if page:

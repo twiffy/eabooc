@@ -2,41 +2,52 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
-<div>Page by <a href="{{ author_link }}">{{ author_name }}</a></div>
 {% if can_edit %}
 <a href="{{edit_url}}">edit</a>
 {% endif %}
-<div>{{ content | safe }}</div>
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      {% if unit %}
+      <h1>Unit {{ unit.unit_id }} - {{ unit.title | safe }} <small class="wiki-unit-link">
+          <a href="unit?unit={{ unit.unit_id }}">(prompt)</a></small></h1>
+      {% endif %}
+      <div>by <a href="{{ author_link }}">{{ author_name }}</a></div>
+      {{ content | safe }}
+    </div>
+  </div>
+  <div class="gcb-cols">
+    <div class="gcb-col-1">
+    </div>
+    <div class="gcb-col-9 gcb-aside">
+      <ol>
+        {% for comment in comments %}
+        <li>Comment by {{comment.author.name}}:<br>{{ comment.text | safe }}</li>
+        {% else %}
+        <li><em>No comments yet.</em></li>
+        {% endfor %}
+      </ol>
 
-<div>
-  <ol>
-    {% for comment in comments %}
-    <li>Comment by {{comment.author.name}}:<br>{{ comment.text | safe }}</li>
-    {% else %}
-    <li><em>No comments yet.</em></li>
-    {% endfor %}
-  </ol>
+      {% if can_comment %}
+      <form action="{{ comment_url }}" method="POST">
+        <fieldset>
+          <legend>Comment</legend>
+          <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
+          <textarea name="text" id="comment_editor" rows="10" cols="50"></textarea>
+          <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+          <input type="submit" value="Comment">
+        </fieldset>
+      </form>
+      <script src="/assets/ckeditor/ckeditor.js"></script>
+      <script>
+        CKEDITOR.replace('comment_editor', {
+          allowedContent: '{{ ckeditor_comment_content }}',
+          removePlugins: 'pastefromword,undo,image,magicline,format',
+        });
+      </script>
+      {% endif %}
+    </div>
+  </div>
 </div>
-
-{% if can_comment %}
-<div>
-  <form action="{{ comment_url }}" method="POST">
-    <fieldset>
-      <legend>Comment</legend>
-      <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
-      <textarea name="text" id="comment_editor" rows="10" cols="50"></textarea>
-      <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
-      <input type="submit" value="Comment">
-    </fieldset>
-  </form>
-</div>
-<script src="/assets/ckeditor/ckeditor.js"></script>
-<script>
-  CKEDITOR.replace('comment_editor', {
-    allowedContent: '{{ ckeditor_comment_content }}',
-    removePlugins: 'pastefromword,clipboard,undo,fakeobjects,image,magicline,format',
-  });
-</script>
-{% endif %}
 
 {% endblock %}
