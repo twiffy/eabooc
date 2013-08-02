@@ -15,15 +15,6 @@ import logging
 import urllib
 import wtforms as wtf
 
-class WikiNavForm(wtf.Form):
-    unit = wtf.IntegerField('Unit number', [
-        wtf.validators.NumberRange(min=1, max=100),
-        ])
-    student = wtf.IntegerField('Student id', [
-        wtf.validators.Optional(),
-        wtf.validators.NumberRange(min=1, max=100000000000),
-        ])
-
 def get_student_by_wiki_id(wiki_id):
     return (Student.all()
             .filter("wiki_id =", wiki_id)
@@ -77,8 +68,18 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
     get_actions = ["view", "edit"]
     post_actions = ["save"]
 
+    class _NavForm(wtf.Form):
+        unit = wtf.IntegerField('Unit number', [
+            wtf.validators.NumberRange(min=1, max=100),
+            ])
+        student = wtf.IntegerField('Student id', [
+            wtf.validators.Optional(),
+            wtf.validators.NumberRange(min=1, max=100000000000),
+            ])
+
+
     def _get_query(self, user):
-        form = WikiNavForm(self.request.params)
+        form = self._NavForm(self.request.params)
         data = None
         if form.validate():
             data = form.data
