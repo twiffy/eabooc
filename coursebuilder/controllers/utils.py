@@ -21,6 +21,7 @@ import hmac
 import os
 import time
 import urlparse
+import re
 import appengine_config
 from models import transforms
 from models.config import ConfigProperty
@@ -63,6 +64,17 @@ CAN_PERSIST_PAGE_EVENTS = ConfigProperty(
         'this data.'),
     False)
 
+def _ga_key_sanity_check(value, errors):
+    if not value:
+        return
+    if not re.match(r'UA-\d+-\d+', value):
+        errors.append("Doesn't look like a google analytics key ('UA-#####-#')")
+
+GOOGLE_ANALYTICS_KEY = ConfigProperty(
+    'ga_analytics_key', str, (
+        'The Google Analytics key to use for this course.  Should be'
+        'a string like UA-12345678-1.'),
+    '', validator=_ga_key_sanity_check)
 
 # Date format string for displaying datetimes in UTC.
 # Example: 2013-03-21 13:00 UTC
@@ -168,6 +180,7 @@ class ApplicationHandler(webapp2.RequestHandler):
         self.template_value[
             'is_read_write_course'] = self.app_context.fs.is_read_write()
         self.template_value['is_super_admin'] = Roles.is_super_admin()
+        self.template_value['ga_analytics_key'] = GOOGLE_ANALYTICS_KEY.value
         self.template_value[COURSE_BASE_KEY] = self.get_base_href(self)
         return self.app_context.get_template_environ(
             self.template_value[COURSE_INFO_KEY]['course']['locale'],
