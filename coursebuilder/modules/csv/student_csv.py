@@ -24,7 +24,10 @@ class StudentCsvHandler(BaseHandler):
             d['email'] = s.key().name()
             for p in d.keys():
                 if type(d[p]) is list:
-                    d[p] = ", ".join(d[p])
+                    d[p] = u", ".join(d[p])
+                # note that I just changed the type from list to unicode...
+                if type(d[p]) is unicode:
+                    d[p] = d[p].encode('utf-8')
             out.writerow(d)
 
 
