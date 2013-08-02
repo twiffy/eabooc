@@ -9,11 +9,14 @@ import csv
 
 class StudentCsvHandler(BaseHandler):
     def get(self):
-        if not Roles.is_super_admin():
-            self.error(404)
-            return
-        props = sorted(Student.properties().keys() + ['email',])
         self.response.content_type = 'text/plain'
+
+        if not Roles.is_super_admin():
+            self.error(403)
+            self.response.write("NO")
+            return
+
+        props = sorted(Student.properties().keys() + ['email',])
         out = csv.DictWriter(self.response, props, extrasaction='ignore')
         out.writeheader()
         for s in Student.all().run(limit=9999):
