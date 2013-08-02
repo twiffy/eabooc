@@ -317,6 +317,7 @@ class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
             ])
 
     def _get_query(self):
+        # TODO: maybe do redirects to ?student= from here?
         form = self._NavForm(self.request.params)
         if form.validate():
             return form.data
@@ -330,7 +331,9 @@ class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
             return
         query = self._get_query()
         if not query['student']:
-            query['student'] = user.wiki_id
+            self.redirect("wikiprofile?" + urllib.urlencode({
+                'student': user.wiki_id}))
+            return
 
         student_model = get_student_by_wiki_id(query['student'])
 
