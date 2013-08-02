@@ -35,6 +35,7 @@ import modules.oauth2.oauth2
 import modules.oeditor.oeditor
 import modules.review.review
 import modules.wikifolios.wikifolios
+import modules.csv.student_csv
 
 
 # use this flag to control debug only features
@@ -50,6 +51,7 @@ modules.courses.courses.register_module().enable()
 
 # BOOC
 modules.wikifolios.wikifolios.register_module().enable()
+modules.csv.student_csv.register_module().enable()
 
 # register modules that are not enabled by default.
 modules.oauth2.oauth2.register_module()
