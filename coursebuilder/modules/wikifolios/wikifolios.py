@@ -336,17 +336,22 @@ class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
 
-        self.template_value['content'] = "(here is some <i>html</i>)"
-
+        units = self.get_units()
         pages = WikiPage.query_by_student(student_model).run(limit=100)
-        def linkified(page):
-            page._link = "wiki?" + urllib.urlencode({
+        units_with_pages = set([ unicode(p.unit) for p in pages ])
+        for unit in units:
+            if unit.unit_id in units_with_pages:
+                unit._wiki_exists = True
+            unit._wiki_link = "wiki?" + urllib.urlencode({
                 'student': student_model.wiki_id,
                 'action': 'view',
-                'unit': page.unit,
+                'unit': unit.unit_id,
                 })
-            return page
-        self.template_value['wiki_pages'] = [linkified(p) for p in pages]
+
+        self.template_value['units'] = units
+
+        self.template_value['content'] = "(here is some <i>html</i>)"
+
         self.render("wf_profile.html")
 
 module = None

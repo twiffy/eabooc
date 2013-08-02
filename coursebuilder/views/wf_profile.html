@@ -10,10 +10,12 @@
 <div id="wf-page-list">
   Pages by {{ author_name }}:
   <ul>
-    {% for page in wiki_pages %}
-    <li><a href="{{ page._link }}">Unit {{ page.unit }}</a></li>
-    {% else %}
-    <li><em>No pages found</em></li>
+    {% for unit in units %}
+    {% if unit.type == 'U' %}
+    <li><a href="{{unit._wiki_link}}">Unit {{ unit.unit_id }}: {{unit.title|safe}}</a>
+    {% if not unit._wiki_exists %}(not created yet){% endif %}</li>
+    {% endif %}
+
     {% endfor %}
   </ul>
 </div>
