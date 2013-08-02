@@ -11,7 +11,7 @@
 <div>
   <ol>
     {% for comment in comments %}
-    <li>Comment by {{comment.author.name}}:<br>{{ comment.text }}</li>
+    <li>Comment by {{comment.author.name}}:<br>{{ comment.text | safe }}</li>
     {% else %}
     <li><em>No comments yet.</em></li>
     {% endfor %}
@@ -21,12 +21,22 @@
 {% if can_comment %}
 <div>
   <form action="{{ comment_url }}" method="POST">
-    <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
-    <textarea name="text" id="editor" rows="10" cols="50"></textarea>
-    <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
-    <input type="submit" value="Comment">
+    <fieldset>
+      <legend>Comment</legend>
+      <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
+      <textarea name="text" id="comment_editor" rows="10" cols="50"></textarea>
+      <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+      <input type="submit" value="Comment">
+    </fieldset>
   </form>
 </div>
+<script src="/assets/ckeditor/ckeditor.js"></script>
+<script>
+  CKEDITOR.replace('comment_editor', {
+    allowedContent: '{{ ckeditor_comment_content }}',
+    removePlugins: 'pastefromword,clipboard,undo,fakeobjects,image,magicline,format',
+  });
+</script>
 {% endif %}
 
 {% endblock %}

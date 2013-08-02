@@ -59,9 +59,29 @@ ALLOWED_STYLES = (
 def bleach_entry(html):
     return bleach.clean(html,
             tags=ALLOWED_TAGS,
-            attributes=ALLOWED_ATTRIBUTES ,
+            attributes=ALLOWED_ATTRIBUTES,
             styles=ALLOWED_STYLES,
             )
+
+COMMENT_TAGS = (
+        'a', 'b',
+        'blockquote', 'i',
+        'li', 'ol', 'ul',
+        'p', 'tt',
+        )
+COMMENT_ATTRIBUTES = {
+        # bleach.ALLOWED_ATTRIBUTES:
+        'a': ['href', 'title'],
+        }
+COMMENT_STYLES = ()
+
+def bleach_comment(html):
+    return bleach.clean(html,
+            tags=COMMENT_TAGS,
+            attributes=COMMENT_ATTRIBUTES,
+            styles=COMMENT_STYLES,
+            )
+
 
 class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
     default_action = "view"
@@ -170,8 +190,11 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
                         query['student'])
                 self.template_value['comments'] = page.comments.order("added_time")
                 if self._can_comment(query, user):
-                    self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
                     self.template_value['can_comment'] = True
+                    self.template_value['ckeditor_comment_content'] = (
+                            ckeditor.allowed_content(COMMENT_TAGS,
+                                COMMENT_ATTRIBUTES, COMMENT_STYLES))
+                    self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
                     self.template_value['comment_url'] = self._create_action_url(query, 'comment')
             else:
                 content = "The page you requested could not be found."
@@ -266,7 +289,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             comment = WikiComment(
                     author=user,
                     topic=page,
-                    text=bleach_entry(self.request.get('text', '')))
+                    text=bleach_comment(self.request.get('text', '')))
             comment.put()
 
             self.redirect(self._create_action_url(query, 'view'))
