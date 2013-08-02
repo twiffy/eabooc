@@ -227,9 +227,10 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             page = self._find_page(query)
             if page:
                 content = page.text
+                self.template_value['author_name'] = page.author.name
             else:
                 content = ''
-            self.template_value['author_name'] = page.author.name
+                self.template_value['author_name'] = user.name
             self.template_value['author_link'] = student_profile_link(
                     query['student'])
             self.template_value['content'] = content
