@@ -4,11 +4,13 @@ Wikifolios module for Google Course Builder
 
 from models import custom_modules
 from models.models import Student
+from models.roles import Roles
 from common import ckeditor
 import bleach
 import webapp2
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
 from modules.wikifolios.wiki_models import WikiPage
+from google.appengine.api import users
 import logging
 import urllib
 import wtforms as wtf
@@ -114,6 +116,23 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
                 self.request.path,
                 urllib.urlencode(params)))
 
+    def _can_view(self, query, current_student):
+        if current_student:
+            assert current_student.key().name() == users.get_current_user().email()
+        is_enrolled = (current_student and current_student.is_enrolled)
+        return is_enrolled or Roles.is_course_admin()
+
+    def _can_edit(self, query, current_student):
+        if current_student:
+            assert current_student.key().name() == users.get_current_user().email()
+        is_author = (current_student
+                and current_student.wiki_id == query['student']
+                and current_student.is_enrolled)
+        return is_author or Roles.is_course_admin()
+
+    def _can_comment(self, query, current_student):
+        return self._can_view(query, current_student)
+
     def get_view(self):
         user = self.personalize_page_and_get_enrolled()
         if not user:
@@ -131,19 +150,18 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             query['student'] = user.wiki_id
             self.redirect(self._create_action_url(query, 'view'))
             return
+        elif not self._can_view(query, user):
+            content = "Sorry, you can't see this page."
+            self.error(403)
+            # fall through
         else:
-            # Want the edit link even if the page doesn't exist, so they
-            # can create it.
-            # TODO if user is admin, it's ok after all
-            page_author_is_viewer = query['student'] == user.wiki_id
-            self.template_value['can_edit'] = page_author_is_viewer
+            self.template_value['can_edit'] = self._can_edit(query, user)
             self.template_value['edit_url'] = self._create_action_url(query, 'edit')
 
             page = self._find_page(query)
             if page:
                 content = page.text
-                author_name = page.author.name + (
-                        " (you)" if page_author_is_viewer else "")
+                author_name = page.author.name
                 self.template_value['author_name'] = author_name
                 self.template_value['author_link'] = student_profile_link(
                         query['student'])
@@ -175,10 +193,10 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             query['student'] = user.wiki_id
             self.redirect(self._create_action_url(query, 'edit'))
             return
-        elif query['student'] != user.wiki_id:
-            # TODO if user is admin, it's ok after all
+        elif not self._can_edit(query, user):
             content = "You are not allowed to edit this student's wiki."
             self.error(403)
+            # fall through
         else:
             page = self._find_page(query)
             if page:
@@ -201,17 +219,19 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         if not user:
             return
         query = self._get_query()
+        if not query['student']:
+            query['student'] = user.wiki_id
 
         if not query:
             logging.warning("POST is not legit")
             content = "You can't do that."
             self.error(403)
-        elif query['student'] != user.wiki_id:
-            # TODO if user is admin, it's ok
-            # (make sure to handle empty query['student'])
+            # fall through
+        elif not self._can_edit(query, user):
             logging.warning("Attempt to edit someone else's wiki")
             content = "You are not allowed to edit this student's wiki."
             self.error(403)
+            # fall through
         else:
             page = self._find_page(query, create=True)
 
