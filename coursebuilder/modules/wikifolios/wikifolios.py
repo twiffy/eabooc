@@ -77,13 +77,19 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
     get_actions = ["view", "edit"]
     post_actions = ["save"]
 
-    def _get_query(self):
+    def _get_query(self, user):
         form = WikiNavForm(self.request.params)
+        data = None
         if form.validate():
-            return form.data
+            data = form.data
         else:
             # TODO maybe log why it's not good
-            return None
+            data = None
+
+        if data and not data['student'] and user:
+            data['student'] = user.wiki_id
+
+        return data
 
     def _find_page(self, query, create=False):
         logging.info(query)
@@ -137,7 +143,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         user = self.personalize_page_and_get_enrolled()
         if not user:
             return
-        query = self._get_query()
+        query = self._get_query(user)
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
 
@@ -146,10 +152,6 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             content = "The page you requested could not be found."
             self.error(404)
             # fall through
-        elif not query['student']:
-            query['student'] = user.wiki_id
-            self.redirect(self._create_action_url(query, 'view'))
-            return
         elif not self._can_view(query, user):
             content = "Sorry, you can't see this page."
             self.error(403)
@@ -177,7 +179,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         user = self.personalize_page_and_get_enrolled()
         if not user:
             return
-        query = self._get_query()
+        query = self._get_query(user)
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['ckeditor_allowed_content'] = (
                 ckeditor.allowed_content(ALLOWED_TAGS,
@@ -189,10 +191,6 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             content = "The page you requested could not be found."
             self.error(404)
             # fall through
-        elif not query['student']:
-            query['student'] = user.wiki_id
-            self.redirect(self._create_action_url(query, 'edit'))
-            return
         elif not self._can_edit(query, user):
             content = "You are not allowed to edit this student's wiki."
             self.error(403)
@@ -218,9 +216,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         user = self.personalize_page_and_get_enrolled()
         if not user:
             return
-        query = self._get_query()
-        if not query['student']:
-            query['student'] = user.wiki_id
+        query = self._get_query(user)
 
         if not query:
             logging.warning("POST is not legit")
