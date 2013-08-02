@@ -4,9 +4,10 @@
 {% block main_content %}
 <div>Page by <a href="{{ author_link }}">{{ author_name }}</a></div>
 <form action="{{ save_url }}" method="POST">
-  <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small>
-  <textarea name="text" id="editor">{{ content | safe }}</textarea>
+  <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
+  <textarea name="text" id="editor" rows="20" cols="80">{{ content | safe }}</textarea>
   <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+  <br>
   <input type="submit">
 </form>
 <script src="/assets/ckeditor/ckeditor.js"></script>
