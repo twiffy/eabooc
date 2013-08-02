@@ -115,8 +115,8 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
                 urllib.urlencode(params)))
 
     def get_view(self):
-        student = self.personalize_page_and_get_enrolled()
-        if not student:
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
             return
         query = self._get_query()
         self.template_value['navbar'] = {'wiki': True}
@@ -128,14 +128,14 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             self.error(404)
             # fall through
         elif not query['student']:
-            query['student'] = student.wiki_id
+            query['student'] = user.wiki_id
             self.redirect(self._create_action_url(query, 'view'))
             return
         else:
             # Want the edit link even if the page doesn't exist, so they
             # can create it.
             # TODO if user is admin, it's ok after all
-            page_author_is_viewer = query['student'] == student.wiki_id
+            page_author_is_viewer = query['student'] == user.wiki_id
             self.template_value['can_edit'] = page_author_is_viewer
             self.template_value['edit_url'] = self._create_action_url(query, 'edit')
 
@@ -156,8 +156,8 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         self.render("wf_page.html")
 
     def get_edit(self):
-        student = self.personalize_page_and_get_enrolled()
-        if not student:
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
             return
         query = self._get_query()
         self.template_value['navbar'] = {'wiki': True}
@@ -172,10 +172,10 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             self.error(404)
             # fall through
         elif not query['student']:
-            query['student'] = student.wiki_id
+            query['student'] = user.wiki_id
             self.redirect(self._create_action_url(query, 'edit'))
             return
-        elif query['student'] != student.wiki_id:
+        elif query['student'] != user.wiki_id:
             # TODO if user is admin, it's ok after all
             content = "You are not allowed to edit this student's wiki."
             self.error(403)
@@ -197,8 +197,8 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         self.render("wf_page.html")
 
     def post_save(self):
-        student = self.personalize_page_and_get_enrolled()
-        if not student:
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
             return
         query = self._get_query()
 
@@ -206,7 +206,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             logging.warning("POST is not legit")
             content = "You can't do that."
             self.error(403)
-        elif query['student'] != student.wiki_id:
+        elif query['student'] != user.wiki_id:
             # TODO if user is admin, it's ok
             # (make sure to handle empty query['student'])
             logging.warning("Attempt to edit someone else's wiki")
@@ -247,12 +247,12 @@ class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
             return None
 
     def get_view(self):
-        student = self.personalize_page_and_get_enrolled()
-        if not student:
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
             return
         query = self._get_query()
         if not query['student']:
-            query['student'] = student.wiki_id
+            query['student'] = user.wiki_id
 
         student_model = get_student_by_wiki_id(query['student'])
 
