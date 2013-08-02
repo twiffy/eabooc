@@ -7,4 +7,16 @@
 <a href="{{edit_url}}">edit</a>
 {% endif %}
 <div>{{ content | safe }}</div>
+
+<div>
+  <ol>
+    {% for comment in comments %}
+    <li>Comment by {{comment.author.name}}:<br>{{ comment.text }}</li>
+    {% else %}
+    <li><em>No comments yet.</em></li>
+    {% endfor %}
+  </ol>
+</div>
+
+
 {% endblock %}

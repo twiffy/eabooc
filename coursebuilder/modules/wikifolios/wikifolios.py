@@ -147,12 +147,12 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
                 self.template_value['author_name'] = author_name
                 self.template_value['author_link'] = student_profile_link(
                         query['student'])
+                self.template_value['comments'] = page.comments.order("added_time")
             else:
                 content = "The page you requested could not be found."
                 self.error(404)
 
         self.template_value['content'] = content
-        # TODO put access check into model? or at least own function.
         self.render("wf_page.html")
 
     def get_edit(self):
