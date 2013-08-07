@@ -140,8 +140,8 @@ class Student(BaseEntity):
     """Student profile."""
     enrolled_on = db.DateTimeProperty(auto_now_add=True, indexed=True)
     user_id = db.StringProperty(indexed=True)
-    name = db.StringProperty(indexed=False)
-    is_enrolled = db.BooleanProperty(indexed=False)
+    name = db.StringProperty()
+    is_enrolled = db.BooleanProperty()
     wiki_id = db.IntegerProperty()
 
     # Each of the following is a string representation of a JSON dict.

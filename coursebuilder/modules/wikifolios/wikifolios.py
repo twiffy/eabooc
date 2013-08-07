@@ -300,6 +300,30 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             return
         self.render("wf_page.html")
 
+class WikiProfileListHandler(BaseHandler):
+    def get(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        self.template_value['navbar'] = {'wiki': True}
+
+        # will need to cache this somehow.
+        student_list = Student.all()
+        student_list.filter('is_enrolled =', True)
+        student_list.order('name')
+
+        # our course is capped at 500 students, so...
+        FETCH_LIMIT=600
+
+        self.template_value['students'] = student_list.run(
+                limit=FETCH_LIMIT,
+                projection=(
+                    'wiki_id',
+                    'name',
+                    ),
+                )
+
+        self.render("wf_list.html")
 
 
 class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
@@ -368,6 +392,7 @@ def register_module():
     handlers = [
             ('/wiki', WikiPageHandler),
             ('/wikiprofile', WikiProfileHandler),
+            ('/students', WikiProfileListHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",

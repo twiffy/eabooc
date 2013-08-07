@@ -34,6 +34,17 @@ indexes:
   - name: assigned_count
   - name: create_date
 
+- kind: Student
+  properties:
+  - name: is_enrolled
+  - name: name
+
+- kind: Student
+  properties:
+  - name: is_enrolled
+  - name: name
+  - name: wiki_id
+
 - kind: WikiComment
   properties:
   - name: topic
