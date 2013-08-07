@@ -362,7 +362,3 @@ class StudentPropertyEntity(BaseEntity):
             else:
                 MemcacheManager.set(cls._memcache_key(key), NO_OBJECT)
         return value
-
-class ApiKey(BaseEntity):
-    the_key = db.StringProperty()
-

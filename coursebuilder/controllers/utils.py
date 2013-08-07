@@ -27,7 +27,7 @@ from models import transforms
 from models.config import ConfigProperty
 from models.config import ConfigPropertyEntity
 from models.courses import Course
-from models.models import Student, ApiKey
+from models.models import Student
 from models.roles import Roles
 import webapp2
 from google.appengine.api import namespace_manager
