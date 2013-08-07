@@ -147,7 +147,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         if current_student:
             assert current_student.key().name() == users.get_current_user().email()
         is_enrolled = (current_student and current_student.is_enrolled)
-        return is_enrolled or Roles.is_course_admin()
+        return is_enrolled or Roles.is_course_admin(self.app_context)
 
     def _can_edit(self, query, current_student):
         if current_student:
@@ -155,7 +155,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         is_author = (current_student
                 and current_student.wiki_id == query['student']
                 and current_student.is_enrolled)
-        return is_author or Roles.is_course_admin()
+        return is_author or Roles.is_course_admin(self.app_context)
 
     def _can_comment(self, query, current_student):
         return self._can_view(query, current_student)
