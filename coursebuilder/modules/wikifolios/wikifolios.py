@@ -82,8 +82,13 @@ def bleach_comment(html):
             styles=COMMENT_STYLES,
             )
 
+class WikiBaseHandler(BaseHandler):
+    def personalize_page_and_get_wiki_user(self):
+        user = self.personalize_page_and_get_enrolled()
+        # TODO add more restrictions on who can use the wiki
+        return user
 
-class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
+class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
     post_actions = ["save", "comment", "endorse"]
@@ -169,7 +174,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         return self._can_view(query, current_student)
 
     def get_view(self):
-        user = self.personalize_page_and_get_enrolled()
+        user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query(user)
@@ -227,7 +232,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         self.render("wf_page.html")
 
     def post_endorse(self):
-        user = self.personalize_page_and_get_enrolled()
+        user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query(user)
@@ -264,7 +269,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
 
 
     def get_edit(self):
-        user = self.personalize_page_and_get_enrolled()
+        user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query(user)
@@ -305,7 +310,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         self.render("wf_page.html")
 
     def post_save(self):
-        user = self.personalize_page_and_get_enrolled()
+        user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query(user)
@@ -342,7 +347,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
 
     def post_comment(self):
         logging.warning("In comment handler")
-        user = self.personalize_page_and_get_enrolled()
+        user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query(user)
@@ -369,9 +374,10 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             return
         self.render("wf_page.html")
 
-class WikiProfileListHandler(BaseHandler):
+
+class WikiProfileListHandler(WikiBaseHandler):
     def get(self):
-        user = self.personalize_page_and_get_enrolled()
+        user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         self.template_value['navbar'] = {'wiki': True}
@@ -395,7 +401,7 @@ class WikiProfileListHandler(BaseHandler):
         self.render("wf_list.html")
 
 
-class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
+class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = [
             "view",
@@ -419,7 +425,7 @@ class WikiProfileHandler(BaseHandler, ReflectiveRequestHandler):
             return None
 
     def get_view(self):
-        user = self.personalize_page_and_get_enrolled()
+        user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query()
