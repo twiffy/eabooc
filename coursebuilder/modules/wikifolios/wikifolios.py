@@ -2,14 +2,14 @@
 Wikifolios module for Google Course Builder
 """
 
-from models import custom_modules
-from models.models import Student
+from models import custom_modules, transforms
+from models.models import Student, EventEntity
 from models.roles import Roles
 from common import ckeditor
 import bleach
 import webapp2
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
-from modules.wikifolios.wiki_models import WikiPage, WikiComment
+from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
 from google.appengine.api import users
 import logging
 import urllib
@@ -86,7 +86,7 @@ def bleach_comment(html):
 class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
-    post_actions = ["save", "comment"]
+    post_actions = ["save", "comment", "endorse"]
 
     class _NavForm(wtf.Form):
         unit = wtf.IntegerField('Unit number', [
@@ -192,6 +192,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
                 self.template_value['author_link'] = student_profile_link(
                         query['student'])
                 self.template_value['comments'] = page.comments.order("added_time")
+
                 if self._can_comment(query, user):
                     self.template_value['can_comment'] = True
                     self.template_value['ckeditor_comment_content'] = (
@@ -199,12 +200,60 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
                                 COMMENT_ATTRIBUTES, COMMENT_STYLES))
                     self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
                     self.template_value['comment_url'] = self._create_action_url(query, 'comment')
+
+                if query['student'] == user.wiki_id:
+                    self.template_value['endorsement_view'] = 'author'
+                    self.template_value['is_endorsed'] = Annotation.endorsements(page).count(limit=1) > 0
+                elif Annotation.endorsements(page, user).count(limit=1) > 0:
+                    self.template_value['endorsement_view'] = 'has_endorsed'
+                else:
+                    self.template_value['endorsement_view'] = 'can_endorse'
+                    self.template_value['endorse_xsrf_token'] = self.create_xsrf_token('endorse')
+                    self.template_value['endorse_url'] = self._create_action_url(query, 'endorse')
+
             else:
                 content = "The page you requested could not be found."
                 self.error(404)
 
         self.template_value['content'] = content
         self.render("wf_page.html")
+
+    def post_endorse(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        query = self._get_query(user)
+        self.template_value['navbar'] = {'wiki': True}
+        content = ''
+
+        if not query:
+            logging.warning("POST is not legit")
+            content = "You can't do that."
+            self.error(403)
+            # fall through
+        elif not self._can_view(query, user):
+            logging.warning("Attempt to mark complete an unviewable wiki page")
+            content = "You are not allowed to mark this page complete."
+            self.error(403)
+            # fall through
+        elif user.wiki_id == query['student']:
+            logging.warning("Attempt to mark own page as complete")
+            content = "You are not allowed to mark this page complete."
+            self.error(403)
+            # fall through
+        else:
+            page = self._find_page(query)
+            if Annotation.endorsements(page, user).count() > 0:
+                logging.warning("Attempt to mark complete multiple times.")
+                content = "You've already marked this page complete."
+                self.error(403)
+            else:
+                Annotation.endorse(page, user)
+                self.redirect(self._create_action_url(query, 'view'))
+                return
+        self.template_value['content'] = content
+        self.render("wf_page.html")
+
 
     def get_edit(self):
         user = self.personalize_page_and_get_enrolled()
@@ -263,10 +312,19 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         else:
             page = self._find_page(query, create=True)
 
+            old_text = page.text
             page.text = bleach_entry(self.request.get('text', ''))
             page.unit = query['unit']
 
             page.put()
+            EventEntity.record(
+                    'edit-wiki-page', users.get_current_user(), transforms.dumps({
+                        'page-author': page.author.key().name(),
+                        'page-editor': user.key().name(),
+                        'unit': page.unit,
+                        'before': old_text,
+                        'after': page.text,
+                        }))
             self.redirect(self._create_action_url(query, 'view'))
             return
         self.render("wf_page.html")

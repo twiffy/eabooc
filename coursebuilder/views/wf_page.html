@@ -16,6 +16,22 @@
       {{ content | safe }}
     </div>
   </div>
+  <div id="assignment-completion">
+  {% if endorsement_view == 'author' %}
+  {%   if is_endorsed %}
+  This page has been marked as complete!
+  {%   else %}
+  This page has not yet been marked as complete.
+  {%   endif %}
+  {% elif endorsement_view == 'has_endorsed' %}
+  You have marked this page as complete.
+  {% elif endorsement_view == 'can_endorse' %}
+  <form action="{{ endorse_url }}" method=POST>
+    <input type="hidden" name="xsrf_token" value="{{ endorse_xsrf_token }}">
+    <input type="submit" class="gcb-button" value="This assignment is complete">
+  </form>
+  {% endif %}
+  </div>
   <div class="gcb-cols">
     <div class="gcb-col-1">
     </div>
