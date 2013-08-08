@@ -117,6 +117,10 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         assert query
         # TODO don't have to do this query if it's your own page,
         # optimize this.  Also, cache.
+        # TODO maybe store the wiki_id of the student in the Page,
+        # and look up by that, so we don't fetch the Student
+        # model twice (once by wiki id, once as a reference in
+        # the page)
         student_model = get_student_by_wiki_id(query['student'])
         if not student_model:
             return None
