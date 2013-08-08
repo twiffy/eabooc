@@ -1,5 +1,6 @@
 from models import models
 from google.appengine.ext import db
+import logging
 
 class WikiPage(models.BaseEntity):
     text = db.TextProperty()
@@ -46,3 +47,50 @@ class WikiComment(models.BaseEntity):
     # Or maybe cache it???  Can ReferenceProperty be smart enough
     # to consult the cache?
 
+class Annotation(models.BaseEntity):
+    """Endorsements, flags-as-abuse, and exemplaries."""
+    why = db.StringProperty()
+    timestamp = db.DateTimeProperty(auto_now_add=True)
+    who = db.ReferenceProperty(models.Student, collection_name="own_annotations")
+    what = db.ReferenceProperty(collection_name="annotations")
+
+    # JSON data, format depends on the value of .action
+    data = db.TextProperty()
+
+    @classmethod
+    def flag(cls, what, who, data=None):
+        ann = Annotation()
+        ann.why = 'flag'
+        ann.who = who
+        ann.what = what
+        ann.data = data
+        ann.put()
+
+    @classmethod
+    def endorse(cls, what, who, data=None):
+        ann = Annotation()
+        ann.why = 'endorse'
+        ann.who = who
+        ann.what = what
+        ann.data = data
+        ann.put()
+
+    @classmethod
+    def endorsements(cls, what=None, who=None):
+        q = Annotation.all()
+        if what:
+            q.filter("what =", what)
+        if who:
+            q.filter("who =", who)
+        return q
+
+    @classmethod
+    def exemplary(cls, what, who, data=None):
+        if data is None:
+            logging.info("prolly want more info in Exemplary")
+        ann = Annotation()
+        ann.why = 'exemplary'
+        ann.who = who
+        ann.what = what
+        ann.data = data
+        ann.put()
