@@ -149,13 +149,17 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
         is_enrolled = (current_student and current_student.is_enrolled)
         return is_enrolled or Roles.is_course_admin(self.app_context)
 
-    def _can_edit(self, query, current_student):
+    def _editor_role(self, query, current_student):
         if current_student:
             assert current_student.key().name() == users.get_current_user().email()
         is_author = (current_student
                 and current_student.wiki_id == query['student']
                 and current_student.is_enrolled)
-        return is_author or Roles.is_course_admin(self.app_context)
+        if is_author:
+            return 'author'
+        elif Roles.is_course_admin(self.app_context):
+            return 'admin'
+        return None
 
     def _can_comment(self, query, current_student):
         return self._can_view(query, current_student)
@@ -180,7 +184,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             self.error(403)
             # fall through
         else:
-            self.template_value['can_edit'] = self._can_edit(query, user)
+            self.template_value['editor_role'] = self._editor_role(query, user)
             self.template_value['edit_url'] = self._create_action_url(query, 'edit')
             self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
 
@@ -268,21 +272,24 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
 
         if not query:
             logging.info("404: query is not legit.")
-            content = "The page you requested could not be found."
+            self.template_value['content'] = "The page you requested could not be found."
+            self.render("wf_page.html")
             self.error(404)
-            # fall through
-        elif not self._can_edit(query, user):
+            return
+
+        editor_role = self._editor_role(query, user)
+        if not editor_role:
             content = "You are not allowed to edit this student's wiki."
             self.error(403)
             # fall through
         else:
-            page = self._find_page(query)
-            if page:
-                content = page.text
-                self.template_value['author_name'] = page.author.name
-            else:
-                content = ''
-                self.template_value['author_name'] = user.name
+            # We call with create=True to eliminate a conditional on how
+            # to set the author_name later.  But we don't .put() it.
+            page = self._find_page(query, create=True)
+            self.template_value['editor_role'] = editor_role
+            content = page.text or ''
+
+            self.template_value['author_name'] = page.author.name
             self.template_value['author_link'] = student_profile_link(
                     query['student'])
             self.template_value['content'] = content
@@ -304,7 +311,7 @@ class WikiPageHandler(BaseHandler, ReflectiveRequestHandler):
             content = "You can't do that."
             self.error(403)
             # fall through
-        elif not self._can_edit(query, user):
+        elif not self._editor_role(query, user):
             logging.warning("Attempt to edit someone else's wiki")
             content = "You are not allowed to edit this student's wiki."
             self.error(403)
