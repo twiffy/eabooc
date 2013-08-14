@@ -11,6 +11,16 @@
     border: solid thin #c33;
     background-color: #fcc;
   }
+  div.reg-form {
+    border: solid thin #aaa;
+    margin: 10px;
+    padding: 10px;
+  }
+
+  div.reg-form p {
+    margin-bottom: 10px;
+    padding: 5px;
+  }
 </style>
 
 {% endblock %}
@@ -41,17 +51,50 @@
         {% endfor %}
       </ul>
       {% endif %}
-      <form method="POST" action="confirm">
-        <label>{{ form.curricular_aim.label }}:<br>{{ form.curricular_aim(class="ckeditor", rows=10, cols=50) }}</label>
+      <div class="reg-form">
+        <form method="POST" action="confirm">
+          <p>
+            Your answers to these questions will be visible to the other
+            participants in the course.  They are a way to start a conversation,
+            as well as a start on the work of the course.
+          </p>
 
-        <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
-        {{ form.page }}
+          <p>For help with the editor controls, click inside an editor and
+          press Alt+0.</p>
 
-        <br>
-        <input class="gcb-button" type="submit" value="Submit the Pre-Assignment">
-      </form>
+          <p>
+            Please tell us a typical curricular aim in your classroom...
+            <br>{{ form.curricular_aim(id="aim-editor", rows=10, cols=50) }}
+          </p>
+
+          <p>
+            Please introduce yourself briefly.  What is your professional
+            role?  What else is important about you?
+            <br>{{ form.introduction(id="intro-editor", rows=10, cols=50) }}
+          </p>
+
+          <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+          {{ form.page }}
+
+          <br>
+          <input class="gcb-button" type="submit" value="Submit the Pre-Assignment">
+        </form>
+      </div>
     </div>
   </div>
 </div>
+
+<script src="/assets/ckeditor/ckeditor.js"></script>
+<script>
+  var toRemove = 'contextmenu,tabletools,pastefromword,undo,image,magicline,format,indent,indentlist,list,styles,elementspath,maximize,stylescombo,resize';
+  CKEDITOR.replace("intro-editor", {
+      allowedContent: 'a[href];b;i;p;',
+      removePlugins: toRemove,
+    });
+  CKEDITOR.replace("aim-editor", {
+      allowedContent: 'a[href];b;i;p;',
+      removePlugins: toRemove,
+    });
+</script>
 
 {% endblock %}
