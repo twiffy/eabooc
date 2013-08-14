@@ -4,7 +4,7 @@ from models.models import Student
 from controllers.utils import BaseHandler, XsrfTokenManager
 from google.appengine.ext import db
 
-class FirstAssignmentPage(wtf.Form):
+class PreAssignmentForm(wtf.Form):
     # TODO: how to add ckeditor, how to add more text
     # how to make big textarea
     curricular_aim = wtf.TextAreaField("Curricular Aim", [wtf.validators.Length(min=10)])
@@ -37,7 +37,7 @@ def on_pre_assignment_submission(handler, user, form):
 
 class ConfirmationHandler(BaseHandler):
     forms = {
-            'pre': FirstAssignmentPage,
+            'pre': PreAssignmentForm,
             'conf': ConfirmationForm,
             }
     templates = {
