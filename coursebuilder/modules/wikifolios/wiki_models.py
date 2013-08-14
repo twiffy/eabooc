@@ -31,11 +31,14 @@ class WikiPage(models.BaseEntity):
                     'WikiPage', 'profile')
 
     @classmethod
-    def get_page(cls, user, unit=None):
+    def get_page(cls, user, unit=None, create=False):
         key = cls.get_key(user, unit)
         if not key:
             return None
-        return cls.get(key)
+        page = cls.get(key)
+        if create and not page:
+            return cls(key=key)
+        return page
 
 class WikiComment(models.BaseEntity):
     author = db.ReferenceProperty(models.Student, collection_name="wiki_comments")

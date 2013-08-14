@@ -1,4 +1,6 @@
+import bleach
 import wtforms as wtf
+from modules.wikifolios.wiki_models import WikiPage
 from models import custom_modules
 from models.models import Student
 from controllers.utils import BaseHandler, XsrfTokenManager
@@ -13,7 +15,6 @@ class FormSubmission(db.Expando):
 
 class PreAssignmentForm(wtf.Form):
     curricular_aim = wtf.TextAreaField("Curricular Aim", [wtf.validators.Length(min=10)])
-    professional_role = wtf.TextAreaField("Professional Role")
     introduction = wtf.TextAreaField("Introduce Yourself")
     page = wtf.HiddenField(default="pre")
 
@@ -33,6 +34,12 @@ def on_pre_assignment_submission(handler, user, form):
     submission = FormSubmission(form_name='pre', user=user)
     form.populate_obj(submission)
     submission.put()
+
+    allowed_tags = ['p', 'i', 'b', 'a']
+    profile_page = WikiPage.get_page(user, unit=None, create=True)
+    profile_page.text = bleach.clean(form.introduction.data,
+            tags=allowed_tags)
+    profile_page.put()
 
     handler.redirect('confirm?page=conf')
 
