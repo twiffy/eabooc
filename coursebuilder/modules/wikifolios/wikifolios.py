@@ -57,11 +57,12 @@ ALLOWED_STYLES = (
         )
 
 def bleach_entry(html):
-    return bleach.clean(html,
+    cleaned = bleach.clean(html,
             tags=ALLOWED_TAGS,
             attributes=ALLOWED_ATTRIBUTES,
             styles=ALLOWED_STYLES,
             )
+    return bleach.linkify(cleaned)
 
 COMMENT_TAGS = (
         'a', 'b',
