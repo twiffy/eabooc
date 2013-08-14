@@ -22,6 +22,7 @@ import os
 import time
 import urlparse
 import re
+import logging
 import appengine_config
 from models import transforms
 from models.config import ConfigProperty
@@ -282,6 +283,8 @@ class BaseHandler(ApplicationHandler):
         """Asserts the current request has proper XSRF token or fails."""
         token = request.get('xsrf_token')
         if not token or not XsrfTokenManager.is_xsrf_token_valid(token, action):
+            logging.warning("Bad or missing XSRF token for %s %s (wanted action %s)",
+                    request.method, request.url, action)
             self.error(403)
             return False
         return True
