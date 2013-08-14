@@ -151,6 +151,8 @@ class CourseHandler(BaseHandler):
         self.template_value['units'] = self.get_units()
         self.augment_assessment_units(student)
 
+        self.template_value['participant'] = student.is_participant
+
         self.template_value['progress'] = (
             self.get_progress_tracker().get_unit_progress(student))
         self.template_value['is_progress_recorded'] = (

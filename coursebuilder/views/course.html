@@ -4,6 +4,18 @@
     <div class="gcb-cols">
       <div class="gcb-col-11 gcb-aside">
         {% include 'summary.html' %}
+
+        {% if not participant %}
+        <div class="gcb-col-5">
+          <center>
+            <a class="gcb-button gcb-button-large" href="confirm" role="button">
+              Pre-Assignment
+            </a><br>
+
+            Complete the Pre-Assignment to confirm your spot in the course!
+          </center>
+        </div>
+        {% endif %}
       </div>
     </div>
 {% endblock %}
