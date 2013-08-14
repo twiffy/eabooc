@@ -1,6 +1,11 @@
 {% extends 'base_registration.html' %}
 
 {% block top_content %}
+<style>
+  div#confirm-why {
+    margin-bottom: -20px;
+  }
+</style>
 
 {% endblock %}
 
@@ -8,6 +13,10 @@
 <div id="gcb-main">
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
+      {% if is_redirect %}
+      <div id="confirm-why">Before you can use that page, you need to</div>
+      {% endif %}
+      <h1>Confirm your Registration</h1>
       {% if form.errors %}
       <ul class="errors">
         {% for field_name, field_errors in form.errors|dictsort if field_errors %}

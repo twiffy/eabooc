@@ -23,6 +23,9 @@ class ConfirmationHandler(BaseHandler):
             return
         progress = FormProgress.all().filter('form_name', 'FirstAssignmentPage').filter('user', user.key()).get()
         form = FirstAssignmentPage(None, progress)
+
+        if 'redirect' in self.request.GET:
+            self.template_value['is_redirect'] = True
         self.do_render(form)
 
     def do_render(self, form):
