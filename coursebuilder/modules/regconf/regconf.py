@@ -14,26 +14,65 @@ class FirstAssignmentPage(wtf.Form):
 class FormSubmission(db.Expando):
     form_name = db.StringProperty()
     user = db.ReferenceProperty(Student)
+    submitted = db.DateTimeProperty(auto_now=True)
+
+class ConfirmationForm:
+    pass
+
+def on_pre_assignment_submission(handler, user, form):
+    submission = FormSubmission(form_name='pre', user=user)
+    form.populate_obj(submission)
+    submission.put()
+
+    user.is_participant = True
+    user.put()
+
+    handler.redirect('course')
 
 class ConfirmationHandler(BaseHandler):
+    forms = {
+            'pre': FirstAssignmentPage,
+            'conf': ConfirmationForm,
+            }
+    templates = {
+            'pre': 'confirm_registration.html',
+            'conf': 'nothing_yet.html',
+            }
+    actions = {
+            'pre': on_pre_assignment_submission,
+            'conf': None,
+            }
+    default_page = 'pre'
+
+    def _page(self):
+        page = self.default_page
+        query_page = self.request.get('page', None)
+        if query_page and query_page in self.templates.keys():
+            page = query_page
+        return page
+
     def get(self):
         user = self.personalize_page_and_get_enrolled()
         if not user:
             self.redirect('register')
             return
-        submission = FormSubmission.all().filter('form_name', 'FirstAssignmentPage').filter('user', user.key()).get()
-        form = FirstAssignmentPage(None, submission)
+
+        page = self._page()
+
+        # submission may be None
+        submission = FormSubmission.all().filter('form_name', page).filter('user', user.key()).get()
+        form = self.forms[page](None, submission)
 
         if 'redirect' in self.request.GET:
             self.template_value['is_redirect'] = True
-        self.do_render(form)
+        self.do_render(form, self.templates[page])
 
-    def do_render(self, form):
+    def do_render(self, form, template):
         self.template_value['navbar'] = {'confirm': True}
         self.template_value['form'] = form
         self.template_value['xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('register-conf-post'))
-        self.render("confirm_registration.html")
+        self.render(template)
 
     def post(self):
         user = self.personalize_page_and_get_enrolled()
@@ -43,18 +82,15 @@ class ConfirmationHandler(BaseHandler):
         if not self.assert_xsrf_token_or_fail(self.request, 'register-conf-post'):
             return
 
-        form = FirstAssignmentPage(self.request.POST)
+        page = self._page()
+
+        form = self.forms[page](self.request.POST)
         if form.validate():
-            submission = FormSubmission(form_name='FirstAssignmentPage', user=user)
-            form.populate_obj(submission)
-            submission.put()
-
-            user.is_participant = True
-            user.put()
-
-            self.redirect('course')
+            self.actions[page](self, user, form)
         else:
-            self.do_render(form)
+            # Validation errors will be included in the 'form' object
+            self.do_render(form, self.templates[page])
+
 
 module = None
 
