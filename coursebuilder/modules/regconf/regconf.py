@@ -16,8 +16,14 @@ class FormSubmission(db.Expando):
     user = db.ReferenceProperty(Student)
     submitted = db.DateTimeProperty(auto_now=True)
 
-class ConfirmationForm:
-    pass
+class ConfirmationForm(wtf.Form):
+    participation_level = wtf.RadioField("Participation Level",
+            choices=[
+                ('badges', 'Badges'),
+                ('instructor-cert', 'Instructor Certified'),
+                ('for-credit', 'For Credit'),
+                ])
+    accept_terms = wtf.BooleanField("Terms of Use")
 
 def on_pre_assignment_submission(handler, user, form):
     submission = FormSubmission(form_name='pre', user=user)
@@ -27,7 +33,7 @@ def on_pre_assignment_submission(handler, user, form):
     user.is_participant = True
     user.put()
 
-    handler.redirect('course')
+    handler.redirect('confirm?page=conf')
 
 class ConfirmationHandler(BaseHandler):
     forms = {
@@ -35,8 +41,8 @@ class ConfirmationHandler(BaseHandler):
             'conf': ConfirmationForm,
             }
     templates = {
-            'pre': 'confirm_registration.html',
-            'conf': 'nothing_yet.html',
+            'pre': 'pre_assignment.html',
+            'conf': 'confirm_registration.html',
             }
     actions = {
             'pre': on_pre_assignment_submission,
