@@ -331,6 +331,8 @@ class AssessmentHandler(BaseHandler):
         student = self.personalize_page_and_get_enrolled()
         if not student:
             return
+        if not self.assert_participant_or_fail(student):
+            return
 
         # Extract incoming args
         unit_id = self.request.get('name')
