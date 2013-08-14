@@ -18,12 +18,6 @@ indexes:
   - name: form_name
   - name: user
   - name: submitted
-
-- kind: FormSubmission
-  properties:
-  - name: form_name
-  - name: user
-  - name: submitted
     direction: desc
 
 - kind: ReviewStep
