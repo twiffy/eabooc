@@ -11,7 +11,7 @@ class FirstAssignmentPage(wtf.Form):
     professional_role = wtf.TextAreaField("Professional Role")
     introduction = wtf.TextAreaField("Introduce Yourself")
 
-class FormProgress(db.Expando):
+class FormSubmission(db.Expando):
     form_name = db.StringProperty()
     user = db.ReferenceProperty(Student)
 
@@ -21,8 +21,8 @@ class ConfirmationHandler(BaseHandler):
         if not user:
             self.redirect('register')
             return
-        progress = FormProgress.all().filter('form_name', 'FirstAssignmentPage').filter('user', user.key()).get()
-        form = FirstAssignmentPage(None, progress)
+        submission = FormSubmission.all().filter('form_name', 'FirstAssignmentPage').filter('user', user.key()).get()
+        form = FirstAssignmentPage(None, submission)
 
         if 'redirect' in self.request.GET:
             self.template_value['is_redirect'] = True
@@ -45,9 +45,9 @@ class ConfirmationHandler(BaseHandler):
 
         form = FirstAssignmentPage(self.request.POST)
         if form.validate():
-            progress = FormProgress(form_name='FirstAssignmentPage', user=user)
-            form.populate_obj(progress)
-            progress.put()
+            submission = FormSubmission(form_name='FirstAssignmentPage', user=user)
+            form.populate_obj(submission)
+            submission.put()
 
             user.is_participant = True
             user.put()
