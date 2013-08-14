@@ -158,6 +158,8 @@
         <div class="gcb-pull-right" style="font-size: larger;">
           {{ email }}
           &nbsp;|&nbsp;
+          <a href="student/home" style="text-decoration: underline;">Account</a>
+          &nbsp;|&nbsp;
           <a href="{{ logoutUrl }}" style="text-decoration: underline;">
             {# I18N: Navbar text. #}
             {{ gettext('Logout') }}
@@ -194,16 +196,12 @@
           {% endif %}
           <li {% if navbar.myprofile %}class='active'{% endif %}>
             {# I18N: Navbar tab. #}
-            <a href="student/home">{{ gettext('My Profile') }}</a>
+            <a href="wikiprofile">{{ gettext('My Wikifolio') }}</a>
           </li>
           <li {% if navbar.faq %}class='active'{% endif %}>
             {# I18N: Navbar tab. #}
             <a href="http://www.indiana.edu/~booc/faqs/">FAQ</a>
           </li>          
-          <li {% if navbar.wiki %}class='active'{% endif %}>
-            {# I18N: Navbar tab. #}
-            <a href="wikiprofile">Wikifolio</a>
-          </li>
           {{course_info.base.before_navbar_ends | safe}}
           {% if is_super_admin %}
           <li class="gcb-pull-right">
