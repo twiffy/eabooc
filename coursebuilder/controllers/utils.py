@@ -286,6 +286,15 @@ class BaseHandler(ApplicationHandler):
             return False
         return True
 
+    def assert_participant_or_fail(self, user=None):
+        if not user:
+            user = self.get_user()
+        if not (user and user.is_enrolled and user.is_participant):
+            self.redirect('confirm?redirect=1')
+            return False
+        return True
+
+
     def render(self, template_file):
         """Renders a template."""
         template = self.get_template(template_file)

@@ -112,6 +112,9 @@ class AnswerHandler(BaseHandler):
         if not self.assert_xsrf_token_or_fail(self.request, 'assessment-post'):
             return
 
+        if not self.assert_participant_or_fail(student):
+            return
+
         course = self.get_course()
         assessment_type = self.request.get('assessment_type')
         if not assessment_type:

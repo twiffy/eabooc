@@ -86,9 +86,8 @@ class WikiBaseHandler(BaseHandler):
     # I don't like how leaky this is, always having to check for the None return.
     def personalize_page_and_get_wiki_user(self):
         user = self.personalize_page_and_get_enrolled()
-        if user and not user.is_participant:
-            self.redirect('confirm')
-            return None
+        if not user or not self.assert_participant_or_fail(user):
+            return
         return user
 
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
