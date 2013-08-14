@@ -4,17 +4,19 @@ from models.models import Student
 from controllers.utils import BaseHandler, XsrfTokenManager
 from google.appengine.ext import db
 
-class PreAssignmentForm(wtf.Form):
-    # TODO: how to add ckeditor, how to add more text
-    # how to make big textarea
-    curricular_aim = wtf.TextAreaField("Curricular Aim", [wtf.validators.Length(min=10)])
-    professional_role = wtf.TextAreaField("Professional Role")
-    introduction = wtf.TextAreaField("Introduce Yourself")
 
 class FormSubmission(db.Expando):
     form_name = db.StringProperty()
     user = db.ReferenceProperty(Student)
     submitted = db.DateTimeProperty(auto_now=True)
+
+
+class PreAssignmentForm(wtf.Form):
+    curricular_aim = wtf.TextAreaField("Curricular Aim", [wtf.validators.Length(min=10)])
+    professional_role = wtf.TextAreaField("Professional Role")
+    introduction = wtf.TextAreaField("Introduce Yourself")
+    page = wtf.HiddenField(default="pre")
+
 
 class ConfirmationForm(wtf.Form):
     participation_level = wtf.RadioField("Participation Level",
@@ -23,17 +25,28 @@ class ConfirmationForm(wtf.Form):
                 ('instructor-cert', 'Instructor Certified'),
                 ('for-credit', 'For Credit'),
                 ])
-    accept_terms = wtf.BooleanField("Terms of Use")
+    accept_terms = wtf.BooleanField("Terms of Use", validators=[wtf.validators.Required()])
+    page = wtf.HiddenField(default="conf")
+
 
 def on_pre_assignment_submission(handler, user, form):
     submission = FormSubmission(form_name='pre', user=user)
     form.populate_obj(submission)
     submission.put()
 
+    handler.redirect('confirm?page=conf')
+
+
+def on_confirmation_submission(handler, user, form):
+    submission = FormSubmission(form_name='conf', user=user)
+    form.populate_obj(submission)
+    submission.put()
+
     user.is_participant = True
     user.put()
 
-    handler.redirect('confirm?page=conf')
+    handler.redirect("wikiprofile")
+
 
 class ConfirmationHandler(BaseHandler):
     forms = {
@@ -46,7 +59,7 @@ class ConfirmationHandler(BaseHandler):
             }
     actions = {
             'pre': on_pre_assignment_submission,
-            'conf': None,
+            'conf': on_confirmation_submission,
             }
     default_page = 'pre'
 
@@ -77,7 +90,7 @@ class ConfirmationHandler(BaseHandler):
         self.template_value['navbar'] = {'confirm': True}
         self.template_value['form'] = form
         self.template_value['xsrf_token'] = (
-            XsrfTokenManager.create_xsrf_token('register-conf-post'))
+            XsrfTokenManager.create_xsrf_token('register-conf-post-' + self._page()))
         self.render(template)
 
     def post(self):
@@ -85,7 +98,7 @@ class ConfirmationHandler(BaseHandler):
         if not user:
             self.redirect('register')
             return
-        if not self.assert_xsrf_token_or_fail(self.request, 'register-conf-post'):
+        if not self.assert_xsrf_token_or_fail(self.request, 'register-conf-post-' + self._page()):
             return
 
         page = self._page()

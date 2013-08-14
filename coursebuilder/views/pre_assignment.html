@@ -45,9 +45,10 @@
         <label>{{ form.curricular_aim.label }}:<br>{{ form.curricular_aim(class="ckeditor", rows=10, cols=50) }}</label>
 
         <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+        {{ form.page }}
 
         <br>
-        <input class="gcb-button" type="submit" value="Confirm ur regi">
+        <input class="gcb-button" type="submit" value="Submit the Pre-Assignment">
       </form>
     </div>
   </div>

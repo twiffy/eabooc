@@ -11,6 +11,9 @@
     border: solid thin #c33;
     background-color: #fcc;
   }
+  table {
+    border-collapse: collapse;
+  }
 </style>
 
 {% endblock %}
@@ -22,7 +25,8 @@
       <h1>Confirm your Registration</h1>
 
       <div id="confirm-explain">
-        Some stuff here...
+        You're almost done!  Please let us know the following information, and you will
+        be completely registered!
       </div>
 
       {% if form.errors %}
@@ -36,9 +40,27 @@
       {% endif %}
       <form method="POST" action="confirm">
         <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+        {{ form.page }}
 
-        <br>
-        <input class="gcb-button" type="submit" value="Confirm ur regi">
+        <div>What will be your participation level in this course?
+        <table>
+          {% for level in form.participation_level %}
+          <tr>
+            <td>{{ level }}</td>
+            <td>{{ level.label }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        </div>
+
+        <div>{{ form.accept_terms }}
+          Do you accept the <a href="assets/content/terms_of_use.html">Terms of Use?</a>
+        </div>
+
+        <div>
+          All done!  By pressing Confirm, you reserve a place for yourself in this course!<br>
+          <input class="gcb-button" type="submit" value="Confirm">
+        </div>
       </form>
     </div>
   </div>
