@@ -94,7 +94,7 @@ class ConfirmationHandler(BaseHandler):
         self.do_render(form, self.templates[page])
 
     def do_render(self, form, template):
-        self.template_value['navbar'] = {'confirm': True}
+        self.template_value['navbar'] = {'registration': True}
         self.template_value['form'] = form
         self.template_value['xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('register-conf-post-' + self._page()))

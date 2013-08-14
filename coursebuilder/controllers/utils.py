@@ -486,6 +486,9 @@ class RegisterHandler(BaseHandler):
 
             mailchimp.subscribe_to_pre_reg(user.email(), student.name, self.request.remote_addr)
 
+            self.redirect('confirm')
+            return
+
         # Render registration confirmation page
         self.template_value['navbar'] = {'registration': True}
         self.render('confirmation.html')
