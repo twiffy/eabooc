@@ -27,11 +27,12 @@
       </ul>
       {% endif %}
       <form method="POST" action="confirm">
-        <label>{{ form.curricular_aim.label }}:<br>{{ form.curricular_aim(class="ckeditor") }}</label>
+        <label>{{ form.curricular_aim.label }}:<br>{{ form.curricular_aim(class="ckeditor", rows=10, cols=50) }}</label>
 
         <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
 
-        <input type="submit" value="Confirm ur regi">
+        <br>
+        <input class="gcb-button" type="submit" value="Confirm ur regi">
       </form>
     </div>
   </div>
