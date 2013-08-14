@@ -91,6 +91,27 @@ class WikiBaseHandler(BaseHandler):
             return
         return user
 
+    def _editor_role(self, query, current_student):
+        if current_student:
+            assert current_student.key().name() == users.get_current_user().email()
+        is_author = (current_student
+                and current_student.wiki_id == query['student']
+                and current_student.is_enrolled)
+        if is_author:
+            return 'author'
+        elif Roles.is_course_admin(self.app_context):
+            return 'admin'
+        return None
+
+    def _create_action_url(self, query, action="view"):
+        params = dict(query)
+        params.update({
+                'action': action,
+                })
+        return '?'.join((
+                self.request.path,
+                urllib.urlencode(params)))
+
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
@@ -145,33 +166,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         return page
 
-    def _create_action_url(self, query, action="view"):
-        params = {
-                'action': action,
-                'unit': query['unit'],
-                'student': query['student'],
-                }
-        return '?'.join((
-                self.request.path,
-                urllib.urlencode(params)))
-
     def _can_view(self, query, current_student):
         if current_student:
             assert current_student.key().name() == users.get_current_user().email()
         is_enrolled = (current_student and current_student.is_enrolled)
         return is_enrolled or Roles.is_course_admin(self.app_context)
 
-    def _editor_role(self, query, current_student):
-        if current_student:
-            assert current_student.key().name() == users.get_current_user().email()
-        is_author = (current_student
-                and current_student.wiki_id == query['student']
-                and current_student.is_enrolled)
-        if is_author:
-            return 'author'
-        elif Roles.is_course_admin(self.app_context):
-            return 'admin'
-        return None
 
     def _can_comment(self, query, current_student):
         return self._can_view(query, current_student)
@@ -408,9 +408,9 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = [
             "view",
-            #"edit",
+            "edit",
             ]
-    #post_actions = ["save"]
+    post_actions = ["save"]
 
     class _NavForm(wtf.Form):
         student = wtf.IntegerField('Student id', [
@@ -444,6 +444,15 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
 
+        profile_page = WikiPage.get_page(user=user, unit=None)
+        if profile_page:
+            self.template_value['content'] = profile_page.text
+        else:
+            self.template_value['content'] = "This user has not created a profile yet."
+
+        self.template_value['editor_role'] = self._editor_role(query, user)
+        self.template_value['edit_url'] = self._create_action_url(query, 'edit')
+
         units = self.get_units()
         pages = WikiPage.query_by_student(student_model).run(limit=100)
         units_with_pages = set([ unicode(p.unit) for p in pages ])
@@ -458,9 +467,81 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         self.template_value['units'] = units
 
-        self.template_value['content'] = "(here is some <i>html</i>)"
-
         self.render("wf_profile.html")
+
+    def get_edit(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+        query = self._get_query()
+        if not query['student']:
+            self.redirect("wikiprofile?" + urllib.urlencode({
+                'student': user.wiki_id}))
+            return
+
+        self.template_value['navbar'] = {'wiki': True}
+
+        editor_role = self._editor_role(query, user)
+        if not editor_role:
+            self.template_value['content'] = "You are not allowed to edit this student's wiki."
+            self.render("wf_page.html")
+            self.error(403)
+            return
+
+        self.template_value['editor_role'] = editor_role
+        self.template_value['ckeditor_allowed_content'] = (
+                ckeditor.allowed_content(ALLOWED_TAGS,
+                    ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
+
+        student_model = get_student_by_wiki_id(query['student'])
+
+        self.template_value['author_name'] = student_model.name
+        self.template_value['author_link'] = student_profile_link(
+                query['student'])
+
+        self.template_value['xsrf_token'] = self.create_xsrf_token('save')
+        self.template_value['save_url'] = self._create_action_url(query, 'save')
+
+        profile_page = WikiPage.get_page(user=user, unit=None)
+        if profile_page:
+            self.template_value['content'] = profile_page.text
+
+        self.render("wf_profile_edit.html")
+
+    def post_save(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+        query = self._get_query()
+
+        if not query:
+            logging.warning("POST is not legit")
+            content = "You can't do that."
+            self.error(403)
+            # fall through
+        elif not self._editor_role(query, user):
+            logging.warning("Attempt to edit someone else's wiki")
+            content = "You are not allowed to edit this student's wiki."
+            self.error(403)
+            # fall through
+        else:
+            page = WikiPage.get_page(user=user, unit=None, create=True)
+
+            old_text = page.text
+            page.text = bleach_entry(self.request.get('text', ''))
+
+            page.put()
+            EventEntity.record(
+                    'edit-wiki-profile', users.get_current_user(), transforms.dumps({
+                        'page-author': page.author.key().name(),
+                        'page-editor': user.key().name(),
+                        'before': old_text,
+                        'after': page.text,
+                        }))
+            self.redirect(self._create_action_url(query, 'view'))
+            return
+        self.render("wf_page.html")
+
 
 module = None
 

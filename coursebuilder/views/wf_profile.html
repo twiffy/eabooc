@@ -3,10 +3,10 @@
 {% endblock %}
 {% block main_content %}
 <span id="wikifolio-links"><a href="students">&larr; All students</a></span>
-<h1>{{ author_name }}</h1>
-{% if can_edit %}
-<a href="{{edit_url}}">edit</a>
+{% if editor_role %}
+<br><a href="{{edit_url}}">edit</a> as {{ editor_role }}
 {% endif %}
+<h1>{{ author_name }}</h1>
 <div>{{ content | safe }}</div>
 <div id="wf-page-list">
   Pages by {{ author_name }}:
