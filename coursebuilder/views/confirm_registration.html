@@ -4,6 +4,7 @@
 <style>
   div#confirm-why {
     margin-bottom: -20px;
+    font-size: 80%;
   }
 </style>
 
@@ -14,9 +15,18 @@
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
       {% if is_redirect %}
-      <div id="confirm-why">Before you can use that page, you need to</div>
+      <div id="confirm-why">Before you can use that page, you need to complete the</div>
       {% endif %}
-      <h1>Confirm your Registration</h1>
+      <h1>Pre-Assignment</h1>
+
+      <div id="confirm-explain">
+        Thank you for pre-registering!  At this point, you have access to <a
+          href="course">the text of the course content</a>.  To participate in
+        the class, confirm your registration, and become eligible to earn
+        badges and credit, you will need to complete this pre-assignment and
+        then answer a few administrative questions.
+      </div>
+
       {% if form.errors %}
       <ul class="errors">
         {% for field_name, field_errors in form.errors|dictsort if field_errors %}
