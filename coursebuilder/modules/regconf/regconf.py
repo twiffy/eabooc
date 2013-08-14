@@ -79,7 +79,7 @@ class ConfirmationHandler(BaseHandler):
         page = self._page()
 
         # submission may be None
-        submission = FormSubmission.all().filter('form_name', page).filter('user', user.key()).get()
+        submission = FormSubmission.all().filter('form_name', page).filter('user', user.key()).order('-submitted').get()
         form = self.forms[page](None, submission)
 
         if 'redirect' in self.request.GET:

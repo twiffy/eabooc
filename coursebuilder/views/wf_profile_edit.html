@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block top_content %}
+{% endblock %}
+{% block main_content %}
+{% if editor_role == 'admin' %}
+<center><div id="alerts-bar">You are editing someone else's page, as an admin.</div></center>
+{% endif %}
+<span id="wikifolio-links"><a href="students">&larr; All students</a></span>
+<h1>{{ author_name }}</h1>
+<form method="POST" action="{{ save_url }}">
+  <input type="hidden" name="xsrf_token" value="{{xsrf_token}}">
+  
+  <textarea id="editor" cols="50" rows="20" name="text">{{ content | safe }}</textarea>
+  <br>
+  <input type="submit">
+</form>
+
+<script src="/assets/ckeditor/ckeditor.js"></script>
+<script>
+  CKEDITOR.replace('editor', {
+    allowedContent: '{{ ckeditor_allowed_content }}'
+  });
+</script>
+{% endblock %}

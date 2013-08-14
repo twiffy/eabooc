@@ -13,6 +13,19 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: FormSubmission
+  properties:
+  - name: form_name
+  - name: user
+  - name: submitted
+
+- kind: FormSubmission
+  properties:
+  - name: form_name
+  - name: user
+  - name: submitted
+    direction: desc
+
 - kind: ReviewStep
   properties:
   - name: assigner_kind
