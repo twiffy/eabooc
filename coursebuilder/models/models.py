@@ -149,6 +149,9 @@ class Student(BaseEntity):
 
     # --- Additional fields for Assessment BOOC ---
 
+    # If the student is able to use the wiki, comment, etc.
+    is_participant = db.BooleanProperty()
+
     # The user's profile picture
     profile_pic = db.BlobProperty()
 

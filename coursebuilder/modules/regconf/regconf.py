@@ -45,6 +45,10 @@ class ConfirmationHandler(BaseHandler):
             progress = FormProgress(form_name='FirstAssignmentPage', user=user)
             form.populate_obj(progress)
             progress.put()
+
+            user.is_participant = True
+            user.put()
+
             self.redirect('course')
         else:
             self.do_render(form)

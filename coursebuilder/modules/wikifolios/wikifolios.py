@@ -83,9 +83,12 @@ def bleach_comment(html):
             )
 
 class WikiBaseHandler(BaseHandler):
+    # I don't like how leaky this is, always having to check for the None return.
     def personalize_page_and_get_wiki_user(self):
         user = self.personalize_page_and_get_enrolled()
-        # TODO add more restrictions on who can use the wiki
+        if user and not user.is_participant:
+            self.redirect('confirm')
+            return None
         return user
 
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
