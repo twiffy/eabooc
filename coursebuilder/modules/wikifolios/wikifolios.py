@@ -217,9 +217,10 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
                     self.template_value['comment_url'] = self._create_action_url(query, 'comment')
 
+                self.template_value['endorsements'] = Annotation.endorsements(page)
+
                 if query['student'] == user.wiki_id:
                     self.template_value['endorsement_view'] = 'author'
-                    self.template_value['is_endorsed'] = Annotation.endorsements(page).count(limit=1) > 0
                 elif Annotation.endorsements(page, user).count(limit=1) > 0:
                     self.template_value['endorsement_view'] = 'has_endorsed'
                 else:
