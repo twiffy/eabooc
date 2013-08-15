@@ -444,7 +444,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
 
-        profile_page = WikiPage.get_page(user=user, unit=None)
+        profile_page = WikiPage.get_page(user=student_model, unit=None)
         if profile_page:
             self.template_value['content'] = profile_page.text
         else:
