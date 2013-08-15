@@ -30,7 +30,9 @@
     {% elif endorsement_view == 'can_endorse' %}
     <form action="{{ endorse_url }}" method=POST>
       <input type="hidden" name="xsrf_token" value="{{ endorse_xsrf_token }}">
-      <input type="submit" class="gcb-button" value="This assignment is complete">
+      Click here to endorse that the author has completed
+      <input type="submit" name="required_done" class="gcb-button" value="the required parts">, or
+      <input type="submit" name="all_done" class="gcb-button" value="the required AND optional parts"> of the assignment.
     </form>
     {% endif %}
   </div>

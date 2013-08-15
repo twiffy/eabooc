@@ -268,7 +268,11 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 content = "You've already marked this page complete."
                 self.error(403)
             else:
-                Annotation.endorse(page, user)
+                if 'all_done' in self.request.POST:
+                    data = transforms.dumps({'all': True})
+                else:
+                    data = transforms.dumps({'all': True})
+                Annotation.endorse(page, user, data=data)
                 self.redirect(self._create_action_url(query, 'view'))
                 return
         self.template_value['content'] = content
