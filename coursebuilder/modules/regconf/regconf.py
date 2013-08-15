@@ -5,6 +5,7 @@ from models import custom_modules
 from models.models import Student
 from controllers.utils import BaseHandler, XsrfTokenManager
 from google.appengine.ext import db
+from google.appengine.api import users
 
 
 class FormSubmission(db.Expando):
@@ -78,9 +79,20 @@ class ConfirmationHandler(BaseHandler):
         return page
 
     def get(self):
+        app_user = self.get_user()
+        if not app_user:
+            # the request is anonymous
+            self.redirect(
+                users.create_login_url(self.request.uri), normalize=False)
+            return
         user = self.personalize_page_and_get_enrolled()
         if not user:
-            self.redirect('register')
+            # there is a user, but they are not enrolled
+            self.redirect('/register')
+            return
+        if user.is_participant:
+            # the user has *already* filled out this form
+            self.redirect('/course')
             return
 
         page = self._page()
