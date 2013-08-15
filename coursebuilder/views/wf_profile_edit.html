@@ -2,6 +2,16 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
+<style>
+  div#alerts-bar {
+    background-color: #ffffB7;
+    border: solid #cccca0 1px;
+    display: inline-block;
+    padding: 0.4em;
+    border-radius: 5px;
+    margin-top: 4px;
+  }
+</style>
 {% if editor_role == 'admin' %}
 <center><div id="alerts-bar">You are editing someone else's page, as an admin.</div></center>
 {% endif %}
