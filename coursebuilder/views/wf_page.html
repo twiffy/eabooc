@@ -40,7 +40,8 @@
     <div class="gcb-col-9 gcb-aside">
       <ol>
         {% for comment in comments %}
-        <li>Comment by {{comment.author.name}}:<br>{{ comment.text | safe }}</li>
+        <li>Comment by <a href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a>:
+        <br>{{ comment.text | safe }}</li>
         {% else %}
         <li><em>No comments yet.</em></li>
         {% endfor %}

@@ -5,7 +5,7 @@ Wikifolios module for Google Course Builder
 from models import custom_modules, transforms
 from models.models import Student, EventEntity
 from models.roles import Roles
-from common import ckeditor
+from common import ckeditor, prefetch
 import bleach
 import webapp2
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
@@ -207,7 +207,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.template_value['author_name'] = author_name
                 self.template_value['author_link'] = student_profile_link(
                         query['student'])
-                self.template_value['comments'] = page.comments.order("added_time")
+                self.template_value['comments'] = prefetch.prefetch_refprops(
+                        page.comments.order("added_time").fetch(limit=1000),
+                        WikiComment.author)
 
                 if self._can_comment(query, user):
                     self.template_value['can_comment'] = True
@@ -217,7 +219,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
                     self.template_value['comment_url'] = self._create_action_url(query, 'comment')
 
-                self.template_value['endorsements'] = Annotation.endorsements(page)
+                self.template_value['endorsements'] = prefetch.prefetch_refprops(
+                        Annotation.endorsements(page), Annotation.who)
 
                 if query['student'] == user.wiki_id:
                     self.template_value['endorsement_view'] = 'author'
