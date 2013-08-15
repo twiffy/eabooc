@@ -30,17 +30,9 @@
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
       {% if is_redirect %}
-      <div id="confirm-why">Before you can use that page, you need to complete the</div>
+      <div id="confirm-why">Before you can use that page, you need to finish your registration!</div>
       {% endif %}
-      <h1>Pre-Assignment</h1>
-
-      <div id="confirm-explain">
-        Thank you for pre-registering!  At this point, you have access to <a
-          href="course">the text of the course content</a>.  To participate in
-        the class, confirm your registration, and become eligible to earn
-        badges and credit, you will need to complete this pre-assignment and
-        then answer a few administrative questions.
-      </div>
+      <h1>Your Curricular Aim & Introduction <small>(2 of 3)</small></h1>
 
       {% if form.errors %}
       <ul class="errors">
@@ -51,33 +43,41 @@
         {% endfor %}
       </ul>
       {% endif %}
+      <p>
+        Your answers to these questions will be visible to the other
+        participants in the course.  They are a way to start a conversation,
+        as well as a start on the work of the course.
+      </p>
+
       <div class="reg-form">
         <form method="POST" action="confirm">
           <p>
-            Your answers to these questions will be visible to the other
-            participants in the course.  They are a way to start a conversation,
-            as well as a start on the work of the course.
+            The core of Educational Assessment BOOC is focused on evolving a
+            curricular aim that is unique to your role and experience in education.
+            As a part of Registration, we ask you to describe a curricular aim.
+            Don't worry, each weekly unit will ask you to adopt this aim to the new
+            concepts and tasks of that week.
           </p>
 
-          <p>For help with the editor controls, click inside an editor and
-          press Alt+0.</p>
+          <small>For help with the editor controls, click inside an editor and
+          press Alt+0.</small>
+          {{ form.curricular_aim(id="aim-editor", rows=10, cols=50) }}
 
+          <br>
           <p>
-            Please tell us a typical curricular aim in your classroom...
-            <br>{{ form.curricular_aim(id="aim-editor", rows=10, cols=50) }}
+            Please introduce yourself briefly.  What is your professional role in
+            education? What is your interest in Educational Assessment? (This
+            information will be displayed for others to see only your WikiFolio
+            Home Page, and can be edited).
           </p>
 
-          <p>
-            Please introduce yourself briefly.  What is your professional
-            role?  What else is important about you?
-            <br>{{ form.introduction(id="intro-editor", rows=10, cols=50) }}
-          </p>
+          {{ form.introduction(id="intro-editor", rows=10, cols=50) }}
 
           <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
           {{ form.page }}
 
           <br>
-          <input class="gcb-button" type="submit" value="Submit the Pre-Assignment">
+          <input class="gcb-button" type="submit" value="Continue Registration">
         </form>
       </div>
     </div>

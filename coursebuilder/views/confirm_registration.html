@@ -24,6 +24,9 @@
     margin-bottom: 10px;
     padding: 5px;
   }
+  form ul, form li {
+    list-style-type: none;
+  }
 </style>
 
 {% endblock %}
@@ -32,12 +35,7 @@
 <div id="gcb-main">
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
-      <h1>Confirm your Registration</h1>
-
-      <div id="confirm-explain">
-        You're almost done!  Please let us know the following information, and you will
-        be completely registered!
-      </div>
+      <h1>Confirmation Page <small>(3 of 3)</small></h1>
 
       {% if form.errors %}
       <ul class="errors">
@@ -53,6 +51,41 @@
           <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
           {{ form.page }}
 
+          <div>There are several participation levels available for this course.</div>
+
+          <table>
+            <tr>
+              <th>Level</th>
+              <th>Cost</th>
+              <th>Hours per Week</th>
+              <th>Award for Completion</th>
+            </tr>
+            <tr>
+              <td>Badges</td>
+              <td>FREE</td>
+              <td>3 hours</td>
+              <td>Digital Badges awarded via Mozilla OBI</td>
+            </tr>
+            <tr>
+              <td>Instructor Certified</td>
+              <td><strike>$75 audit fee</strike> FREE for Fall 2013</td>
+              <td>3-5 hours</td>
+              <td>Digital Badges &amp; Signed Certificate of completion claiming 30 hours of coursework</td>
+            </tr>
+            <tr>
+              <td>For-Credit</td>
+              <td>Tuition for credit hours</td>
+              <td>10 hours</td>
+              <td>Digital Badges and University Credit on Transcript (claiming 45 hours of coursework)</td>
+            </tr>
+            </table>
+            
+            <div>To enroll for credit you will have to complete enrollment for
+              "P507 : Assessment in Schools", please <a
+                href="http://iuconnected.iu.edu/TakeabrnbspnbspCourse.aspx"
+                target="_blank"> visit IU ConnectED here</a> (click on Fall
+              2013 on the right).</div>
+
           <div>What will be your participation level in this course?
             <table>
               {% for level in form.participation_level %}
@@ -64,8 +97,24 @@
             </table>
           </div>
 
-          <div><label>{{ form.accept_terms }}
-              Do you accept the <a href="assets/content/terms_of_use.html" target="_blank">Terms of Use?</a></label>
+          <div>
+            To take this course, it's suggested that you purchase or rent the book
+            <i>Classroom Assessment: What Teachers Need to Know</i>.
+            Will you be purchasing a book?  If so, what format?<br>
+            {{ form.book_option }}
+          </div>
+          <div class="book_option_other">
+            If you selected "No Book," how will you research course concepts?<br>
+            {{ form.book_other }}
+          </div>
+
+          <div>
+            <label>{{ form.accept_terms }}
+              Do you accept the <a href="assets/content/terms_of_use.html"
+                target="_blank">Terms of Use?</a> (required)</label><br>
+            <label>{{ form.accept_location }}
+              Can your location (only State and Country) be displayed and used
+              to place you in a networking group? (recommended)</label>
           </div>
 
           <div align="right">
