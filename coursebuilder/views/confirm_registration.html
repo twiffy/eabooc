@@ -27,6 +27,9 @@
   form ul, form li {
     list-style-type: none;
   }
+  .reg-form td, .reg-form th {
+    vertical-align: middle;
+  }
 </style>
 
 {% endblock %}
@@ -51,8 +54,9 @@
           <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
           {{ form.page }}
 
-          <div>There are several participation levels available for this course.</div>
+          <div>There are several participation levels available for this course.  You will need to choose one.</div>
 
+          {% set levels = list(form.participation_level) %}
           <table>
             <tr>
               <th>Level</th>
@@ -61,41 +65,30 @@
               <th>Award for Completion</th>
             </tr>
             <tr>
-              <td>Badges</td>
+              <td><label>{{ levels[0] }}&nbsp;Badges</label></td>
               <td>FREE</td>
               <td>3 hours</td>
               <td>Digital Badges awarded via Mozilla OBI</td>
             </tr>
             <tr>
-              <td>Instructor Certified</td>
-              <td><strike>$75 audit fee</strike> FREE for Fall 2013</td>
+              <td style="white-space:nowrap;"><label>{{ levels[1] }}&nbsp;Instructor&nbsp;Certified</label></td>
+              <td><strike>$75 audit fee</strike><br>FREE for Fall 2013</td>
               <td>3-5 hours</td>
               <td>Digital Badges &amp; Signed Certificate of completion claiming 30 hours of coursework</td>
             </tr>
             <tr>
-              <td>For-Credit</td>
+              <td><label>{{ levels[2] }}&nbsp;For-Credit*</label></td>
               <td>Tuition for credit hours</td>
               <td>10 hours</td>
               <td>Digital Badges and University Credit on Transcript (claiming 45 hours of coursework)</td>
             </tr>
             </table>
             
-            <div>To enroll for credit you will have to complete enrollment for
-              "P507 : Assessment in Schools", please <a
+            <div>*To enroll for credit you will have to complete enrollment for
+              "P507 : Assessment in Schools," please <a
                 href="http://iuconnected.iu.edu/TakeabrnbspnbspCourse.aspx"
                 target="_blank"> visit IU ConnectED here</a> (click on Fall
               2013 on the right).</div>
-
-          <div>What will be your participation level in this course?
-            <table>
-              {% for level in form.participation_level %}
-              <tr>
-                <td>{{ level }}</td>
-                <td>{{ level.label }}</td>
-              </tr>
-              {% endfor %}
-            </table>
-          </div>
 
           <div>
             To take this course, it's suggested that you purchase or rent the book
@@ -118,8 +111,7 @@
           </div>
 
           <div align="right">
-            All done!  By pressing Confirm, you reserve a place for yourself in this course!<br>
-            <input class="gcb-button" type="submit" value="Confirm">
+            <input class="gcb-button" type="submit" value="Complete Registration">
           </div>
         </form>
       </div>

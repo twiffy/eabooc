@@ -43,14 +43,9 @@
         {% endfor %}
       </ul>
       {% endif %}
-      <p>
-        Your answers to these questions will be visible to the other
-        participants in the course.  They are a way to start a conversation,
-        as well as a start on the work of the course.
-      </p>
-
       <div class="reg-form">
         <form method="POST" action="confirm">
+          <h3>Your Curricular Aim</h3>
           <p>
             The core of Educational Assessment BOOC is focused on evolving a
             curricular aim that is unique to your role and experience in education.
@@ -60,10 +55,11 @@
           </p>
 
           <small>For help with the editor controls, click inside an editor and
-          press Alt+0.</small>
+            press Alt+0.</small><br>
           {{ form.curricular_aim(id="aim-editor", rows=10, cols=50) }}
 
           <br>
+          <h3>Your Introduction</h3>
           <p>
             Please introduce yourself briefly.  What is your professional role in
             education? What is your interest in Educational Assessment? (This
@@ -77,7 +73,7 @@
           {{ form.page }}
 
           <br>
-          <input class="gcb-button" type="submit" value="Continue Registration">
+          <div align="right"><input class="gcb-button" type="submit" value="Continue Registration"></div>
         </form>
       </div>
     </div>
@@ -86,13 +82,22 @@
 
 <script src="/assets/ckeditor/ckeditor.js"></script>
 <script>
-  var toRemove = 'contextmenu,tabletools,pastefromword,undo,image,magicline,format,indent,indentlist,list,styles,elementspath,maximize,stylescombo,resize';
+  var toRemove = 'contextmenu,magicline,elementspath,resize,tabletools';
+  toolbarGroups = [
+  { name: 'editing',     groups: [ 'spellchecker' ] },
+  { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+  { name: 'links' },
+  { name: 'document',	   groups: [ 'mode', ] },
+  { name: 'insert' },
+  ];
   CKEDITOR.replace("intro-editor", {
       allowedContent: 'a[href];b;i;p;',
+      toolbarGroups: toolbarGroups,
       removePlugins: toRemove,
     });
   CKEDITOR.replace("aim-editor", {
       allowedContent: 'a[href];b;i;p;',
+      toolbarGroups: toolbarGroups,
       removePlugins: toRemove,
     });
 </script>
