@@ -50,6 +50,7 @@
       <ol>
         {% for comment in comments %}
         <li>Comment by <a href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a>:
+        <a name="comment-{{ loop.index }}" title="permalink" href="{{ view_link }}#comment-{{ loop.index }}">¶</a>
         <br>{{ comment.text | safe }}</li>
         {% else %}
         <li><em>No comments yet.</em></li>

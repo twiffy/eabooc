@@ -1,15 +1,25 @@
 from models import models
 from google.appengine.ext import db
+import urllib
 import logging
 
 class WikiPage(models.BaseEntity):
     text = db.TextProperty()
+    title = db.StringProperty()
     unit = db.IntegerProperty()
     # keep update time?  keep history????
 
     @property
     def author(self):
         return self.parent()
+
+    @property
+    def link(self):
+        student = self.author.wiki_id
+        return 'wiki?' + urllib.urlencode({
+            'student': student,
+            'unit': self.unit,
+            'action': 'view'})
 
     @classmethod
     def query_by_student(cls, student):
@@ -39,6 +49,13 @@ class WikiPage(models.BaseEntity):
         if create and not page:
             return cls(key=key)
         return page
+
+    def is_endorsed(self):
+        return self.annotations.filter('why', 'endorse').count(limit=1) > 0
+
+    def is_exemplaried(self):
+        return self.annotations.filter('why', 'exemplary').count(limit=1) > 0
+
 
 class WikiComment(models.BaseEntity):
     author = db.ReferenceProperty(models.Student, collection_name="wiki_comments")

@@ -183,6 +183,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         query = self._get_query(user)
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
+        self.template_value['view_link'] = self._create_action_url(query, 'view')
 
         if not query:
             logging.info("404: query is not legit.")
@@ -319,6 +320,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['content'] = content
         self.render("wf_page.html")
 
+    def get_unit(self, unit_id):
+        units = self.get_units()
+        for unit in units:
+            if unit.unit_id == unit_id:
+                return unit
+
     def post_save(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
@@ -341,6 +348,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             old_text = page.text
             page.text = bleach_entry(self.request.get('text', ''))
             page.unit = query['unit']
+            page.title = self.get_unit(query['unit']).title
 
             page.put()
             EventEntity.record(
@@ -477,6 +485,8 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 })
 
         self.template_value['units'] = units
+
+        self.template_value['endorsements'] = student_model.own_annotations.filter('why IN', ['endorse', 'exemplary']).run(limit=10)
 
         self.render("wf_profile.html")
 

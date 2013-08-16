@@ -16,16 +16,28 @@
   <div class="gcb-cols">
     <div class="gcb-col-1">
     </div>
-    <div class="gcb-col-9 gcb-aside">
-      <div id="wf-page-list">
+    <div class="gcb-col-11 gcb-aside">
+      <div class="gcb-col-5" id="wf-page-list">
         Pages by {{ author_name }}:
         <ul>
           {% for unit in units %}
-          {% if unit.type == 'U' %}
+          {%   if unit.type == 'U' %}
+          {%     if unit._wiki_exists or editor_role %}
           <li><a href="{{unit._wiki_link}}">Unit {{ unit.unit_id }}: {{unit.title|safe}}</a>
-          {% if not unit._wiki_exists %}(not created yet){% endif %}</li>
-          {% endif %}
-
+          {%       if not unit._wiki_exists %}(not created yet){% endif %}</li>
+          {%     endif %}
+          {%   endif %}
+          {% else %}
+          (no pages yet)
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="gcb-col-5">
+        Recent endorsements and exemplaries by {{ author_name }}:
+        <ul>
+          {% for e in endorsements %}
+          <li>{% if e.why == 'exemplary' %}<span style="color: #fc0;">&#9733;</span>{%endif%}
+          <a href="{{ e.what.link }}">{{ e.what.title }}</a> by {{ e.what.author.name }} at {{ e.timestamp }}</li>
           {% endfor %}
         </ul>
       </div>
