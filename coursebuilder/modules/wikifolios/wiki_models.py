@@ -57,25 +57,27 @@ class Annotation(models.BaseEntity):
     who = db.ReferenceProperty(models.Student, collection_name="own_annotations")
     what = db.ReferenceProperty(collection_name="annotations")
 
-    # JSON data, format depends on the value of .action
-    data = db.TextProperty()
+    # for endorsements:
+    optional_parts_done = db.BooleanProperty()
+
+    # for exemplaries:
+    comment = db.ReferenceProperty(WikiComment, collection_name="exemplary_marks")
 
     @classmethod
-    def flag(cls, what, who, data=None):
+    def flag(cls, what, who):
         ann = Annotation()
         ann.why = 'flag'
         ann.who = who
         ann.what = what
-        ann.data = data
         ann.put()
 
     @classmethod
-    def endorse(cls, what, who, data=None):
+    def endorse(cls, what, who, optional_done):
         ann = Annotation()
         ann.why = 'endorse'
         ann.who = who
         ann.what = what
-        ann.data = data
+        ann.optional_parts_done = optional_done
         ann.put()
 
     @classmethod
@@ -88,12 +90,19 @@ class Annotation(models.BaseEntity):
         return q
 
     @classmethod
-    def exemplary(cls, what, who, data=None):
-        if data is None:
-            logging.info("prolly want more info in Exemplary")
+    def exemplary(cls, what, who, comment):
         ann = Annotation()
         ann.why = 'exemplary'
         ann.who = who
         ann.what = what
-        ann.data = data
+        ann.comment = comment
         ann.put()
+
+    @classmethod
+    def exemplaries(cls, what=None, who=None):
+        q = Annotation.all()
+        if what:
+            q.filter("what =", what)
+        if who:
+            q.filter("who =", who)
+        return q

@@ -35,6 +35,13 @@
       <input type="submit" name="all_done" class="gcb-button" value="the required AND optional parts"> of the assignment.
     </form>
     {% endif %}
+    {% for e in exemplaries %}
+    {% if loop.first %}<br><span style="font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
+    {% if loop.last and not loop.first %} and {% endif %}
+    <a href="wikiprofile?student={{ e.who.wiki_id }}">{{ e.who.name }}</a>{% if not loop.last%},{%endif%}
+    {% else %}<!-- no exemplaries -->
+    {% endfor %}
+
   </div>
   <div class="gcb-cols">
     <div class="gcb-col-1">
@@ -55,6 +62,9 @@
           <legend>Comment</legend>
           <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
           <textarea name="text" id="comment_editor" rows="10" cols="50"></textarea>
+          <p>
+          <label><input type="checkbox" name="exemplary"> Mark this assignment as exemplary</label>
+          <p>
           <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
           <input type="submit" value="Comment">
         </fieldset>

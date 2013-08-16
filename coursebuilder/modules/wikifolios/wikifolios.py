@@ -222,7 +222,10 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.template_value['endorsements'] = prefetch.prefetch_refprops(
                         Annotation.endorsements(page), Annotation.who)
 
+                self.template_value['exemplaries'] = Annotation.exemplaries(page)
+
                 if query['student'] == user.wiki_id:
+                    self.template_value['is_author'] = True
                     self.template_value['endorsement_view'] = 'author'
                 elif Annotation.endorsements(page, user).count(limit=1) > 0:
                     self.template_value['endorsement_view'] = 'has_endorsed'
@@ -263,16 +266,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             # fall through
         else:
             page = self._find_page(query)
-            if Annotation.endorsements(page, user).count() > 0:
+            if Annotation.endorsements(page, user).count(limit=1) > 0:
                 logging.warning("Attempt to mark complete multiple times.")
                 content = "You've already marked this page complete."
                 self.error(403)
             else:
-                if 'all_done' in self.request.POST:
-                    data = transforms.dumps({'all': True})
-                else:
-                    data = transforms.dumps({'all': True})
-                Annotation.endorse(page, user, data=data)
+                Annotation.endorse(page, user, 'all_done' in self.request.POST)
                 self.redirect(self._create_action_url(query, 'view'))
                 return
         self.template_value['content'] = content
@@ -380,6 +379,10 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     topic=page,
                     text=bleach_comment(self.request.get('text', '')))
             comment.put()
+
+            if (self.request.POST.get('exemplary', False)
+                    and query['student'] != user.wiki_id):
+                Annotation.exemplary(page, user, comment)
 
             self.redirect(self._create_action_url(query, 'view'))
             return
