@@ -2,23 +2,35 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
-<span id="wikifolio-links"><a href="students">&larr; All students</a></span>
-{% if editor_role %}
-<br><a href="{{edit_url}}">edit</a> as {{ editor_role }}
-{% endif %}
-<h1>{{ author_name }}</h1>
-<div>{{ content | safe }}</div>
-<div id="wf-page-list">
-  Pages by {{ author_name }}:
-  <ul>
-    {% for unit in units %}
-    {% if unit.type == 'U' %}
-    <li><a href="{{unit._wiki_link}}">Unit {{ unit.unit_id }}: {{unit.title|safe}}</a>
-    {% if not unit._wiki_exists %}(not created yet){% endif %}</li>
-    {% endif %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <span id="wikifolio-links"><a href="students">&larr; All students</a></span>
+    <div class="gcb-col-11 gcb-aside">
+      <h1>{{ author_name }}</h1>
+      {% if editor_role %}
+      <div><a href="{{edit_url}}">edit</a> as {{ editor_role }}</div>
+      {% endif %}
+      <div>{{ content | safe }}</div>
+    </div>
+  </div>
+  <div class="gcb-cols">
+    <div class="gcb-col-1">
+    </div>
+    <div class="gcb-col-9 gcb-aside">
+      <div id="wf-page-list">
+        Pages by {{ author_name }}:
+        <ul>
+          {% for unit in units %}
+          {% if unit.type == 'U' %}
+          <li><a href="{{unit._wiki_link}}">Unit {{ unit.unit_id }}: {{unit.title|safe}}</a>
+          {% if not unit._wiki_exists %}(not created yet){% endif %}</li>
+          {% endif %}
 
-    {% endfor %}
-  </ul>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
