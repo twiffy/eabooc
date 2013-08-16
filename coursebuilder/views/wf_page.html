@@ -12,7 +12,7 @@
       <h1>Unit {{ unit.unit_id }} - {{ unit.title | safe }} <small class="wiki-unit-link">
           <a href="unit?unit={{ unit.unit_id }}">(prompt)</a></small></h1>
       {% endif %}
-      <div>by <a href="{{ author_link }}">{{ author_name }}</a></div>
+      <div>by {{ author_link(author) }}</div>
       {{ content | safe }}
     </div>
   </div>

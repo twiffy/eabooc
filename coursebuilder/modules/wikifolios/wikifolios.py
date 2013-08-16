@@ -3,7 +3,7 @@ Wikifolios module for Google Course Builder
 """
 
 from models import custom_modules, transforms
-from models.models import Student, EventEntity
+from models.models import Student, EventEntity, MemcacheManager
 from models.roles import Roles
 from common import ckeditor, prefetch
 import bleach
@@ -11,14 +11,30 @@ import webapp2
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
 from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
 from google.appengine.api import users
+import filters
 import logging
 import urllib
 import wtforms as wtf
 
+NO_OBJECT = {}
+
+# Some folks go all the way from e.g. email->rendered link in the cache
+# Here's just the wiki_id->author object
 def get_student_by_wiki_id(wiki_id):
-    return (Student.all()
+    memcache_key = 'entity:student-by-wiki-id:%s' % wiki_id
+
+    student = MemcacheManager.get(memcache_key)
+    if NO_OBJECT == student:
+        return None
+    if not student:
+        student = (Student.all()
             .filter("wiki_id =", wiki_id)
             .get())
+        if student:
+            MemcacheManager.set(memcache_key, student)
+        else:
+            MemcacheManager.set(memcache_key, NO_OBJECT)
+    return student
 
 def student_profile_link(wiki_id):
     return "wikiprofile?" + urllib.urlencode({'student': wiki_id})
@@ -87,6 +103,7 @@ class WikiBaseHandler(BaseHandler):
     # I don't like how leaky this is, always having to check for the None return.
     def personalize_page_and_get_wiki_user(self):
         user = self.personalize_page_and_get_enrolled()
+        self.template_value['author_link'] = filters.author_link
         if not user or not self.assert_participant_or_fail(user):
             return
         return user
@@ -202,12 +219,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
 
             page = self._find_page(query)
+            self.template_value['author'] = get_student_by_wiki_id(query['student'])
             if page:
                 content = page.text
-                author_name = page.author.name
-                self.template_value['author_name'] = author_name
-                self.template_value['author_link'] = student_profile_link(
-                        query['student'])
                 self.template_value['comments'] = prefetch.prefetch_refprops(
                         page.comments.order("added_time").fetch(limit=1000),
                         WikiComment.author)
