@@ -8,6 +8,7 @@ from google.appengine.ext import db
 from google.appengine.api import users
 from common import mailchimp
 import logging
+from common import generalcounter
 
 # If true, don't redirect students away from the confirmation pages, even if
 # they are already fully registered.
@@ -45,7 +46,16 @@ class ConfirmationForm(wtf.Form):
     book_other = wtf.TextField()
     accept_location = wtf.BooleanField("Location", default=True)
 
+PARTICIPANT_COUNT = "participant-count"
+def get_student_count():
+    count = generalcounter.get_count(PARTICIPANT_COUNT)
+    if not count:
+        count = Student.all(keys_only=True).filter("is_participant", True).count(limit=10000)
+        generalcounter.increment(PARTICIPANT_COUNT, by=count)
+    return count
 
+def inc_student_count():
+    generalcounter.increment(PARTICIPANT_COUNT)
 
 def on_pre_assignment_submission(handler, user, form):
     submission = FormSubmission(form_name='pre', user=user)
@@ -75,6 +85,7 @@ def on_confirmation_submission(handler, user, form):
     if form.participation_level.data == u'for-credit':
         mailchimp.subscribe('for-credit', user.key().name(), user.name)
     mailchimp.unsubscribe('pre-reg', user.key().name())
+    inc_student_count()
 
     handler.redirect("wikiprofile?confirm=1&student=%d" % user.wiki_id)
 
@@ -132,6 +143,7 @@ class ConfirmationHandler(BaseHandler):
         self.template_value['navbar'] = {'registration': True}
         self.template_value['form'] = form
         self.template_value['list'] = list
+        self.template_value['student_count'] = get_student_count()
         self.template_value['xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('register-conf-post-' + self._page()))
         self.render(template)
@@ -153,6 +165,23 @@ class ConfirmationHandler(BaseHandler):
             # Validation errors will be included in the 'form' object
             self.do_render(form, self.templates[page])
 
+class StudentCountHandler(BaseHandler):
+    def get(self):
+        self.response.write('''
+            <html><body>
+            <center>
+            Current participant count is:<br>
+            <h1 style="font-size: 1000%;">''')
+
+        count = get_student_count()
+        self.response.write(count)
+        self.response.write('''
+            </h1>
+            </center></body></html>
+            ''')
+
+
+
 
 module = None
 
@@ -161,6 +190,7 @@ def register_module():
 
     handlers = [
             ('/confirm', ConfirmationHandler),
+            ('/enrollment', StudentCountHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("RegConf", "Registration Confirmation",
