@@ -335,6 +335,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.render("wf_page.html")
 
     def get_unit(self, unit_id):
+        unit_id = unicode(unit_id) # harrumph
         units = self.get_units()
         for unit in units:
             if unit.unit_id == unit_id:
