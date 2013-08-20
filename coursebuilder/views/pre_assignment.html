@@ -21,8 +21,21 @@
     margin-bottom: 10px;
     padding: 5px;
   }
+
+  p.example {
+    display: none;
+    border: solid thin #aaa;
+  }
 </style>
 
+<script>
+  $(document).ready(function() {
+    $(".example-link").click(function() {
+      $(this).next().toggle();
+      return false;
+    });
+  });
+</script>
 {% endblock %}
 
 {% block main_content %}
@@ -50,11 +63,18 @@
             The core of Educational Assessment BOOC is focused on evolving a
             curricular aim that is unique to your role and experience in education.
             As a part of Registration, we ask you to describe a curricular aim.
-            Don't worry, each weekly unit will ask you to adopt this aim to the new
+            Don't worry, each weekly unit will ask you to adapt this aim to the new
             concepts and tasks of that week.
           </p>
 
-          <small>For help with the editor controls, click inside an editor and
+          <a href="#" class="example-link">Click here to show an example Curricular Aim</a>
+          <p class="example">
+            To teach college-level students, for whom English is their second
+            language, how to write an informative synthesis paper using four
+            sources.
+          </p>
+
+          <br><small>For help with the editor controls, click inside an editor and
             press Alt+0.</small><br>
           {{ form.curricular_aim(id="aim-editor", rows=10, cols=50) }}
 
@@ -65,6 +85,19 @@
             education? What is your interest in Educational Assessment? (This
             information will be displayed for others to see only your WikiFolio
             Home Page, and can be edited).
+          </p>
+
+          <a href="#" class="example-link">Click here to show an example Introduction</a>
+          <p class="example">
+          Hi! I’m Tara Kelley, the Teaching Assistant to Dr. Dan Hickey for the
+          Educational Assessment BOOC. I have been working with Dan 2 ½ years
+          beginning with when I took this course online at Indiana University.
+          Taking the class changed my life – I added Learning Sciences as my
+          PhD minor and began studying assessment in the classes I teach. I am
+          a PhD student in Literacy, Culture, and Language Education and I
+          teach Elementary Composition for Multilingual Students. I also
+          research something called Productive Disciplinary Engagement, which I
+          can tell you about if you ask :)
           </p>
 
           {{ form.introduction(id="intro-editor", rows=10, cols=50) }}
