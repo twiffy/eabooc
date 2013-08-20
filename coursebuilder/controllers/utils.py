@@ -484,7 +484,7 @@ class RegisterHandler(BaseHandler):
 
             student.put()
 
-            mailchimp.subscribe_to_pre_reg(user.email(), student.name, self.request.remote_addr)
+            mailchimp.subscribe_to_pre_reg(user.email(), student.name)
 
             self.redirect('confirm')
             return
