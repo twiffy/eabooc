@@ -5,6 +5,9 @@ import logging
 import datetime
 import os
 
+# This module uses Michael Helmick's version of mailsnake
+# https://github.com/michaelhelmick/python-mailsnake
+
 MAILCHIMP_API_KEY = ConfigProperty(
         'mailchimp_api_key', str,
         """The API Key for MailChimp, used for adding
@@ -54,6 +57,13 @@ def subscribe_to_confirmed(email, name):
     except mailsnake.exceptions.MailSnakeException:
         logging.exception(
             'Failed to subscribe %s to confirmed-reg mailchimp list, ', email)
+
+
+# TODO: http://apidocs.mailchimp.com/api/1.3/listunsubscribe.func.php
+def unsubscribe_all(email):
+    pass
+
+
 
 def _do_subscribe(list_id, email, name):
     ip = os.environ["REMOTE_ADDR"]
