@@ -6,6 +6,8 @@ from models.models import Student
 from controllers.utils import BaseHandler, XsrfTokenManager
 from google.appengine.ext import db
 from google.appengine.api import users
+from common import mailchimp
+import os
 
 
 class FormSubmission(db.Expando):
@@ -63,6 +65,8 @@ def on_confirmation_submission(handler, user, form):
 
     user.is_participant = True
     user.put()
+
+    mailchimp.subscribe_to_confirmed(user.key().name(), user.name, os.environ["REMOTE_ADDR"])
 
     handler.redirect("wikiprofile")
 
