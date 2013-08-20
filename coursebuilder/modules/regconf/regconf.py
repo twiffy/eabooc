@@ -31,10 +31,10 @@ class ConfirmationForm(wtf.Form):
     page = wtf.HiddenField(default="conf")
     book_option = wtf.RadioField("Book Option",
             choices=[
+                ('courseload', 'CourseLoad (IU students MUST get the book this way, $38 through OnCourse)'),
                 ('paperback-7th', '7th edition paperback ($93 on Amazon)'),
                 ('paperback-6th', '6th edition paperback ($14 on Amazon)'),
                 ('coursesmart', 'CourseSmart (180-day e-text rental, $42)'),
-                ('courseload', 'CourseLoad (IU enrolled students only, $38 through OnCourse)'),
                 ('no-book', 'No Book'),
                 ])
     book_other = wtf.TextField()
