@@ -100,6 +100,7 @@ class Annotation(models.BaseEntity):
     @classmethod
     def endorsements(cls, what=None, who=None):
         q = Annotation.all()
+        q.filter("why =", "endorse")
         if what:
             q.filter("what =", what)
         if who:
@@ -118,6 +119,7 @@ class Annotation(models.BaseEntity):
     @classmethod
     def exemplaries(cls, what=None, who=None):
         q = Annotation.all()
+        q.filter("why =", "exemplary")
         if what:
             q.filter("what =", what)
         if who:
