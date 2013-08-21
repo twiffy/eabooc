@@ -28,9 +28,17 @@ MAILCHIMP_CONFIRMED_LIST_ID = ConfigProperty(
         Set to None to disable this subscription.""",
         '')
 
-def subscribe_to_pre_reg(email, name):
+list_ids = {
+        'pre-reg': MAILCHIMP_PRE_REG_LIST_ID,
+        'confirmed': MAILCHIMP_CONFIRMED_LIST_ID,
+        }
+
+def subscribe(list_name, email, name):
     try:
-        list_id = MAILCHIMP_PRE_REG_LIST_ID.value
+        list_id_prop = list_ids.get(list_name, None)
+        list_id = None
+        if list_id_prop:
+            list_id = list_id_prop.value
         if not list_id:
             logging.debug(
                     'MailChimp: No pre-reg list id configured, not subscribing.')
@@ -42,22 +50,6 @@ def subscribe_to_pre_reg(email, name):
     except mailsnake.exceptions.MailSnakeException:
         logging.exception(
             'Failed to subscribe %s to pre-registration mailchimp list, ', email)
-
-def subscribe_to_confirmed(email, name):
-    try:
-        list_id = MAILCHIMP_CONFIRMED_LIST_ID.value
-        if not list_id:
-            logging.debug(
-                    'MailChimp: No confirmed-reg list id configured, not subscribing.')
-            return
-        success = _do_subscribe(list_id, email, name)
-        if not success:
-            logging.warning(
-                'Failed to subscribe %s to confirmed-reg mailchimp list', email)
-    except mailsnake.exceptions.MailSnakeException:
-        logging.exception(
-            'Failed to subscribe %s to confirmed-reg mailchimp list, ', email)
-
 
 # TODO: http://apidocs.mailchimp.com/api/1.3/listunsubscribe.func.php
 def unsubscribe_all(email):

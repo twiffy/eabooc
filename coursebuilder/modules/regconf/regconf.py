@@ -65,7 +65,7 @@ def on_confirmation_submission(handler, user, form):
     user.is_participant = True
     user.put()
 
-    mailchimp.subscribe_to_confirmed(user.key().name(), user.name)
+    mailchimp.subscribe('confirmed', user.key().name(), user.name)
 
     handler.redirect("wikiprofile")
 
