@@ -28,9 +28,18 @@ MAILCHIMP_CONFIRMED_LIST_ID = ConfigProperty(
         Set to None to disable this subscription.""",
         '')
 
+MAILCHIMP_FOR_CREDIT_LIST_ID = ConfigProperty(
+        'mailchimp_for_credit_list_id', str,
+        """The List ID of the MailChimp list that
+        contains everyone who has indicated they are
+        registered for credit.
+        Set to None to disable this subscription.""",
+        '')
+
 list_ids = {
         'pre-reg': MAILCHIMP_PRE_REG_LIST_ID,
         'confirmed': MAILCHIMP_CONFIRMED_LIST_ID,
+        'for-credit': MAILCHIMP_FOR_CREDIT_LIST_ID,
         }
 
 def subscribe(list_name, email, name):
