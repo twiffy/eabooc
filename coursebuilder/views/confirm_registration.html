@@ -54,33 +54,42 @@
           <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
           {{ form.page }}
 
-          <div>There are several participation levels available for this course.  You will need to choose one.</div>
+          <div>You can take this course for digital badges, a certificate,
+            and/or three graduate-level credits from Indiana University.  Each
+            level includes the credentials from the previous levels.</div>
 
           {% set levels = list(form.participation_level) %}
           <table>
             <tr>
               <th>Level</th>
               <th>Cost</th>
-              <th>Hours per Week</th>
-              <th>Award for Completion</th>
+              <th>Likely Commitment</th>
+              <th>Credential</th>
             </tr>
             <tr>
               <td><label>{{ levels[0] }}&nbsp;Badges</label></td>
               <td>FREE</td>
-              <td>3 hours</td>
-              <td>Digital Badges awarded via Mozilla Open Badge Initiative</td>
+              <td>At least 3 hours a week.<br>Complete all required parts of assignments.</td>
+              <td>Four web-enabled digital badges, containing detailed
+                information about the course and what you had to do to earn
+                them</td>
             </tr>
             <tr>
               <td style="white-space:nowrap;"><label>{{ levels[1] }}&nbsp;Instructor&nbsp;Certified</label></td>
-              <td><strike>$75 audit fee</strike><br>FREE for Fall 2013</td>
-              <td>3-5 hours</td>
-              <td>Digital Badges and Signed Certificate of Completion of 30 hours of coursework</td>
+              <td><strike>$75 audit fee</strike><br>FREE in 2013, thanks to a grant from Google</td>
+              <td>At least 3 hours a week.<br>Complete all required parts of assignments.</td>
+              <td>Digital badges and a signed certificate of completion indicating that
+                the earner completed at least 30 hours of graduate level coursework.</td>
             </tr>
             <tr>
-              <td><label>{{ levels[2] }}&nbsp;For-Credit*</label></td>
-              <td>Tuition for credit hours</td>
-              <td>10 hours</td>
-              <td>Digital Badges and University Credit on Transcript for 45 hours of coursework</td>
+              <td><label>{{ levels[2] }}&nbsp;Official Graduate Credit*</label></td>
+              <td>IU Tuition plus the cost of the Courseload e-book</td>
+              <td>At least ten hours per week.  Complete required and optional
+                parts of all assignments and interact with instructor
+                weekly.</td>
+              <td>Digital badges, certificate of completion, and 3 official graduate-level
+                credits from Indiana University.  This counts for 45 hours of educator
+                professional development in Indiana and many other states.</td>
             </tr>
             </table>
             
@@ -88,16 +97,23 @@
               "P507 : Assessment in Schools," please <a
                 href="http://iuconnected.iu.edu/TakeabrnbspnbspCourse.aspx"
                 target="_blank"> visit IU ConnectED here</a> (click on Fall
-              2013 on the right).</div>
+              2013 on the right).  At this time, Indiana University charges
+              residents of other states and countries the same discounted
+              in-state tuition rate that Indiana residents pay.</div>
 
           <div>
-            To take this course, it's suggested that you purchase or rent the book
-            <i>Classroom Assessment: What Teachers Need to Know</i>.
-            Will you be purchasing a book?  If so, what format?<br>
+            This course is organized around the book <i>Classroom Assessment:
+              What Teachers Need to Know</i> by James Popham.  You are strongly
+            encouraged to purchase the current 7th Edition (2014).  Some (but
+            not all) chapters were completely rewritten for the 7th Edition.
+            If you use the 6th edition, you will need to draw from your
+            classmates' wikifolios.  What do you expect to do?<br>
             {{ form.book_option }}
           </div>
           <div class="book_option_other">
-            If you selected "No Book," how will you research course concepts?<br>
+            If you selected "no book," please indicate how you might search for
+            information about the core concepts and big ideas in each chapter
+            (Google, classmates' assignments, a different textbook, etc.)<br>
             {{ form.book_other }}
           </div>
 
