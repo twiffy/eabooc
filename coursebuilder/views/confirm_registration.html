@@ -30,7 +30,33 @@
   .reg-form td, .reg-form th {
     vertical-align: middle;
   }
+
+  label.disabled {
+    color: #999;
+  }
 </style>
+
+<script>
+  $(document).ready(function() {
+    function updateBooks() {
+      isForCredit = $('input:radio[value="for-credit"]').attr('checked');
+
+      bookChoices = $('input:radio[name="book_option"]');
+      bookChoices.removeAttr('disabled');
+      $('label.disabled').removeClass('disabled');
+      if (isForCredit) {
+        bookChoices.filter('[value="courseload"]').click();
+        bookChoices.filter('[value!="courseload"]').attr('disabled', true).next('label').addClass('disabled')
+      } else {
+        bookChoices.filter('[value="courseload"]').attr('disabled', true).attr('checked', false).next('label').addClass('disabled');
+      }
+    }
+
+    updateBooks();
+    $('input:radio[name="participation_level"]').click(updateBooks);
+  });
+
+</script>
 
 {% endblock %}
 
