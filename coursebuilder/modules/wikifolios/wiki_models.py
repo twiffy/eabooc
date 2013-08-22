@@ -80,12 +80,16 @@ class Annotation(models.BaseEntity):
     # for exemplaries:
     comment = db.ReferenceProperty(WikiComment, collection_name="exemplary_marks")
 
+    # for flags:
+    reason = db.StringProperty()
+
     @classmethod
-    def flag(cls, what, who):
+    def flag(cls, what, who, reason):
         ann = Annotation()
         ann.why = 'flag'
         ann.who = who
         ann.what = what
+        ann.reason = reason
         ann.put()
 
     @classmethod
