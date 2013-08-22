@@ -8,6 +8,9 @@ from google.appengine.ext import db
 from google.appengine.api import users
 from common import mailchimp
 
+# If true, don't redirect students away from the confirmation pages, even if
+# they are already fully registered.
+DEBUG_CONFIRMATION = False
 
 class FormSubmission(db.Expando):
     form_name = db.StringProperty()
@@ -106,7 +109,7 @@ class ConfirmationHandler(BaseHandler):
             # there is a user, but they are not enrolled
             self.redirect('/register')
             return
-        if user.is_participant:
+        if user.is_participant and not DEBUG_CONFIRMATION:
             # the user has *already* filled out this form
             self.redirect('/course')
             return
