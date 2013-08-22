@@ -115,7 +115,7 @@ base:
   before_body_tag_ends: '<!-- base.before_body_tag_ends -->'
 
   # Whether to show a G+ button on the header of all pages.
-  show_gplus_button: True
+  show_gplus_button: False
 
   # Header phrase for the main navigation bar
   nav_header:  'Educational Assessment:<br>Practices, Principles, and Policies'
