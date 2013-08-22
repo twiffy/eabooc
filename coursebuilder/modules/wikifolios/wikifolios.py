@@ -170,6 +170,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             data = form.data
         else:
             # TODO maybe log why it's not good
+            self.template_value['content'] = 'Sorry, that page was not found.'
+            self.error(403)
             data = None
 
         if data and not data['student'] and user:
@@ -304,7 +306,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.redirect(self._create_action_url(query, 'view'))
                 return
         self.template_value['content'] = content
-        self.render("wf_page.html")
+        self.render("bare.html")
 
 
     def get_edit(self):
@@ -319,7 +321,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not query:
             logging.info("404: query is not legit.")
             self.template_value['content'] = "The page you requested could not be found."
-            self.render("wf_page.html")
+            self.render("bare.html")
             self.error(404)
             return
 
@@ -337,9 +339,10 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.render("wf_edit.html")
             return
         self.template_value['content'] = content
-        self.render("wf_page.html")
+        self.render("bare.html")
 
     def get_unit(self, unit_id):
+        # TODO find_unit_by_id??
         unit_id = unicode(unit_id) # harrumph
         units = self.get_units()
         for unit in units:
@@ -381,7 +384,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                         }))
             self.redirect(self._create_action_url(query, 'view'))
             return
-        self.render("wf_page.html")
+        self.render("bare.html")
 
     def post_comment(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -414,7 +417,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
             self.redirect(self._create_action_url(query, 'view'))
             return
-        self.render("wf_page.html")
+        self.render("bare.html")
 
 
 class WikiProfileListHandler(WikiBaseHandler):
@@ -466,7 +469,8 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     self._create_action_url, form.data)
             return form.data
         else:
-            # TODO maybe log why it's not good
+            self.template_value['content'] = 'Sorry, that student was not found.'
+            self.error(404)
             return None
 
     def get_view(self):
@@ -474,12 +478,17 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not user:
             return
         query = self._get_query()
-        if not query['student']:
+        if not query or not query['student']:
             self.redirect("wikiprofile?" + urllib.urlencode({
                 'student': user.wiki_id}))
             return
 
         student_model = get_student_by_wiki_id(query['student'])
+        if not student_model:
+            self.template_value['content'] = 'Sorry, that student was not found.'
+            self.error(404)
+            self.render('bare.html')
+            return
 
         self.template_value['author_name'] = student_model.name
         self.template_value['author_link'] = student_profile_link(
@@ -524,7 +533,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         editor_role = self._editor_role(query, user, set_error=True)
         if not editor_role:
-            self.render("wf_page.html")
+            self.render("bare.html")
             return
 
         self.template_value['ckeditor_allowed_content'] = (
@@ -572,7 +581,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                         }))
             self.redirect(self._create_action_url(query, 'view'))
             return
-        self.render("wf_page.html")
+        self.render("bare.html")
 
 
 module = None
