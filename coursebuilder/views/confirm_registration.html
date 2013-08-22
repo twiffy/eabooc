@@ -66,6 +66,8 @@
     <div class="gcb-aside">
       <h1>Confirmation Page <small>(3 of 3)</small></h1>
 
+      <a href="confirm?page=pre">&larr; back to page 2</a>
+
       {% if form.errors %}
       <ul class="errors">
         {% for field_name, field_errors in form.errors|dictsort if field_errors %}
