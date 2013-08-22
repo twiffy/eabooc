@@ -14,6 +14,7 @@ from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
 from google.appengine.api import users
 import filters
 import logging
+import functools
 import urllib
 import wtforms as wtf
 
@@ -208,7 +209,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         query = self._get_query(user)
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
-        self.template_value['view_link'] = self._create_action_url(query, 'view')
 
         if not query:
             logging.info("404: query is not legit.")
@@ -222,11 +222,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.error(403)
             # fall through
         else:
+            self.template_value['action_url'] = functools.partial(
+                    self._create_action_url, query)
             editor_role = self._editor_role(query, user)
             self.template_value['editor_role'] = editor_role
             if editor_role != 'author':
                 self.template_value['navbar'] = {'participants': True}
-            self.template_value['edit_url'] = self._create_action_url(query, 'edit')
             self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
 
             page = self._find_page(query)
@@ -243,7 +244,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                             ckeditor.allowed_content(COMMENT_TAGS,
                                 COMMENT_ATTRIBUTES, COMMENT_STYLES))
                     self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
-                    self.template_value['comment_url'] = self._create_action_url(query, 'comment')
 
                 self.template_value['endorsements'] = prefetch.prefetch_refprops(
                         Annotation.endorsements(page), Annotation.who)
@@ -258,7 +258,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 else:
                     self.template_value['endorsement_view'] = 'can_endorse'
                     self.template_value['endorse_xsrf_token'] = self.create_xsrf_token('endorse')
-                    self.template_value['endorse_url'] = self._create_action_url(query, 'endorse')
 
             else:
                 content = "The page you requested could not be found."
@@ -314,6 +313,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 ckeditor.allowed_content(ALLOWED_TAGS,
                     ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
         self.template_value['content'] = ''
+        self.template_value['action_url'] = functools.partial(
+                self._create_action_url, query)
 
         if not query:
             logging.info("404: query is not legit.")
@@ -341,7 +342,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     query['student'])
             self.template_value['content'] = content
             self.template_value['xsrf_token'] = self.create_xsrf_token('save')
-            self.template_value['save_url'] = self._create_action_url(query, 'save')
             self.render("wf_edit.html")
             return
         self.template_value['content'] = content
@@ -397,7 +397,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.render("wf_page.html")
 
     def post_comment(self):
-        logging.warning("In comment handler")
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -415,6 +414,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             # fall through
         else:
             page = self._find_page(query)
+            # TODO: use wtforms for comments
             comment = WikiComment(
                     author=user,
                     topic=page,
@@ -490,6 +490,8 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 'student': user.wiki_id}))
             return
 
+        self.template_value['action_url'] = functools.partial(
+                self._create_action_url, query)
         student_model = get_student_by_wiki_id(query['student'])
 
         self.template_value['navbar'] = {'wiki': True}
@@ -507,7 +509,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['editor_role'] = editor_role
         if editor_role != 'author':
             self.template_value['navbar'] = {'participants': True}
-        self.template_value['edit_url'] = self._create_action_url(query, 'edit')
 
         units = self.get_units()
         pages = WikiPage.query_by_student(student_model).run(limit=100)
@@ -538,6 +539,8 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             return
 
         self.template_value['navbar'] = {'wiki': True}
+        self.template_value['action_url'] = functools.partial(
+                self._create_action_url, query)
 
         editor_role = self._editor_role(query, user)
         if not editor_role:
@@ -558,7 +561,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 query['student'])
 
         self.template_value['xsrf_token'] = self.create_xsrf_token('save')
-        self.template_value['save_url'] = self._create_action_url(query, 'save')
 
         profile_page = WikiPage.get_page(user=user, unit=None)
         if profile_page:

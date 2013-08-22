@@ -17,7 +17,7 @@
 {% endif %}
 <span id="wikifolio-links"><a href="students">&larr; All students</a></span>
 <h1>{{ author_name }}</h1>
-<form method="POST" action="{{ save_url }}">
+<form method="POST" action="{{ action_url('save') }}">
   <input type="hidden" name="xsrf_token" value="{{xsrf_token}}">
   
   <textarea id="editor" cols="50" rows="20" name="text">{{ content | safe }}</textarea>

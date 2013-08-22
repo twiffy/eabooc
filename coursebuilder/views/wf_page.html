@@ -3,7 +3,7 @@
 {% endblock %}
 {% block main_content %}
 {% if editor_role and can_do_assignments %}
-<a href="{{edit_url}}">edit</a> as {{ editor_role }}
+<a href="{{action_url('edit')}}">edit</a> as {{ editor_role }}
 {% endif %}
 <div class="gcb-aux">
   <div class="gcb-cols">
@@ -28,7 +28,7 @@
     {% if endorsement_view == 'has_endorsed' %}
     You have marked this page as complete.
     {% elif endorsement_view == 'can_endorse' %}
-    <form action="{{ endorse_url }}" method=POST>
+    <form action="{{ action_url('endorse') }}" method=POST>
       <input type="hidden" name="xsrf_token" value="{{ endorse_xsrf_token }}">
       Click here to endorse that the author has completed
       <input type="submit" name="required_done" class="gcb-button" value="the required parts">, or
@@ -48,7 +48,7 @@
       <ol>
         {% for comment in comments %}
         <li>Comment by <a href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a>:
-        <a name="comment-{{ loop.index }}" title="permalink" href="{{ view_link }}#comment-{{ loop.index }}">¶</a>
+        <a name="comment-{{ loop.index }}" title="permalink" href="{{ action_url('view') }}#comment-{{ loop.index }}">¶</a>
         <br>{{ comment.text | safe }}</li>
         {% else %}
         <li><em>No comments yet.</em></li>
@@ -56,7 +56,7 @@
       </ol>
 
       {% if can_comment %}
-      <form action="{{ comment_url }}" method="POST">
+      <form action="{{ action_url('comment') }}" method="POST">
         <fieldset>
           <legend>Comment</legend>
           <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
