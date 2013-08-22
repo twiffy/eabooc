@@ -417,7 +417,7 @@ class WikiProfileListHandler(WikiBaseHandler):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
-        self.template_value['navbar'] = {'wiki': True}
+        self.template_value['navbar'] = {'participants': True}
 
         # will need to cache this somehow.
         student_list = Student.all()
@@ -587,7 +587,7 @@ def register_module():
     handlers = [
             ('/wiki', WikiPageHandler),
             ('/wikiprofile', WikiProfileHandler),
-            ('/students', WikiProfileListHandler),
+            ('/participants', WikiProfileListHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",

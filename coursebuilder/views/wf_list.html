@@ -2,13 +2,19 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
-<h1>Enrolled Students</h1>
-<div id="wf-page-list">
-  <ul>
-    {% for student in students %}
-    <li><a href="wikiprofile?student={{student.wiki_id}}">{{ student.name }}</a>
-    {% endfor %}
-  </ul>
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <h1>Participants</h1>
+      <div id="wf-page-list">
+        <ul>
+          {% for student in students %}
+          <li><a href="wikiprofile?student={{student.wiki_id}}">{{ student.name }}</a>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
