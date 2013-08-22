@@ -440,6 +440,7 @@ class WikiProfileListHandler(WikiBaseHandler):
         # will need to cache this somehow.
         student_list = Student.all()
         student_list.filter('is_enrolled =', True)
+        student_list.filter('is_participant =', True)
         student_list.order('name')
 
         # our course is capped at 500 students, so...
