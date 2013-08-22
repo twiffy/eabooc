@@ -119,17 +119,25 @@ class WikiBaseHandler(BaseHandler):
             return
         return user
 
-    def _editor_role(self, query, current_student):
+    def _editor_role(self, query, current_student, set_error=False, template=True):
         if current_student:
             assert current_student.key().name() == users.get_current_user().email()
         is_author = (current_student
                 and current_student.wiki_id == query['student']
                 and current_student.is_enrolled)
+        role = None
         if is_author:
-            return 'author'
+            role = 'author'
         elif Roles.is_course_admin(self.app_context):
-            return 'admin'
-        return None
+            role = 'admin'
+        if template:
+            self.template_value['editor_role'] = role
+            if role != 'author':
+                self.template_value['navbar'] = {'participants': True}
+        if set_error and not role:
+            self.template_value['content'] = "You cannot edit this page."
+            self.error(403)
+        return role
 
     def _create_action_url(self, query, action="view"):
         params = dict(query)
@@ -225,9 +233,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['action_url'] = functools.partial(
                     self._create_action_url, query)
             editor_role = self._editor_role(query, user)
-            self.template_value['editor_role'] = editor_role
-            if editor_role != 'author':
-                self.template_value['navbar'] = {'participants': True}
             self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
 
             page = self._find_page(query)
@@ -320,18 +325,10 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.error(404)
             return
 
-        editor_role = self._editor_role(query, user)
-        if not editor_role:
-            content = "You are not allowed to edit this student's wiki."
-            self.error(403)
-            # fall through
-        else:
+        if self._editor_role(query, user, set_error=True):
             # We call with create=True to eliminate a conditional on how
             # to set the author_name later.  But we don't .put() it.
             page = self._find_page(query, create=True)
-            self.template_value['editor_role'] = editor_role
-            if editor_role != 'author':
-                self.template_value['navbar'] = {'participants': True}
             content = page.text or ''
 
             self.template_value['author_name'] = page.author.name
@@ -362,17 +359,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             content = "You can't do that."
             self.error(403)
             # fall through
-        elif not self._editor_role(query, user):
-            logging.warning("Attempt to edit someone else's wiki")
-            content = "You are not allowed to edit this student's wiki."
-            self.error(403)
-            # fall through
         elif not STUDENTS_CAN_DO_ASSIGNMENTS.value:
             logging.warning("Assignments not yet open (STUDENTS_CAN_DO_ASSIGNMENTS is false)")
             content = "Assignments are not yet available."
             self.error(403)
             # fall through
-        else:
+        elif self._editor_role(query, user, set_error=True):
             page = self._find_page(query, create=True)
 
             old_text = page.text
@@ -502,9 +494,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['content'] = "This user has not created a profile yet."
 
         editor_role = self._editor_role(query, user)
-        self.template_value['editor_role'] = editor_role
-        if editor_role != 'author':
-            self.template_value['navbar'] = {'participants': True}
 
         units = self.get_units()
         pages = WikiPage.query_by_student(student_model).run(limit=100)
@@ -537,14 +526,11 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['action_url'] = functools.partial(
                 self._create_action_url, query)
 
-        editor_role = self._editor_role(query, user)
+        editor_role = self._editor_role(query, user, set_error=True)
         if not editor_role:
-            self.template_value['content'] = "You are not allowed to edit this student's wiki."
             self.render("wf_page.html")
-            self.error(403)
             return
 
-        self.template_value['editor_role'] = editor_role
         self.template_value['ckeditor_allowed_content'] = (
                 ckeditor.allowed_content(ALLOWED_TAGS,
                     ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
@@ -574,12 +560,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             content = "You can't do that."
             self.error(403)
             # fall through
-        elif not self._editor_role(query, user):
-            logging.warning("Attempt to edit someone else's wiki")
-            content = "You are not allowed to edit this student's wiki."
-            self.error(403)
-            # fall through
-        else:
+        elif self._editor_role(query, user, set_error=True):
             page = WikiPage.get_page(user=user, unit=None, create=True)
 
             old_text = page.text
