@@ -111,6 +111,8 @@ class WikiBaseHandler(BaseHandler):
     # I don't like how leaky this is, always having to check for the None return.
     def personalize_page_and_get_wiki_user(self):
         user = self.personalize_page_and_get_enrolled()
+        self.template_value['navbar'] = {'wiki': True}
+        self.template_value['content'] = ''
         self.template_value['author_link'] = filters.author_link
         self.template_value['can_do_assignments'] = STUDENTS_CAN_DO_ASSIGNMENTS.value
         if not user or not self.assert_participant_or_fail(user):
@@ -207,8 +209,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not user:
             return
         query = self._get_query(user)
-        self.template_value['navbar'] = {'wiki': True}
-        self.template_value['content'] = ''
 
         if not query:
             logging.info("404: query is not legit.")
@@ -271,7 +271,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not user:
             return
         query = self._get_query(user)
-        self.template_value['navbar'] = {'wiki': True}
         content = ''
 
         if not query:
@@ -308,11 +307,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not user:
             return
         query = self._get_query(user)
-        self.template_value['navbar'] = {'wiki': True}
         self.template_value['ckeditor_allowed_content'] = (
                 ckeditor.allowed_content(ALLOWED_TAGS,
                     ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
-        self.template_value['content'] = ''
         self.template_value['action_url'] = functools.partial(
                 self._create_action_url, query)
 
@@ -494,7 +491,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self._create_action_url, query)
         student_model = get_student_by_wiki_id(query['student'])
 
-        self.template_value['navbar'] = {'wiki': True}
         self.template_value['author_name'] = student_model.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
@@ -538,7 +534,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 'student': user.wiki_id}))
             return
 
-        self.template_value['navbar'] = {'wiki': True}
         self.template_value['action_url'] = functools.partial(
                 self._create_action_url, query)
 
