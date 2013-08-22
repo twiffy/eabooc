@@ -27,6 +27,8 @@ from common import tags
 from controllers import sites
 from models import custom_modules
 
+# Needs to be before .admin for its ConfigProperty to be registered
+import modules.wikifolios.wikifolios
 import modules.admin.admin
 import modules.announcements.announcements
 import modules.courses.courses
@@ -34,7 +36,6 @@ import modules.dashboard.dashboard
 import modules.oauth2.oauth2
 import modules.oeditor.oeditor
 import modules.review.review
-import modules.wikifolios.wikifolios
 import modules.csv.student_csv
 import modules.regconf.regconf
 

@@ -2,7 +2,7 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
-{% if editor_role %}
+{% if editor_role and can_do_assignments %}
 <a href="{{edit_url}}">edit</a> as {{ editor_role }}
 {% endif %}
 <div class="gcb-aux">

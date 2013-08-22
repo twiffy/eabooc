@@ -18,6 +18,7 @@
     <div class="gcb-col-11 gcb-aside">
       <div class="gcb-col-5" id="wf-page-list">
         {{ author_name }}'s Wikifolio:
+        {% if can_do_assignments %}
         <ul>
           {% for unit in units %}
           {%   if unit.type == 'U' %}
@@ -30,6 +31,9 @@
           (no pages yet)
           {% endfor %}
         </ul>
+        {% else %}
+        <p><em>(Wikifolios will become available when the course starts)</em></p>
+        {% endif %}
       </div>
       <div class="gcb-col-5">
         Recent activity by {{ author_name }}:

@@ -3,6 +3,7 @@ Wikifolios module for Google Course Builder
 """
 
 from models import custom_modules, transforms
+from models.config import ConfigProperty
 from models.models import Student, EventEntity, MemcacheManager
 from models.roles import Roles
 from common import ckeditor, prefetch
@@ -17,6 +18,12 @@ import urllib
 import wtforms as wtf
 
 NO_OBJECT = {}
+
+STUDENTS_CAN_DO_ASSIGNMENTS = ConfigProperty(
+        'students_can_do_assignments', bool,
+        """Whether to allow students to create and edit pages on their
+        wikifolios, other than their profiles.""",
+        True)
 
 # Some folks go all the way from e.g. email->rendered link in the cache
 # Here's just the wiki_id->author object
@@ -104,6 +111,7 @@ class WikiBaseHandler(BaseHandler):
     def personalize_page_and_get_wiki_user(self):
         user = self.personalize_page_and_get_enrolled()
         self.template_value['author_link'] = filters.author_link
+        self.template_value['can_do_assignments'] = STUDENTS_CAN_DO_ASSIGNMENTS.value
         if not user or not self.assert_participant_or_fail(user):
             return
         return user
@@ -360,6 +368,11 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         elif not self._editor_role(query, user):
             logging.warning("Attempt to edit someone else's wiki")
             content = "You are not allowed to edit this student's wiki."
+            self.error(403)
+            # fall through
+        elif not STUDENTS_CAN_DO_ASSIGNMENTS.value:
+            logging.warning("Assignments not yet open (STUDENTS_CAN_DO_ASSIGNMENTS is false)")
+            content = "Assignments are not yet available."
             self.error(403)
             # fall through
         else:
