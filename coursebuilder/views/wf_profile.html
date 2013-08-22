@@ -17,7 +17,7 @@
     </div>
     <div class="gcb-col-11 gcb-aside">
       <div class="gcb-col-5" id="wf-page-list">
-        Pages by {{ author_name }}:
+        {{ author_name }}'s Wikifolio:
         <ul>
           {% for unit in units %}
           {%   if unit.type == 'U' %}
@@ -32,7 +32,7 @@
         </ul>
       </div>
       <div class="gcb-col-5">
-        Recent endorsements and exemplaries by {{ author_name }}:
+        Recent activity by {{ author_name }}:
         <ul>
           {% for e in endorsements %}
           <li>{% if e.why == 'exemplary' %}<span style="color: #fc0;">&#9733;</span>{%endif%}
