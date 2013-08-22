@@ -175,6 +175,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if data and not data['student'] and user:
             data['student'] = user.wiki_id
 
+        self.template_value['action_url'] = functools.partial(
+                self._create_action_url, data)
         return data
 
     def _find_page(self, query, create=False):
@@ -230,8 +232,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.error(403)
             # fall through
         else:
-            self.template_value['action_url'] = functools.partial(
-                    self._create_action_url, query)
             editor_role = self._editor_role(query, user)
             self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
 
@@ -315,8 +315,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['ckeditor_allowed_content'] = (
                 ckeditor.allowed_content(ALLOWED_TAGS,
                     ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
-        self.template_value['action_url'] = functools.partial(
-                self._create_action_url, query)
 
         if not query:
             logging.info("404: query is not legit.")
@@ -464,6 +462,8 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         # TODO: maybe do redirects to ?student= from here?
         form = self._NavForm(self.request.params)
         if form.validate():
+            self.template_value['action_url'] = functools.partial(
+                    self._create_action_url, form.data)
             return form.data
         else:
             # TODO maybe log why it's not good
@@ -479,8 +479,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 'student': user.wiki_id}))
             return
 
-        self.template_value['action_url'] = functools.partial(
-                self._create_action_url, query)
         student_model = get_student_by_wiki_id(query['student'])
 
         self.template_value['author_name'] = student_model.name
@@ -523,8 +521,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 'student': user.wiki_id}))
             return
 
-        self.template_value['action_url'] = functools.partial(
-                self._create_action_url, query)
 
         editor_role = self._editor_role(query, user, set_error=True)
         if not editor_role:
