@@ -214,7 +214,10 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.error(403)
             # fall through
         else:
-            self.template_value['editor_role'] = self._editor_role(query, user)
+            editor_role = self._editor_role(query, user)
+            self.template_value['editor_role'] = editor_role
+            if editor_role != 'author':
+                self.template_value['navbar'] = {'participants': True}
             self.template_value['edit_url'] = self._create_action_url(query, 'edit')
             self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
 
@@ -321,6 +324,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             # to set the author_name later.  But we don't .put() it.
             page = self._find_page(query, create=True)
             self.template_value['editor_role'] = editor_role
+            if editor_role != 'author':
+                self.template_value['navbar'] = {'participants': True}
             content = page.text or ''
 
             self.template_value['author_name'] = page.author.name
@@ -484,7 +489,10 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         else:
             self.template_value['content'] = "This user has not created a profile yet."
 
-        self.template_value['editor_role'] = self._editor_role(query, user)
+        editor_role = self._editor_role(query, user)
+        self.template_value['editor_role'] = editor_role
+        if editor_role != 'author':
+            self.template_value['navbar'] = {'participants': True}
         self.template_value['edit_url'] = self._create_action_url(query, 'edit')
 
         units = self.get_units()
