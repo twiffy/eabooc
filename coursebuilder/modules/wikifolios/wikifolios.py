@@ -25,22 +25,10 @@ STUDENTS_CAN_DO_ASSIGNMENTS = ConfigProperty(
         wikifolios, other than their profiles.""",
         True)
 
-# Some folks go all the way from e.g. email->rendered link in the cache
-# Here's just the wiki_id->author object
 def get_student_by_wiki_id(wiki_id):
-    memcache_key = 'entity:student-by-wiki-id:%s' % wiki_id
-
-    student = MemcacheManager.get(memcache_key)
-    if NO_OBJECT == student:
-        return None
-    if not student:
-        student = (Student.all()
-            .filter("wiki_id =", wiki_id)
-            .get())
-        if student:
-            MemcacheManager.set(memcache_key, student)
-        else:
-            MemcacheManager.set(memcache_key, NO_OBJECT)
+    student = (Student.all()
+        .filter("wiki_id =", wiki_id)
+        .get())
     return student
 
 def student_profile_link(wiki_id):

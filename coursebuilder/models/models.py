@@ -189,6 +189,7 @@ class Student(BaseEntity):
             # Only has key, not necessarily anything else.
             digest = hashlib.sha256(str(self.key())).hexdigest()
             self.wiki_id = int(digest[0:4], 16)
+            # TODO make sure no other students with this id
 
     @classmethod
     def _memcache_key(cls, key):
