@@ -253,11 +253,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             else:
                 self.template_value['endorsement_view'] = 'can_endorse'
                 self.template_value['endorse_xsrf_token'] = self.create_xsrf_token('endorse')
-
         else:
             content = "The page you requested could not be found."
             self.error(404)
 
+        self.template_value['content'] = content
+        self.render("wf_page.html")
 
     def post_endorse(self):
         user = self.personalize_page_and_get_wiki_user()
