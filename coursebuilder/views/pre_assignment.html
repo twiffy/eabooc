@@ -12,7 +12,6 @@
     background-color: #fcc;
   }
   div.reg-form {
-    border: solid thin #aaa;
     margin: 10px;
     padding: 10px;
   }
@@ -28,6 +27,8 @@
 
   p.example {
     border: solid thin #aaa;
+    margin: 10px;
+    padding: 10px;
   }
 </style>
 
@@ -73,7 +74,7 @@
           </p>
 
           <a href="#" class="example-link">Click here to show some examples of
-            curricular aims that would work well in this course</a>
+            curricular aims that would work well in this course<br></a>
           <div class="example-container">
             <p class="example">
             To teach college-level students, for whom English is their second
@@ -94,7 +95,7 @@
             </p>
           </div>
 
-          <br><small>For help with the editor controls, click inside an editor and
+          <small>For help with the editor controls, click inside an editor and
             press Alt+0.</small><br>
           {{ form.curricular_aim(id="aim-editor", rows=10, cols=50) }}
 

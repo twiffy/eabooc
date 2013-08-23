@@ -15,7 +15,6 @@
     border-collapse: collapse;
   }
   div.reg-form {
-    border: solid thin #aaa;
     margin: 10px;
     padding: 10px;
   }
@@ -105,7 +104,7 @@
                   them</td>
               </tr>
               <tr>
-                <td><label>{{ levels[1] }}&nbsp;Certificate</label></td>
+                <td style="white-space: nowrap;"><label>{{ levels[1] }}&nbsp;Certificate</label></td>
                 <td><strike>$75 audit fee</strike><br>FREE in 2013, thanks to a grant from Google</td>
                 <td>At least 3 hours a week.<br>Complete all required parts of assignments.</td>
                 <td>Digital badges and a signed certificate of completion indicating that
@@ -114,7 +113,7 @@
               <tr>
                 <td><label>{{ levels[2] }}&nbsp;Official Graduate Credit*</label></td>
                 <td>IU Tuition plus the cost of the Courseload e-book</td>
-                <td>At least ten hours per week.  Complete required and optional
+                <td>At least 10 hours per week.<br>Complete required and optional
                   parts of all assignments and interact with instructor
                   weekly.</td>
                 <td>Digital badges, certificate of completion, and 3 official graduate-level
@@ -128,10 +127,10 @@
                 Please <a
                   href="http://iuconnected.iu.edu/TakeabrnbspnbspCourse/Fall2013.aspx#ep"
                   target="_blank">visit IU ConnectED here</a>.  Find
-                "Assessment in Schools: P507." At this time, Indiana
-                University's School of Education charges residents of other
-                states and countries the same discounted in-state tuition rate
-                that Indiana residents pay.
+                "Assessment in Schools," P507, at the IUB campus. At this time,
+                Indiana University's School of Education charges residents of
+                other states and countries the same discounted in-state tuition
+                rate that Indiana residents pay.
               </div>
             </fieldset>
             <fieldset>
@@ -150,7 +149,7 @@
               If you selected "no book," please indicate how you might search for
               information about the core concepts and big ideas in each chapter
               (Google, classmates' assignments, a different textbook, etc.)<br>
-              {{ form.book_other }}
+              {{ form.book_other(size=60) }}
             </div>
           </fieldset>
 
