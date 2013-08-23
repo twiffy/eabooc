@@ -14,6 +14,7 @@ from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
 from google.appengine.api import users
 import filters
 import logging
+import functools
 import urllib
 import wtforms as wtf
 
@@ -98,23 +99,39 @@ class WikiBaseHandler(BaseHandler):
     # I don't like how leaky this is, always having to check for the None return.
     def personalize_page_and_get_wiki_user(self):
         user = self.personalize_page_and_get_enrolled()
+        self.template_value['navbar'] = {'wiki': True}
+        self.template_value['content'] = ''
         self.template_value['author_link'] = filters.author_link
         self.template_value['can_do_assignments'] = STUDENTS_CAN_DO_ASSIGNMENTS.value
         if not user or not self.assert_participant_or_fail(user):
             return
         return user
 
-    def _editor_role(self, query, current_student):
+    def _editor_role(self, query, current_student, template=True):
+        if not (query and current_student):
+            return None
         if current_student:
             assert current_student.key().name() == users.get_current_user().email()
         is_author = (current_student
                 and current_student.wiki_id == query['student']
                 and current_student.is_enrolled)
+        role = None
         if is_author:
-            return 'author'
+            role = 'author'
         elif Roles.is_course_admin(self.app_context):
-            return 'admin'
-        return None
+            role = 'admin'
+        if template:
+            self.template_value['editor_role'] = role
+            if role != 'author':
+                self.template_value['navbar'] = {'participants': True}
+        return role
+
+    def assert_editor_role(self, *args, **kwargs):
+        role = self._editor_role(*args, **kwargs)
+        if not role:
+            self.abort(403, "You cannot edit this page.")
+        return role
+
 
     def _create_action_url(self, query, action="view"):
         params = dict(query)
@@ -147,11 +164,15 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             data = form.data
         else:
             # TODO maybe log why it's not good
+            self.template_value['content'] = 'Sorry, that page was not found.'
+            self.error(403)
             data = None
 
         if data and not data['student'] and user:
             data['student'] = user.wiki_id
 
+        self.template_value['action_url'] = functools.partial(
+                self._create_action_url, data)
         return data
 
     def _find_page(self, query, create=False):
@@ -194,102 +215,72 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not user:
             return
         query = self._get_query(user)
-        self.template_value['navbar'] = {'wiki': True}
-        self.template_value['content'] = ''
-        self.template_value['view_link'] = self._create_action_url(query, 'view')
 
         if not query:
-            logging.info("404: query is not legit.")
-            content = "The page you requested could not be found."
-            self.error(404)
-            # fall through
+            self.abort(404)
         elif not self._can_view(query, user):
             # They may have already bounced off the login page
             # from personalize_page_etc above
-            content = "Sorry, you can't see this page."
-            self.error(403)
-            # fall through
-        else:
-            editor_role = self._editor_role(query, user)
-            self.template_value['editor_role'] = editor_role
-            if editor_role != 'author':
-                self.template_value['navbar'] = {'participants': True}
-            self.template_value['edit_url'] = self._create_action_url(query, 'edit')
-            self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
+            self.abort(403)
+        editor_role = self._editor_role(query, user)
+        self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
+        self.template_value['author'] = get_student_by_wiki_id(query['student'])
 
-            page = self._find_page(query)
-            self.template_value['author'] = get_student_by_wiki_id(query['student'])
-            if page:
-                content = page.text
-                self.template_value['comments'] = prefetch.prefetch_refprops(
-                        page.comments.order("added_time").fetch(limit=1000),
-                        WikiComment.author)
+        page = self._find_page(query)
+        if page:
+            content = page.text
+            self.template_value['comments'] = prefetch.prefetch_refprops(
+                    page.comments.order("added_time").fetch(limit=1000),
+                    WikiComment.author)
 
-                if self._can_comment(query, user):
-                    self.template_value['can_comment'] = True
-                    self.template_value['ckeditor_comment_content'] = (
-                            ckeditor.allowed_content(COMMENT_TAGS,
-                                COMMENT_ATTRIBUTES, COMMENT_STYLES))
-                    self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
-                    self.template_value['comment_url'] = self._create_action_url(query, 'comment')
+            if self._can_comment(query, user):
+                self.template_value['can_comment'] = True
+                self.template_value['ckeditor_comment_content'] = (
+                        ckeditor.allowed_content(COMMENT_TAGS,
+                            COMMENT_ATTRIBUTES, COMMENT_STYLES))
+                self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
 
-                self.template_value['endorsements'] = prefetch.prefetch_refprops(
-                        Annotation.endorsements(page), Annotation.who)
+            self.template_value['endorsements'] = prefetch.prefetch_refprops(
+                    Annotation.endorsements(page), Annotation.who)
 
-                self.template_value['exemplaries'] = Annotation.exemplaries(page)
+            self.template_value['exemplaries'] = Annotation.exemplaries(page)
 
-                if query['student'] == user.wiki_id:
-                    self.template_value['is_author'] = True
-                    self.template_value['endorsement_view'] = 'author'
-                elif Annotation.endorsements(page, user).count(limit=1) > 0:
-                    self.template_value['endorsement_view'] = 'has_endorsed'
-                else:
-                    self.template_value['endorsement_view'] = 'can_endorse'
-                    self.template_value['endorse_xsrf_token'] = self.create_xsrf_token('endorse')
-                    self.template_value['endorse_url'] = self._create_action_url(query, 'endorse')
-
+            if query['student'] == user.wiki_id:
+                self.template_value['is_author'] = True
+                self.template_value['endorsement_view'] = 'author'
+            elif Annotation.endorsements(page, user).count(limit=1) > 0:
+                self.template_value['endorsement_view'] = 'has_endorsed'
             else:
-                content = "The page you requested could not be found."
-                self.error(404)
+                self.template_value['endorsement_view'] = 'can_endorse'
+                self.template_value['endorse_xsrf_token'] = self.create_xsrf_token('endorse')
 
-        self.template_value['content'] = content
-        self.render("wf_page.html")
+        else:
+            content = "The page you requested could not be found."
+            self.error(404)
+
 
     def post_endorse(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query(user)
-        self.template_value['navbar'] = {'wiki': True}
+        if not query:
+            self.abort(404)
         content = ''
 
-        if not query:
-            logging.warning("POST is not legit")
-            content = "You can't do that."
-            self.error(403)
-            # fall through
-        elif not self._can_view(query, user):
-            logging.warning("Attempt to mark complete an unviewable wiki page")
-            content = "You are not allowed to mark this page complete."
-            self.error(403)
-            # fall through
+        if not self._can_view(query, user):
+            self.abort(403)
         elif user.wiki_id == query['student']:
             logging.warning("Attempt to mark own page as complete")
-            content = "You are not allowed to mark this page complete."
-            self.error(403)
-            # fall through
-        else:
-            page = self._find_page(query)
-            if Annotation.endorsements(page, user).count(limit=1) > 0:
-                logging.warning("Attempt to mark complete multiple times.")
-                content = "You've already marked this page complete."
-                self.error(403)
-            else:
-                Annotation.endorse(page, user, 'all_done' in self.request.POST)
-                self.redirect(self._create_action_url(query, 'view'))
-                return
-        self.template_value['content'] = content
-        self.render("wf_page.html")
+            self.abort(403, "You are not allowed to mark your own page complete.")
+
+        page = self._find_page(query)
+        if Annotation.endorsements(page, user).count(limit=1) > 0:
+            logging.warning("Attempt to mark complete multiple times.")
+            self.abort(403, "You've already marked this page complete.")
+
+        Annotation.endorse(page, user, 'all_done' in self.request.POST)
+        self.redirect(self._create_action_url(query, 'view'))
 
 
     def get_edit(self):
@@ -297,45 +288,29 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not user:
             return
         query = self._get_query(user)
-        self.template_value['navbar'] = {'wiki': True}
         self.template_value['ckeditor_allowed_content'] = (
                 ckeditor.allowed_content(ALLOWED_TAGS,
                     ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
-        self.template_value['content'] = ''
 
         if not query:
-            logging.info("404: query is not legit.")
-            self.template_value['content'] = "The page you requested could not be found."
-            self.render("wf_page.html")
-            self.error(404)
-            return
+            self.abort(404)
 
-        editor_role = self._editor_role(query, user)
-        if not editor_role:
-            content = "You are not allowed to edit this student's wiki."
-            self.error(403)
-            # fall through
-        else:
-            # We call with create=True to eliminate a conditional on how
-            # to set the author_name later.  But we don't .put() it.
-            page = self._find_page(query, create=True)
-            self.template_value['editor_role'] = editor_role
-            if editor_role != 'author':
-                self.template_value['navbar'] = {'participants': True}
-            content = page.text or ''
+        self.assert_editor_role(query, user)
 
-            self.template_value['author_name'] = page.author.name
-            self.template_value['author_link'] = student_profile_link(
-                    query['student'])
-            self.template_value['content'] = content
-            self.template_value['xsrf_token'] = self.create_xsrf_token('save')
-            self.template_value['save_url'] = self._create_action_url(query, 'save')
-            self.render("wf_edit.html")
-            return
+        # We call with create=True to eliminate a conditional on how
+        # to set the author_name later.  But we don't .put() it.
+        page = self._find_page(query, create=True)
+        content = page.text or ''
+
+        self.template_value['author_name'] = page.author.name
+        self.template_value['author_link'] = student_profile_link(
+                query['student'])
         self.template_value['content'] = content
-        self.render("wf_page.html")
+        self.template_value['xsrf_token'] = self.create_xsrf_token('save')
+        self.render("wf_edit.html")
 
     def get_unit(self, unit_id):
+        # TODO find_unit_by_id??
         unit_id = unicode(unit_id) # harrumph
         units = self.get_units()
         for unit in units:
@@ -348,74 +323,57 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             return
         query = self._get_query(user)
 
-        if not query:
-            logging.warning("POST is not legit")
-            content = "You can't do that."
-            self.error(403)
-            # fall through
-        elif not self._editor_role(query, user):
-            logging.warning("Attempt to edit someone else's wiki")
-            content = "You are not allowed to edit this student's wiki."
-            self.error(403)
-            # fall through
-        elif not STUDENTS_CAN_DO_ASSIGNMENTS.value:
+        self.assert_editor_role(query, user)
+        if not STUDENTS_CAN_DO_ASSIGNMENTS.value:
             logging.warning("Assignments not yet open (STUDENTS_CAN_DO_ASSIGNMENTS is false)")
             content = "Assignments are not yet available."
             self.error(403)
-            # fall through
-        else:
-            page = self._find_page(query, create=True)
-
-            old_text = page.text
-            page.text = bleach_entry(self.request.get('text', ''))
-            page.unit = query['unit']
-            page.title = self.get_unit(query['unit']).title
-
-            page.put()
-            EventEntity.record(
-                    'edit-wiki-page', users.get_current_user(), transforms.dumps({
-                        'page-author': page.author.key().name(),
-                        'page-editor': user.key().name(),
-                        'unit': page.unit,
-                        'before': old_text,
-                        'after': page.text,
-                        }))
-            self.redirect(self._create_action_url(query, 'view'))
+            self.render("bare.html")
             return
-        self.render("wf_page.html")
+        page = self._find_page(query, create=True)
+
+        old_text = page.text
+        page.text = bleach_entry(self.request.get('text', ''))
+        page.unit = query['unit']
+        page.title = self.get_unit(query['unit']).title
+
+        page.put()
+        EventEntity.record(
+                'edit-wiki-page', users.get_current_user(), transforms.dumps({
+                    'page-author': page.author.key().name(),
+                    'page-editor': user.key().name(),
+                    'unit': page.unit,
+                    'before': old_text,
+                    'after': page.text,
+                    }))
+        self.redirect(self._create_action_url(query, 'view'))
 
     def post_comment(self):
-        logging.warning("In comment handler")
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query(user)
 
         if not query:
-            logging.warning("POST is not legit")
-            content = "You can't do that."
-            self.error(403)
-            # fall through
-        elif not self._can_comment(query, user):
+            self.abort(404)
+
+        if not self._can_comment(query, user):
             logging.warning("Attempt to comment illegally")
-            content = "You are not allowed to comment on this page."
-            self.error(403)
-            # fall through
-        else:
-            page = self._find_page(query)
-            comment = WikiComment(
-                    author=user,
-                    topic=page,
-                    text=bleach_comment(self.request.get('text', '')))
-            comment.put()
+            self.abort(403, "You are not allowed to comment on this page.")
 
-            if (self.request.POST.get('exemplary', False)
-                    and query['student'] != user.wiki_id):
-                Annotation.exemplary(page, user, comment)
+        page = self._find_page(query)
+        # TODO: use wtforms for comments
+        comment = WikiComment(
+                author=user,
+                topic=page,
+                text=bleach_comment(self.request.get('text', '')))
+        comment.put()
 
-            self.redirect(self._create_action_url(query, 'view'))
-            return
-        self.render("wf_page.html")
+        if (self.request.POST.get('exemplary', False)
+                and query['student'] != user.wiki_id):
+            Annotation.exemplary(page, user, comment)
+
+        self.redirect(self._create_action_url(query, 'view'))
 
 
 class WikiProfileListHandler(WikiBaseHandler):
@@ -463,24 +421,28 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         # TODO: maybe do redirects to ?student= from here?
         form = self._NavForm(self.request.params)
         if form.validate():
+            self.template_value['action_url'] = functools.partial(
+                    self._create_action_url, form.data)
             return form.data
         else:
-            # TODO maybe log why it's not good
-            return None
+            self.abort(404, 'Sorry, there is no such student.')
 
     def get_view(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         query = self._get_query()
-        if not query['student']:
-            self.redirect("wikiprofile?" + urllib.urlencode({
+        if not query or not query['student']:
+            self.abort(302, location="wikiprofile?" + urllib.urlencode({
                 'student': user.wiki_id}))
-            return
 
         student_model = get_student_by_wiki_id(query['student'])
+        if not student_model:
+            self.template_value['content'] = 'Sorry, that student was not found.'
+            self.error(404)
+            self.render('bare.html')
+            return
 
-        self.template_value['navbar'] = {'wiki': True}
         self.template_value['author_name'] = student_model.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
@@ -492,10 +454,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['content'] = "This user has not created a profile yet."
 
         editor_role = self._editor_role(query, user)
-        self.template_value['editor_role'] = editor_role
-        if editor_role != 'author':
-            self.template_value['navbar'] = {'participants': True}
-        self.template_value['edit_url'] = self._create_action_url(query, 'edit')
 
         units = self.get_units()
         pages = WikiPage.query_by_student(student_model).run(limit=100)
@@ -525,16 +483,8 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 'student': user.wiki_id}))
             return
 
-        self.template_value['navbar'] = {'wiki': True}
+        self.assert_editor_role(query, user)
 
-        editor_role = self._editor_role(query, user)
-        if not editor_role:
-            self.template_value['content'] = "You are not allowed to edit this student's wiki."
-            self.render("wf_page.html")
-            self.error(403)
-            return
-
-        self.template_value['editor_role'] = editor_role
         self.template_value['ckeditor_allowed_content'] = (
                 ckeditor.allowed_content(ALLOWED_TAGS,
                     ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
@@ -546,7 +496,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 query['student'])
 
         self.template_value['xsrf_token'] = self.create_xsrf_token('save')
-        self.template_value['save_url'] = self._create_action_url(query, 'save')
 
         profile_page = WikiPage.get_page(user=user, unit=None)
         if profile_page:
@@ -559,34 +508,26 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not user:
             return
         query = self._get_query()
-
         if not query:
-            logging.warning("POST is not legit")
-            content = "You can't do that."
-            self.error(403)
-            # fall through
-        elif not self._editor_role(query, user):
-            logging.warning("Attempt to edit someone else's wiki")
-            content = "You are not allowed to edit this student's wiki."
-            self.error(403)
-            # fall through
-        else:
-            page = WikiPage.get_page(user=user, unit=None, create=True)
+            self.abort(404)
 
-            old_text = page.text
-            page.text = bleach_entry(self.request.get('text', ''))
+        self.assert_editor_role(query, user)
 
-            page.put()
-            EventEntity.record(
-                    'edit-wiki-profile', users.get_current_user(), transforms.dumps({
-                        'page-author': page.author.key().name(),
-                        'page-editor': user.key().name(),
-                        'before': old_text,
-                        'after': page.text,
-                        }))
-            self.redirect(self._create_action_url(query, 'view'))
-            return
-        self.render("wf_page.html")
+        page = WikiPage.get_page(user=user, unit=None, create=True)
+
+        old_text = page.text
+        page.text = bleach_entry(self.request.get('text', ''))
+
+        page.put()
+        EventEntity.record(
+                'edit-wiki-profile', users.get_current_user(), transforms.dumps({
+                    'page-author': page.author.key().name(),
+                    'page-editor': user.key().name(),
+                    'before': old_text,
+                    'after': page.text,
+                    }))
+        self.redirect(self._create_action_url(query, 'view'))
+        return
 
 
 module = None
