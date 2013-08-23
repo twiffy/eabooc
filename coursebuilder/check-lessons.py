@@ -7,6 +7,11 @@ from bleach import callbacks
 import sys
 import shutil
 from html5lib.tokenizer import HTMLTokenizer
+import html5lib
+
+# monkey patch html5lib so bleach.linkify treats documents as whole documents,
+# not fragments
+html5lib.HTMLParser.parseFragment = html5lib.HTMLParser.parse
 
 current_file = None
 
