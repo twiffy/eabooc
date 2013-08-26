@@ -11,7 +11,8 @@ import bleach
 import webapp2
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
 from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
-from google.appengine.api import users
+from google.appengine.api import users, mail
+import textwrap
 import filters
 import logging
 import functools
@@ -191,11 +192,62 @@ class WikiBaseHandler(BaseHandler):
 
         self.redirect(self._create_action_url(query, 'view'))
 
+    def post_flag(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+        query = self._get_query(user)
+
+        if not query:
+            self.abort(404)
+
+        if not self._can_view(query, user):
+            logging.warning("Attempt to flag a page they can't see????")
+            self.abort(403, "You are not allowed to do that.")
+
+        page = self._find_page(query)
+        if not page:
+            self.abort(404)
+
+        reason = bleach_comment(self.request.get('reason', ''))
+
+        Annotation.flag(
+                page,
+                user,
+                reason)
+
+        url = self.request.host_url + self._create_action_url(query, 'view')
+        mail.send_mail_to_admins('BOOC Admin <booc.class@gmail.com>',
+                'Inappropriate content reported',
+                textwrap.dedent('''\
+                The user %(name)s <%(email)s> reported inappropriate content on this page:
+
+                %(url)s
+
+                Their comment was:
+
+                %(reason)s
+                ''' % {
+                    'name': user.name,
+                    'email': user.key().name(),
+                    'url': url,
+                    'reason': reason,
+                    }))
+
+        self.template_value['content'] = '''
+            <div class="gcb-aside">
+            <h1>Thank you for your report.</h1>
+            It has been sent to the
+            course administrators for review.
+            </div>
+            '''
+        self.render('bare.html')
+
 
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
-    post_actions = ["save", "comment", "endorse"]
+    post_actions = ["save", "comment", "endorse", "flag"]
 
     class _NavForm(wtf.Form):
         unit = wtf.IntegerField('Unit number', [
@@ -424,6 +476,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
     post_actions = [
             "save",
             "comment",
+            "flag",
             ]
 
     class _NavForm(wtf.Form):
