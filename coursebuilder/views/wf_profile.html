@@ -10,6 +10,11 @@
     margin-top: 4px;
   }
 </style>
+<ul id="wiki-notifications">
+  {% for note in notifications %}
+  <li>{{ note | safe }}</li>
+  {% endfor %}
+</ul>
 {% endblock %}
 {% block main_content %}
 {% if alert %}

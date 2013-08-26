@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% block top_content %}
+{% if notifications %}
+<ul id="wiki-notifications">
+  {% for note in notifications %}
+  <li>{{ note | safe }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}
 {% block main_content %}
 {% if editor_role and can_do_assignments %}

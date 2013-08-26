@@ -18,6 +18,7 @@ import logging
 import functools
 import urllib
 import wtforms as wtf
+from jinja2 import Markup
 
 NO_OBJECT = {}
 
@@ -111,6 +112,9 @@ class WikiBaseHandler(BaseHandler):
             return
         return user
 
+    def show_notifications(self, current_student):
+        self.template_value['notifications'] = current_student.read_notifications()
+
     def _editor_role(self, query, current_student, template=True):
         if not (query and current_student):
             return None
@@ -188,6 +192,14 @@ class WikiBaseHandler(BaseHandler):
                     'unbleached-text': self.request.get('text', ''),
                     }))
 
+        if query['student'] != user.wiki_id:
+            note = Markup('<a href="%(url)s"><b>%(commenter)s</b> commented on %(what)s</a>')
+            page.author.notify(unicode(note % {
+                'url': self._create_action_url(query, 'view'),
+                'commenter': user.name,
+                'what': self.describe_query(query, page.author),
+                }))
+
         if (self.request.POST.get('exemplary', False)
                 and query['student'] != user.wiki_id):
             Annotation.exemplary(page, user, comment)
@@ -262,6 +274,16 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             wtf.validators.NumberRange(min=1, max=100000000000),
             ])
 
+    def describe_query(self, query, user):
+        "Describes the query to a particular user"
+        if query['student'] == user.wiki_id:
+            whose = "your "
+        else:
+            whose = Markup("<b>%s</b>'s ") % get_student_by_wiki_id(query['student']).name
+
+        what = Markup("unit %s wikifolio page") % query['unit']
+        return whose + what
+
 
     def _get_query(self, user):
         form = self._NavForm(self.request.params)
@@ -326,6 +348,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         page = self._find_page(query)
         if page:
             content = page.text
+
+            self.show_notifications(user)
             self.template_value['comments'] = prefetch.prefetch_refprops(
                     page.comments.order("added_time").fetch(limit=1000),
                     WikiComment.author)
@@ -569,6 +593,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         self.template_value['endorsements'] = profile_page.author.own_annotations.filter('why IN', ['endorse', 'exemplary']).run(limit=10)
 
+        self.show_notifications(user)
         self.template_value['comments'] = prefetch.prefetch_refprops(
                 profile_page.comments.order("added_time").fetch(limit=1000),
                 WikiComment.author)
@@ -636,6 +661,15 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.redirect(self._create_action_url(query, 'view'))
         return
 
+    def describe_query(self, query, user):
+        "Describes the query to a particular user"
+        if query['student'] == user.wiki_id:
+            whose = "your "
+        else:
+            whose = Markup("<b>%s</b>'s ") % get_student_by_wiki_id(query['student']).name
+
+        what = Markup("profile page")
+        return whose + what
 
 module = None
 

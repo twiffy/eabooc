@@ -180,6 +180,9 @@ class Student(BaseEntity):
     # does it have any advantages?
     interest_level = db.IntegerProperty()
 
+    # current notifications!
+    notifications = db.StringListProperty(indexed=False)
+
     def __init__(self, *args, **kwargs):
         super(Student, self).__init__(*args, **kwargs)
         self.ensure_wiki_id()
@@ -280,6 +283,18 @@ class Student(BaseEntity):
     def has_same_key_as(self, key):
         """Checks if the key of the student and the given key are equal."""
         return key == self.get_key()
+
+    @db.transactional
+    def notify(self, html):
+        self.notifications.append(html)
+        self.put()
+
+    @db.transactional
+    def read_notifications(self):
+        notes = list(self.notifications)
+        self.notifications = []
+        self.put()
+        return notes
 
 
 class EventEntity(BaseEntity):
