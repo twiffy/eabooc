@@ -29,7 +29,7 @@
     You have marked this page as complete.
     {% elif endorsement_view == 'can_endorse' %}
     <form action="{{ action_url('endorse') }}" method=POST>
-      <input type="hidden" name="xsrf_token" value="{{ endorse_xsrf_token }}">
+      <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('endorse') }}">
       Click here to endorse that the author has completed
       <input type="submit" name="required_done" class="gcb-button" value="the required parts">, or
       <input type="submit" name="all_done" class="gcb-button" value="the required AND optional parts"> of the assignment.
@@ -64,7 +64,7 @@
           <p>
           <label><input type="checkbox" name="exemplary"> Mark this assignment as exemplary</label>
           <p>
-          <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+          <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
           <input type="submit" class="gcb-button" value="Comment">
         </fieldset>
       </form>

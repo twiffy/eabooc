@@ -102,6 +102,7 @@ class WikiBaseHandler(BaseHandler):
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
         self.template_value['author_link'] = filters.author_link
+        self.template_value['create_xsrf_token'] = self.create_xsrf_token
         self.template_value['can_do_assignments'] = STUDENTS_CAN_DO_ASSIGNMENTS.value
         if not user or not self.assert_participant_or_fail(user):
             return
@@ -278,7 +279,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.template_value['ckeditor_comment_content'] = (
                         ckeditor.allowed_content(COMMENT_TAGS,
                             COMMENT_ATTRIBUTES, COMMENT_STYLES))
-                self.template_value['xsrf_token'] = self.create_xsrf_token('comment')
 
             self.template_value['endorsements'] = prefetch.prefetch_refprops(
                     Annotation.endorsements(page), Annotation.who)
@@ -292,7 +292,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.template_value['endorsement_view'] = 'has_endorsed'
             else:
                 self.template_value['endorsement_view'] = 'can_endorse'
-                self.template_value['endorse_xsrf_token'] = self.create_xsrf_token('endorse')
         else:
             content = "The page you requested could not be found."
             self.error(404)
@@ -347,7 +346,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
         self.template_value['content'] = content
-        self.template_value['xsrf_token'] = self.create_xsrf_token('save')
         self.render("wf_edit.html")
 
     def get_unit(self, unit_id):
@@ -523,7 +521,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['ckeditor_comment_content'] = (
                     ckeditor.allowed_content(COMMENT_TAGS,
                         COMMENT_ATTRIBUTES, COMMENT_STYLES))
-            self.template_value['comment_xsrf_token'] = self.create_xsrf_token('comment')
 
         self.render("wf_profile.html")
 
@@ -551,8 +548,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['author_name'] = student_model.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
-
-        self.template_value['xsrf_token'] = self.create_xsrf_token('save')
 
         self.template_value['content'] = profile_page.text
 

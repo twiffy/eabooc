@@ -18,7 +18,7 @@
 <span id="wikifolio-links"><a href="students">&larr; All students</a></span>
 <h1>{{ author_name }}</h1>
 <form method="POST" action="{{ action_url('save') }}">
-  <input type="hidden" name="xsrf_token" value="{{xsrf_token}}">
+  <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
   
   <textarea id="editor" cols="50" rows="20" name="text">{{ content | safe }}</textarea>
   <br>

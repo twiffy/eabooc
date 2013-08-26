@@ -20,7 +20,7 @@
 <form action="{{ action_url('save') }}" method="POST">
   <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
   <textarea name="text" id="editor" rows="20" cols="80">{{ content | safe }}</textarea>
-  <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+  <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
   <br>
   <input type="submit" class="gcb-button" value="Save">
 </form>
