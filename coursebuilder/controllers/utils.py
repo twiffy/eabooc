@@ -484,7 +484,8 @@ class RegisterHandler(BaseHandler):
 
             student.put()
 
-            mailchimp.subscribe('pre-reg', user.email(), student.name)
+            # now that we're in full registration, don't subscribe to pre-reg any more
+            #mailchimp.subscribe('pre-reg', user.email(), student.name)
 
             self.redirect('confirm')
             return

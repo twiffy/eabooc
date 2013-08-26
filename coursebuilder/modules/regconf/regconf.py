@@ -72,6 +72,7 @@ def on_confirmation_submission(handler, user, form):
     mailchimp.subscribe('confirmed', user.key().name(), user.name)
     if form.participation_level.data == u'for-credit':
         mailchimp.subscribe('for-credit', user.key().name(), user.name)
+    mailchimp.unsubscribe('pre-reg', user.key().name())
 
     handler.redirect("wikiprofile")
 
