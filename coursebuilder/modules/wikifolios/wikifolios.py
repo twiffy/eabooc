@@ -219,10 +219,11 @@ class WikiBaseHandler(BaseHandler):
                 reason)
 
         url = self.request.host_url + self._create_action_url(query, 'view')
+        flagger_id = '%s <%s>' % (user.name, user.key().name())
         mail.send_mail_to_admins('BOOC Admin <booc.class@gmail.com>',
                 'Inappropriate content reported',
                 textwrap.dedent('''\
-                The user %(name)s <%(email)s> reported inappropriate content on this page:
+                The user %(flagger_id)s reported inappropriate content on this page:
 
                 %(url)s
 
@@ -230,11 +231,11 @@ class WikiBaseHandler(BaseHandler):
 
                 %(reason)s
                 ''' % {
-                    'name': user.name,
-                    'email': user.key().name(),
+                    'flagger_id': flagger_id,
                     'url': url,
                     'reason': reason,
-                    }))
+                    }),
+                reply_to=flagger_id)
 
         self.template_value['content'] = '''
             <div class="gcb-aside">
