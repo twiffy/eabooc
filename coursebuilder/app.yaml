@@ -1,5 +1,5 @@
 application: booc-iu
-version: 2
+version: pre
 runtime: python27
 api_version: 1
 threadsafe: false
@@ -13,7 +13,6 @@ inbound_services:
 builtins:
 - remote_api: on
 - deferred: on
-- appstats: on
 
 libraries:
 - name: jinja2
