@@ -211,7 +211,8 @@ class WikiBaseHandler(BaseHandler):
         if not page:
             self.abort(404)
 
-        reason = bleach_comment(self.request.get('reason', ''))
+        raw_reason = self.request.get('reason', '')
+        reason = bleach_comment(raw_reason[:2000]) # limit size, de-fang
 
         Annotation.flag(
                 page,
