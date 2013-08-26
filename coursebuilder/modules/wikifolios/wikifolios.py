@@ -132,6 +132,14 @@ class WikiBaseHandler(BaseHandler):
             self.abort(403, "You cannot edit this page.")
         return role
 
+    def _can_view(self, query, current_student):
+        if current_student:
+            assert current_student.key().name() == users.get_current_user().email()
+        is_enrolled = (current_student and current_student.is_enrolled)
+        return is_enrolled or Roles.is_course_admin(self.app_context)
+
+    def _can_comment(self, query, current_student):
+        return self._can_view(query, current_student)
 
     def _create_action_url(self, query, action="view"):
         params = dict(query)
@@ -141,6 +149,47 @@ class WikiBaseHandler(BaseHandler):
         return '?'.join((
                 self.request.path,
                 urllib.urlencode(params)))
+
+    def post_comment(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+        query = self._get_query(user)
+
+        if not query:
+            self.abort(404)
+
+        if not self._can_comment(query, user):
+            logging.warning("Attempt to comment illegally")
+            self.abort(403, "You are not allowed to comment on this page.")
+
+        page = self._find_page(query)
+        if not page:
+            self.abort(404)
+
+        # TODO: use wtforms for comments
+        comment = WikiComment(
+                author=user,
+                topic=page,
+                text=bleach_comment(self.request.get('text', '')))
+        comment.put()
+
+        EventEntity.record(
+                'wiki-comment', users.get_current_user(), transforms.dumps({
+                    'page-author': page.author.key().name(),
+                    'page': str(page.key()),
+                    'unit': page.unit,
+                    'commenter': user.key().name(),
+                    'text': comment.text,
+                    'unbleached-text': self.request.get('text', ''),
+                    }))
+
+        if (self.request.POST.get('exemplary', False)
+                and query['student'] != user.wiki_id):
+            Annotation.exemplary(page, user, comment)
+
+        self.redirect(self._create_action_url(query, 'view'))
+
 
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
@@ -200,15 +249,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         return page
 
-    def _can_view(self, query, current_student):
-        if current_student:
-            assert current_student.key().name() == users.get_current_user().email()
-        is_enrolled = (current_student and current_student.is_enrolled)
-        return is_enrolled or Roles.is_course_admin(self.app_context)
-
-
-    def _can_comment(self, query, current_student):
-        return self._can_view(query, current_student)
 
     def get_view(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -349,33 +389,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     }))
         self.redirect(self._create_action_url(query, 'view'))
 
-    def post_comment(self):
-        user = self.personalize_page_and_get_wiki_user()
-        if not user:
-            return
-        query = self._get_query(user)
-
-        if not query:
-            self.abort(404)
-
-        if not self._can_comment(query, user):
-            logging.warning("Attempt to comment illegally")
-            self.abort(403, "You are not allowed to comment on this page.")
-
-        page = self._find_page(query)
-        # TODO: use wtforms for comments
-        comment = WikiComment(
-                author=user,
-                topic=page,
-                text=bleach_comment(self.request.get('text', '')))
-        comment.put()
-
-        if (self.request.POST.get('exemplary', False)
-                and query['student'] != user.wiki_id):
-            Annotation.exemplary(page, user, comment)
-
-        self.redirect(self._create_action_url(query, 'view'))
-
 
 class WikiProfileListHandler(WikiBaseHandler):
     def get(self):
@@ -410,7 +423,10 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             "view",
             "edit",
             ]
-    post_actions = ["save"]
+    post_actions = [
+            "save",
+            "comment",
+            ]
 
     class _NavForm(wtf.Form):
         student = wtf.IntegerField('Student id', [
@@ -418,7 +434,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             wtf.validators.NumberRange(min=1, max=100000000000),
             ])
 
-    def _get_query(self):
+    def _get_query(self, unused_user=None):
         # TODO: maybe do redirects to ?student= from here?
         form = self._NavForm(self.request.params)
         if form.validate():
@@ -427,6 +443,31 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             return form.data
         else:
             self.abort(404, 'Sorry, there is no such student.')
+
+    def _find_page(self, query, create=False):
+        logging.info(query)
+        assert query
+        # TODO don't have to do this query if it's your own page,
+        # optimize this.  Also, cache.
+        # TODO maybe store the wiki_id of the student in the Page,
+        # and look up by that, so we don't fetch the Student
+        # model twice (once by wiki id, once as a reference in
+        # the page)
+        student_model = get_student_by_wiki_id(query['student'])
+        if not student_model:
+            return None
+
+        key = WikiPage.get_key(student_model, unit=None)
+        if not key:
+            # Not only is there no page,
+            # but the request is invalid too.
+            return None
+
+        page = WikiPage.get(key)
+        if (not page) and create:
+            page = WikiPage(key=key)
+
+        return page
 
     def get_view(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -441,40 +482,48 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['alert'] = '''<b>Congratulations!</b> You are
                 officially registered. Welcome to the course.  Have a look around!'''
 
-        student_model = get_student_by_wiki_id(query['student'])
-        if not student_model:
-            self.template_value['content'] = 'Sorry, that student was not found.'
-            self.error(404)
-            self.render('bare.html')
-            return
+        profile_page = self._find_page(query, create=True)
+        if not profile_page:
+            # e.g. there is no student by that ID.
+            self.abort(404)
+        if not profile_page.text:
+            # The profile is brand new or is blank
+            self.template_value['content'] = "This user has not created a profile yet."
+        else:
+            self.template_value['content'] = profile_page.text
 
-        self.template_value['author_name'] = student_model.name
+        self.template_value['author_name'] = profile_page.author.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
-
-        profile_page = WikiPage.get_page(user=student_model, unit=None)
-        if profile_page:
-            self.template_value['content'] = profile_page.text
-        else:
-            self.template_value['content'] = "This user has not created a profile yet."
 
         editor_role = self._editor_role(query, user)
 
         units = self.get_units()
-        pages = WikiPage.query_by_student(student_model).run(limit=100)
+        pages = WikiPage.query_by_student(profile_page.author).run(limit=100)
         units_with_pages = set([ unicode(p.unit) for p in pages ])
         for unit in units:
             if unit.unit_id in units_with_pages:
                 unit._wiki_exists = True
             unit._wiki_link = "wiki?" + urllib.urlencode({
-                'student': student_model.wiki_id,
+                'student': profile_page.author.wiki_id,
                 'action': 'view',
                 'unit': unit.unit_id,
                 })
 
         self.template_value['units'] = units
 
-        self.template_value['endorsements'] = student_model.own_annotations.filter('why IN', ['endorse', 'exemplary']).run(limit=10)
+        self.template_value['endorsements'] = profile_page.author.own_annotations.filter('why IN', ['endorse', 'exemplary']).run(limit=10)
+
+        self.template_value['comments'] = prefetch.prefetch_refprops(
+                profile_page.comments.order("added_time").fetch(limit=1000),
+                WikiComment.author)
+
+        if self._can_comment(query, user):
+            self.template_value['can_comment'] = True
+            self.template_value['ckeditor_comment_content'] = (
+                    ckeditor.allowed_content(COMMENT_TAGS,
+                        COMMENT_ATTRIBUTES, COMMENT_STYLES))
+            self.template_value['comment_xsrf_token'] = self.create_xsrf_token('comment')
 
         self.render("wf_profile.html")
 
@@ -494,7 +543,10 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 ckeditor.allowed_content(ALLOWED_TAGS,
                     ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
 
-        student_model = get_student_by_wiki_id(query['student'])
+
+        profile_page = self._find_page(query, create=True)
+        assert profile_page
+        student_model = profile_page.author
 
         self.template_value['author_name'] = student_model.name
         self.template_value['author_link'] = student_profile_link(
@@ -502,9 +554,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         self.template_value['xsrf_token'] = self.create_xsrf_token('save')
 
-        profile_page = WikiPage.get_page(user=user, unit=None)
-        if profile_page:
-            self.template_value['content'] = profile_page.text
+        self.template_value['content'] = profile_page.text
 
         self.render("wf_profile_edit.html")
 
@@ -518,7 +568,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         self.assert_editor_role(query, user)
 
-        page = WikiPage.get_page(user=user, unit=None, create=True)
+        page = self._find_page(query, create=True)
 
         old_text = page.text
         page.text = bleach_entry(self.request.get('text', ''))
