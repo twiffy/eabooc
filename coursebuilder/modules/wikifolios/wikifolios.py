@@ -103,7 +103,9 @@ class WikiBaseHandler(BaseHandler):
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
         self.template_value['author_link'] = filters.author_link
-        self.template_value['create_xsrf_token'] = self.create_xsrf_token
+        if hasattr(self, 'create_xsrf_token'):
+            # TODO: refactor to split more complicated pages out from the profile list handler
+            self.template_value['create_xsrf_token'] = self.create_xsrf_token
         self.template_value['can_do_assignments'] = STUDENTS_CAN_DO_ASSIGNMENTS.value
         if not user or not self.assert_participant_or_fail(user):
             return
