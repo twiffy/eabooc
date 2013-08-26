@@ -50,19 +50,51 @@ def subscribe(list_name, email, name):
             list_id = list_id_prop.value
         if not list_id:
             logging.debug(
-                    'MailChimp: No pre-reg list id configured, not subscribing.')
+                    'MailChimp: No %s list id configured, not subscribing.', list_name)
             return
         success = _do_subscribe(list_id, email, name)
         if not success:
             logging.warning(
-                'Failed to subscribe %s to pre-registration mailchimp list', email)
+                'Failed to subscribe %s to %s mailchimp list', email, list_name)
     except mailsnake.exceptions.MailSnakeException:
         logging.exception(
-            'Failed to subscribe %s to pre-registration mailchimp list, ', email)
+            'Failed to subscribe %s to %s mailchimp list, ', email, list_name)
 
 # TODO: http://apidocs.mailchimp.com/api/1.3/listunsubscribe.func.php
-def unsubscribe_all(email):
-    pass
+def unsubscribe(list_name, email):
+    try:
+        list_id_prop = list_ids.get(list_name, None)
+        list_id = None
+        if list_id_prop:
+            list_id = list_id_prop.value
+        if not list_id:
+            logging.debug(
+                    'MailChimp: No %s list id configured, not unsubscribing.', list_name)
+            return
+        success = _do_unsubscribe(list_id, email)
+        if not success:
+            logging.warning(
+                'Failed to unsubscribe %s from %s mailchimp list', email, list_name)
+    except mailsnake.exceptions.MailSnakeException:
+        logging.exception(
+            'Failed to unsubscribe %s from %s mailchimp list, ', email, list_name)
+
+def _do_unsubscribe(list_id, email):
+    ip = os.environ["REMOTE_ADDR"]
+    api_key = MAILCHIMP_API_KEY.value
+    if not api_key:
+        logging.debug(
+                'No MailChimp api key configured, not subscribing.')
+        return
+
+    ms = mailsnake.MailSnake(api_key)
+    success = ms.listUnsubscribe(
+            id=list_id,
+            email_address=email,
+            send_goodbye=False,
+            send_notify=False,
+            )
+    return success
 
 
 
