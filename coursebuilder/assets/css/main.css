@@ -733,3 +733,11 @@ div.faq:target {
   color: #666;
   border: 2px #633 solid;
 }
+
+div#flag-form {
+  font-size: 90%;
+  margin: auto;
+  border: 1px #ccc solid;
+  display: block;
+  width: 50%;
+}

@@ -76,8 +76,18 @@
         });
       </script>
       {% endif %}
+
     </div>
   </div>
+  <center><a onclick="$(this).next().toggle()" style="color: #c33;">Flag inappropriate content</a>
+    <div id="flag-form" style="display: none;">
+      <form action="flag" method="POST">
+        You can alert an instructor regarding inappropriate content on this page:<br>
+        <input size="60" name="reason"></input>
+        <input type="submit" value="Report">
+      </form>
+    </div>
+  </center>
 </div>
 
 {% endblock %}
