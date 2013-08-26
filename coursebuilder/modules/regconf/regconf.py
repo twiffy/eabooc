@@ -48,7 +48,8 @@ class ConfirmationForm(wtf.Form):
 
 def on_pre_assignment_submission(handler, user, form):
     submission = FormSubmission(form_name='pre', user=user)
-    form.populate_obj(submission)
+    for k,v in form.data.items():
+        setattr(submission, k, db.Text(v))
     submission.put()
 
     allowed_tags = ['p', 'i', 'b', 'a']
