@@ -7,6 +7,7 @@ from controllers.utils import BaseHandler, XsrfTokenManager
 from google.appengine.ext import db
 from google.appengine.api import users
 from common import mailchimp
+import logging
 
 # If true, don't redirect students away from the confirmation pages, even if
 # they are already fully registered.
@@ -74,7 +75,10 @@ def on_confirmation_submission(handler, user, form):
         mailchimp.subscribe('for-credit', user.key().name(), user.name)
     mailchimp.unsubscribe('pre-reg', user.key().name())
 
-    handler.redirect("wikiprofile")
+    if Student.all().filter('wiki_id =', user.wiki_id).count(limit=2) > 1:
+        logging.error("OH NO.  There is more than one student with the wiki_id %d", user.wiki_id)
+
+    handler.redirect("wikiprofile?confirm=1&student=%d" % user.wiki_id)
 
 
 class ConfirmationHandler(BaseHandler):

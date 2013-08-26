@@ -437,6 +437,10 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.abort(302, location="wikiprofile?" + urllib.urlencode({
                 'student': user.wiki_id}))
 
+        if self.request.GET.get('confirm', False):
+            self.template_value['alert'] = '''<b>Congratulations!</b> You are
+                officially registered. Welcome to the course.  Have a look around!'''
+
         student_model = get_student_by_wiki_id(query['student'])
         if not student_model:
             self.template_value['content'] = 'Sorry, that student was not found.'

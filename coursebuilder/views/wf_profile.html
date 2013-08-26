@@ -1,7 +1,20 @@
 {% extends 'base.html' %}
 {% block top_content %}
+<style>
+  div#alerts-bar {
+    background-color: #ffffB7;
+    border: solid #cccca0 1px;
+    display: inline-block;
+    padding: 0.4em;
+    border-radius: 5px;
+    margin-top: 4px;
+  }
+</style>
 {% endblock %}
 {% block main_content %}
+{% if alert %}
+<center><div id="alerts-bar">{{ alert | safe }}</div></center>
+{% endif %}
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
