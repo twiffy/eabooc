@@ -12,6 +12,7 @@ import webapp2
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
 from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
 from google.appengine.api import users, mail
+import itertools, collections
 import textwrap
 import filters
 import logging
@@ -466,28 +467,59 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
 
 class WikiProfileListHandler(WikiBaseHandler):
+    group_names = {
+                'administrator': 'Administrators',
+                'educator': 'Educators (K-12)',
+                'faculty': 'Faculty (Post-secondary)',
+                'researcher': 'Researchers',
+                'student': 'Students',
+                'other': 'Other',
+                }
+    allowed_groups = frozenset(('role',))
+
+    def group_name(self, db_val):
+        return self.group_names.get(db_val, None) or db_val.title()
+
     def get(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
         self.template_value['navbar'] = {'participants': True}
+        self.template_value['group_name'] = self.group_name
+
+        group_by = self.request.get('group', None)
+        logging.debug(repr(group_by))
+        if group_by not in self.allowed_groups:
+            logging.debug('Not accepting requested grouping %s', group_by)
+            group_by = None
+
+        self.template_value['group_by'] = group_by
+
+        projection = ['wiki_id', 'name']
 
         # will need to cache this somehow.
         student_list = Student.all()
         student_list.filter('is_enrolled =', True)
         student_list.filter('is_participant =', True)
+        if group_by:
+            student_list.order(group_by)
+            projection.append(group_by)
         student_list.order('name')
 
         # our course is capped at 500 students, so...
         FETCH_LIMIT=600
 
-        self.template_value['students'] = student_list.run(
+        all_students = student_list.run(
                 limit=FETCH_LIMIT,
-                projection=(
-                    'wiki_id',
-                    'name',
-                    ),
+                projection=projection,
                 )
+        if group_by:
+            lazy_groups = itertools.groupby(all_students,
+                    lambda student: getattr(student, group_by))
+            self.template_value['groups'] = lazy_groups
+        else:
+            self.template_value['groups'] = [ ('All Students', all_students) ]
+
 
         self.render("wf_list.html")
 

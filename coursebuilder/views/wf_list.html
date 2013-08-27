@@ -2,14 +2,33 @@
 {% block top_content %}
 {% endblock %}
 {% block main_content %}
+<style>
+  td.hilight {
+    font-weight: bold;
+  }
+</style>
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
       <h1>Participants</h1>
+      <table>
+        <tr>
+          <td {% if not group_by %}class="hilight"{% endif %}>
+            <a href="participants">All Participants</a></td>
+          <td {% if group_by == 'role' %}class="hilight"{% endif %}>
+            <a href="participants?group=role">Participants by Primary Role</a></td>
+        </tr>
+      </table>
       <div id="wf-page-list">
         <ul>
-          {% for student in students %}
-          <li><a href="wikiprofile?student={{student.wiki_id}}">{{ student.name }}</a>
+          {% for group in groups %}
+          <li>{{ group_name(group[0]) }}
+          <ul>
+            {% for student in group[1] %}
+            <li><a href="wikiprofile?student={{student.wiki_id}}">{{ student.name }}</a></li>
+            {% endfor %}
+          </ul>
+          </li>
           {% endfor %}
         </ul>
       </div>

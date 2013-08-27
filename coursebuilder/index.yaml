@@ -51,6 +51,14 @@ indexes:
 - kind: Student
   properties:
   - name: is_enrolled
+  - name: is_participant
+  - name: role
+  - name: name
+  - name: wiki_id
+
+- kind: Student
+  properties:
+  - name: is_enrolled
   - name: name
 
 - kind: Student
