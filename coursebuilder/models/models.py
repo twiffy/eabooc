@@ -319,8 +319,9 @@ class Student(BaseEntity):
     @db.transactional
     def read_notifications(self):
         notes = list(self.notifications)
-        self.notifications = []
-        self.put()
+        if notes:
+            self.notifications = []
+            self.put()
         return notes
 
 
