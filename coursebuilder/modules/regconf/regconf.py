@@ -67,6 +67,7 @@ def on_confirmation_submission(handler, user, form):
     form.populate_obj(submission)
     submission.put()
 
+    user.ensure_wiki_id()
     user.is_participant = True
     user.put()
 
@@ -74,9 +75,6 @@ def on_confirmation_submission(handler, user, form):
     if form.participation_level.data == u'for-credit':
         mailchimp.subscribe('for-credit', user.key().name(), user.name)
     mailchimp.unsubscribe('pre-reg', user.key().name())
-
-    if Student.all().filter('wiki_id =', user.wiki_id).count(limit=2) > 1:
-        logging.error("OH NO.  There is more than one student with the wiki_id %d", user.wiki_id)
 
     handler.redirect("wikiprofile?confirm=1&student=%d" % user.wiki_id)
 
