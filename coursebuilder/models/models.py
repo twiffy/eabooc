@@ -168,20 +168,20 @@ class Student(BaseEntity):
     role = db.StringProperty(indexed=True)
 
     # Other registration questions
-    grade_levels = db.StringListProperty()
-    title_and_setting = db.StringListProperty()
-    faculty_area = db.StringListProperty()
-    student_subject = db.StringListProperty()
-    research_area = db.StringListProperty()
-    other_role = db.StringProperty()
-
-    # "How interested are you in completing the course?"
-    # TODO maybe use RatingProperty?  It wants from 0-100,
-    # does it have any advantages?
-    interest_level = db.IntegerProperty()
+    # Not indexed because String List Properties multiply
+    # the number of writes by a lot!  But also we don't
+    # need these indexes yet; if we do, that's ok.
+    grade_levels = db.StringListProperty(indexed=False)
+    title_and_setting = db.StringListProperty(indexed=False)
+    faculty_area = db.StringListProperty(indexed=False)
+    student_subject = db.StringListProperty(indexed=False)
+    research_area = db.StringListProperty(indexed=False)
+    other_role = db.StringProperty(indexed=False)
 
     # current notifications!
     notifications = db.StringListProperty(indexed=False)
+
+    _memcache_ids = set(('email', 'wiki_id'))
 
     def __init__(self, *args, **kwargs):
         super(Student, self).__init__(*args, **kwargs)
@@ -195,9 +195,11 @@ class Student(BaseEntity):
             # TODO make sure no other students with this id
 
     @classmethod
-    def _memcache_key(cls, key):
-        """Makes a memcache key from primary key."""
-        return 'entity:student:%s' % key
+    def _memcache_key(cls, key, by='email'):
+        """Makes a memcache key from primary key or other unique id."""
+        if by not in cls._memcache_ids:
+            raise ValueError('Can only memcache by unique values')
+        return 'entity:student-by-%s:%s' % (by, key)
 
     def set_profile_pic(self, orig_filename, image_data):
         """Set the user's profile picture."""
@@ -212,12 +214,14 @@ class Student(BaseEntity):
         """Do the normal put() and also add the object to memcache."""
         result = super(Student, self).put()
         MemcacheManager.set(self._memcache_key(self.key().name()), self)
+        MemcacheManager.set(self._memcache_key(self.wiki_id, by='wiki_id'), self)
         return result
 
     def delete(self):
         """Do the normal delete() and also remove the object from memcache."""
         super(Student, self).delete()
         MemcacheManager.delete(self._memcache_key(self.key().name()))
+        MemcacheManager.delete(self._memcache_key(self.wiki_id, by='wiki_id'))
 
     @classmethod
     def get_by_email(cls, email):
@@ -239,6 +243,29 @@ class Student(BaseEntity):
             return student
         else:
             return None
+
+    @classmethod
+    def get_enrolled_student_by_wiki_id(cls, wiki_id):
+        student = MemcacheManager.get(cls._memcache_key(wiki_id, by='wiki_id'))
+        if NO_OBJECT == student:
+            return None
+        if not student:
+            student = Student.get_by_wiki_id(wiki_id)
+            if student:
+                MemcacheManager.set(cls._memcache_key(wiki_id, by='wiki_id'), student)
+            else:
+                MemcacheManager.set(cls._memcache_key(wiki_id, by='wiki_id'), NO_OBJECT)
+        if student and student.is_enrolled:
+            return student
+        else:
+            return None
+
+    @classmethod
+    def get_by_wiki_id(cls, wiki_id):
+        student = (Student.all()
+            .filter("wiki_id =", wiki_id)
+            .get())
+        return student
 
     @classmethod
     def rename_current(cls, new_name):

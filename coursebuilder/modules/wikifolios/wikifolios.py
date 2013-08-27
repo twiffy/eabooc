@@ -29,10 +29,7 @@ STUDENTS_CAN_DO_ASSIGNMENTS = ConfigProperty(
         True)
 
 def get_student_by_wiki_id(wiki_id):
-    student = (Student.all()
-        .filter("wiki_id =", wiki_id)
-        .get())
-    return student
+    return Student.get_enrolled_student_by_wiki_id(wiki_id)
 
 def student_profile_link(wiki_id):
     return "wikiprofile?" + urllib.urlencode({'student': wiki_id})
