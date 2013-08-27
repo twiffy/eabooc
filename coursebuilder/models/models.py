@@ -28,6 +28,7 @@ from google.appengine.api import images
 from google.appengine.ext import db
 
 import hashlib
+import random
 
 # We want to use memcache for both objects that exist and do not exist in the
 # datastore. If object exists we cache its instance, if object does not exist
@@ -188,8 +189,11 @@ class Student(BaseEntity):
         if not self.wiki_id:
             # Only has key, not necessarily anything else.
             digest = hashlib.sha256(str(self.key())).hexdigest()
-            self.wiki_id = int(digest[0:4], 16)
-            # TODO make sure no other students with this id
+            wiki_id = int(digest[0:4], 16)
+            while Student.all().filter('wiki_id =', wiki_id).count(limit=1) > 0:
+                logging.info('Wiki_id collision for %s: %d, re-rolling.', self.key().name(), wiki_id)
+                wiki_id += random.randrange(100)
+            self.wiki_id = wiki_id
 
     @classmethod
     def _memcache_key(cls, key):
