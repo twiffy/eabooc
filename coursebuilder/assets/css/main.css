@@ -649,3 +649,19 @@ div#wiki-notifications {
     margin: 0px;
     border: thin solid #c6b3a1;
     display: inline-block; }
+
+div.comment-actions {
+  text-align: right;
+  font-size: 70%;
+  border-top: thin solid #ebe4cd;
+  margin: 0px;
+  padding: 1px; }
+
+li.comment {
+  background: #f9f8f1;
+  border: thin solid #e3dbbb;
+  padding: 4px;
+  margin: 1px; }
+
+li.comment p {
+  margin-top: 8px; }

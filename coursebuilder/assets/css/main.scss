@@ -761,3 +761,23 @@ div#wiki-notifications {
 	  display: inline-block;
   }
 }
+
+div.comment-actions {
+  text-align: right;
+  font-size: 70%;
+  border-top: thin solid darken($content-bg-color, 5%);
+  margin: 0px;
+  padding: 1px;
+}
+
+li.comment {
+  background: lighten($content-bg-color, 5%);
+  border: thin solid darken($content-bg-color, 10%);
+  padding: 4px;
+  margin: 1px;
+}
+
+li.comment p {
+  margin-top: 8px;
+}
+

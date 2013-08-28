@@ -106,6 +106,8 @@ class WikiBaseHandler(BaseHandler):
             # TODO: refactor to split more complicated pages out from the profile list handler
             self.template_value['create_xsrf_token'] = self.create_xsrf_token
         self.template_value['can_do_assignments'] = STUDENTS_CAN_DO_ASSIGNMENTS.value
+        self.template_value['user_can_edit_comment'] = functools.partial(
+                self._user_can_edit_comment, user)
         if not user or not self.assert_participant_or_fail(user):
             return
         return user
@@ -143,6 +145,11 @@ class WikiBaseHandler(BaseHandler):
             assert current_student.key().name() == users.get_current_user().email()
         is_enrolled = (current_student and current_student.is_enrolled)
         return is_enrolled or Roles.is_course_admin(self.app_context)
+
+    def _user_can_edit_comment(self, user, comment):
+        # would be great to use the same code as _editor_role above...
+        author_id = str(WikiComment.author.get_value_for_datastore(comment))
+        return str(user.key()) == author_id or Roles.is_course_admin(self.app_context)
 
     def _can_comment(self, query, current_student):
         return self._can_view(query, current_student)

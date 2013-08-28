@@ -2,12 +2,14 @@
   <div class="gcb-col-11 gcb-aside">
     <ol>
       {% for comment in comments %}
-      <li><b><a name="comment-{{ comment.key().id() }}" href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b> said:
-      <br>{{ comment.text | safe }}
-      <br><span class="comment-actions">
+      <li class="comment"><b><a name="comment-{{ comment.key().id() }}" href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b> said:
+      {{ comment.text | safe }}
+      <div class="comment-actions">
+        {% if user_can_edit_comment(comment) %}
         <a href="wikicomment?comment_id={{ comment.key().id() }}">edit</a>
+        {% endif %}
         <a href="{{ action_url('view') }}#comment-{{ comment.key().id() }}">permalink</a>
-      </span>
+      </div>
       </li>
       {% else %}
       <li><em>No comments yet.</em></li>
