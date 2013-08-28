@@ -16,10 +16,16 @@ class WikiPage(models.BaseEntity):
     @property
     def link(self):
         student = self.author.wiki_id
-        return 'wiki?' + urllib.urlencode({
+        params = {
             'student': student,
-            'unit': self.unit,
-            'action': 'view'})
+            'action': 'view',
+            }
+        if self.unit:
+            params['unit'] = self.unit
+            return 'wiki?' + urllib.urlencode(params)
+        else:
+            return 'wikiprofile?' + urllib.urlencode(params)
+
 
     @classmethod
     def query_by_student(cls, student):
