@@ -2,8 +2,8 @@
   <div class="gcb-col-11 gcb-aside">
     <ol>
       {% for comment in comments %}
-      <li>Comment by <a href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a>:
-      <a name="comment-{{ loop.index }}" title="permalink" href="{{ action_url('view') }}#comment-{{ loop.index }}">¶</a>
+      <li><b><a href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b> said:
+      {# <a name="comment-{{ loop.index }}" title="permalink" href="{{ action_url('view') }}#comment-{{ loop.index }}">¶</a> #}
       <br>{{ comment.text | safe }}</li>
       {% else %}
       <li><em>No comments yet.</em></li>
