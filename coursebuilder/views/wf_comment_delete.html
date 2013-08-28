@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block top_content %}
+<style>
+  div#alerts-bar {
+    background-color: #ffffB7;
+    border: solid #cccca0 1px;
+    display: inline-block;
+    padding: 0.4em;
+    border-radius: 5px;
+    margin-top: 4px;
+  }
+</style>
+{% endblock %}
+{% block main_content %}
+{% if editor_role == 'admin' %}
+<center><div id="alerts-bar">You are editing someone else's comment, as an admin.</div></center>
+{% endif %}
+<ul>
+  <li class="comment">
+  <a href="{{ author_link }}">{{ author_name }}</a> says:
+  {{ content | safe }}
+  </li>
+</ul>
+<form action="{{ action_url('delete') }}" method="POST">
+  <h1>Are you sure you want to delete this comment?</h1>
+  <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('delete') }}">
+  <input type="submit" class="gcb-button" value="DELETE">
+</form>
+{% endblock %}

@@ -670,3 +670,7 @@ div#assignment-completion {
   background: #cbbbab; }
   div#assignment-completion > div > div {
     border: thin solid black; }
+
+.comment .deleted {
+  color: #999;
+  font-style: italic; }

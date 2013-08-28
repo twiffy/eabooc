@@ -7,6 +7,7 @@
       <div class="comment-actions">
         {% if user_can_edit_comment(comment) %}
         <a href="wikicomment?comment_id={{ comment.key().id() }}">edit</a>
+        <a href="wikicomment?comment_id={{ comment.key().id() }}&action=delete" class="delete-link">delete</a>
         {% endif %}
         <a href="{{ action_url('view') }}#comment-{{ comment.key().id() }}">permalink</a>
       </div>

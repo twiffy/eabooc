@@ -262,17 +262,13 @@ class WikiBaseHandler(BaseHandler):
 
 class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = 'edit'
-    get_actions = ['edit']
+    get_actions = ['edit', 'delete']
     post_actions = ['save', 'delete']
 
     class _NavForm(wtf.Form):
         comment_id = wtf.IntegerField('Comment ID', [wtf.validators.Required()])
 
-    def get_edit(self):
-        user = self.personalize_page_and_get_wiki_user()
-        if not user:
-            return
-
+    def _find_comment(self):
         form = self._NavForm(self.request.GET)
         if not form.validate():
             self.abort(404)
@@ -281,7 +277,19 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not comment:
             self.abort(404, "The requested comment could not be found.")
 
-        query = {'student': comment.author.wiki_id}
+        return comment
+
+    def get_edit(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+
+        comment = self._find_comment()
+
+        query = {
+                'student': comment.author.wiki_id,
+                'comment_id': comment.key().id(),
+                }
         self.assert_editor_role(query, user)
 
         self.template_value['ckeditor_allowed_content'] = (
@@ -293,7 +301,7 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 query['student'])
         self.template_value['content'] = comment.text
         self.template_value['action_url'] = functools.partial(
-                self._create_action_url, form.data)
+                self._create_action_url, query)
         self.render("wf_comment_edit.html")
 
     def post_save(self):
@@ -301,15 +309,12 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not user:
             return
 
-        form = self._NavForm(self.request.GET)
-        if not form.validate():
-            self.abort(404)
+        comment = self._find_comment()
 
-        comment = WikiComment.get_by_id(form.comment_id.data)
-        if not comment:
-            self.abort(404, "The requested comment could not be found.")
-
-        query = {'student': comment.author.wiki_id}
+        query = {
+                'student': comment.author.wiki_id,
+                'comment_id': comment.key().id(),
+                }
         self.assert_editor_role(query, user)
 
         old_text = comment.text
@@ -327,6 +332,58 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     }))
 
         self.redirect(comment.topic.link)
+
+    def get_delete(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+
+        comment = self._find_comment()
+
+        query = {
+                'student': comment.author.wiki_id,
+                'comment_id': comment.key().id(),
+                }
+        self.assert_editor_role(query, user)
+
+        self.template_value['author_name'] = comment.author.name
+        self.template_value['author_link'] = student_profile_link(
+                query['student'])
+        self.template_value['content'] = comment.text
+        self.template_value['action_url'] = functools.partial(
+                self._create_action_url, query)
+        self.render("wf_comment_delete.html")
+
+    def post_delete(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+
+        comment = self._find_comment()
+
+        query = {
+                'student': comment.author.wiki_id,
+                'comment_id': comment.key().id(),
+                }
+        self.assert_editor_role(query, user)
+
+        new_text = Markup('''<span class="deleted">This comment was deleted by
+                <a href="wikiprofile?student=%d">%s</a>.
+                </span>''')
+        new_text = new_text % (user.wiki_id, user.name)
+
+        EventEntity.record(
+                'wiki-comment-delete', users.get_current_user(), transforms.dumps({
+                    'comment-author': comment.author.key().name(),
+                    'comment': str(comment.key()),
+                    'editor': user.key().name(),
+                    'text': comment.text,
+                    }))
+
+        comment.text = new_text
+        comment.put()
+        self.redirect(comment.topic.link)
+
 
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
