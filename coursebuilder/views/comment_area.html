@@ -1,0 +1,34 @@
+<div class="gcb-cols">
+  <div class="gcb-col-11 gcb-aside">
+    <ol>
+      {% for comment in comments %}
+      <li>Comment by <a href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a>:
+      <a name="comment-{{ loop.index }}" title="permalink" href="{{ action_url('view') }}#comment-{{ loop.index }}">¶</a>
+      <br>{{ comment.text | safe }}</li>
+      {% else %}
+      <li><em>No comments yet.</em></li>
+      {% endfor %}
+    </ol>
+
+    {% if can_comment %}
+    <form action="{{ action_url('comment') }}" method="POST">
+      <fieldset>
+        <legend>Comment</legend>
+        <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
+        <textarea name="text" id="comment_editor" rows="10" cols="50"></textarea>
+        <p>
+        <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
+        <input type="submit" class="gcb-button" value="Comment">
+      </fieldset>
+    </form>
+    <script src="/assets/ckeditor/ckeditor.js"></script>
+    <script>
+      CKEDITOR.replace('comment_editor', {
+        allowedContent: '{{ ckeditor_comment_content }}',
+        removePlugins: 'pastefromword,undo,image,magicline,format',
+      });
+    </script>
+    {% endif %}
+
+  </div>
+</div>
