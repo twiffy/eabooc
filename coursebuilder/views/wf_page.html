@@ -47,13 +47,15 @@
         {% if loop.last %}<br>{% endif %}
         {% else %}<!-- no exemplaries -->
         {% endfor %}
-        {% if endorsement_view in ('can_endorse', 'has_endorsed') %}
+        {% if exemplary_view == 'can_exemplary' %}
         You can mark this page as exemplary!<br>
         <form action="{{ action_url('exemplary') }}" method="POST">
           <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('exemplary') }}">
-          <textarea name="comment" style="width: 100%" rows="2"></textarea><br>
+          <textarea name="comment" style="width: 100%" rows="2" placeholder="This is great because..."></textarea><br>
           <input type="submit" class="gcb-button" value="Exemplary">
         </form>
+        {% elif exemplary_view == 'has_exemplaried' %}
+        You have marked this page as exemplary.
         {% endif %}
       </div>
     </div>
@@ -71,5 +73,5 @@
     </div>
   </center>
 </div>
-
+<script src="/assets/lib/Placeholders.min.js"></script>
 {% endblock %}

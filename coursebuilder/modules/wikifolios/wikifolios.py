@@ -205,10 +205,6 @@ class WikiBaseHandler(BaseHandler):
                 'what': self.describe_query(query, page.author),
                 }))
 
-        if (self.request.POST.get('exemplary', False)
-                and query['student'] != user.wiki_id):
-            Annotation.exemplary(page, user, comment)
-
         self.redirect(self._create_action_url(query, 'view'))
 
     def post_flag(self):
@@ -335,7 +331,7 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
-    post_actions = ["save", "comment", "endorse", "flag"]
+    post_actions = ["save", "comment", "endorse", "flag", "exemplary"]
 
     class _NavForm(wtf.Form):
         unit = wtf.IntegerField('Unit number', [
@@ -440,16 +436,48 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             if query['student'] == user.wiki_id:
                 self.template_value['is_author'] = True
                 self.template_value['endorsement_view'] = 'author'
+                self.template_value['exemplary_view'] = 'author'
             elif Annotation.endorsements(page, user).count(limit=1) > 0:
                 self.template_value['endorsement_view'] = 'has_endorsed'
             else:
                 self.template_value['endorsement_view'] = 'can_endorse'
+
+            if Annotation.exemplaries(page, user).count(limit=1) > 0:
+                self.template_value['exemplary_view'] = 'has_exemplaried'
+            else:
+                self.template_value['exemplary_view'] = 'can_exemplary'
+
         else:
             content = "The page you requested could not be found."
             self.error(404)
 
         self.template_value['content'] = content
         self.render("wf_page.html")
+
+    def post_exemplary(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+        query = self._get_query(user)
+        if not query:
+            self.abort(404)
+        content = ''
+
+        if not self._can_view(query, user):
+            self.abort(403)
+        elif user.wiki_id == query['student']:
+            logging.warning("Attempt to mark own page as exemplary")
+            self.abort(403, "You are not allowed to mark your own page exemplary.")
+
+        page = self._find_page(query)
+        if Annotation.exemplaries(page, user).count(limit=1) > 0:
+            logging.warning("Attempt to mark complete multiple times.")
+            self.abort(403, "You've already marked this page exemplary.")
+
+        Annotation.exemplary(page, user,
+                reason=bleach_comment(self.request.get('comment')))
+
+        self.redirect(self._create_action_url(query, 'view'))
 
     def post_endorse(self):
         user = self.personalize_page_and_get_wiki_user()

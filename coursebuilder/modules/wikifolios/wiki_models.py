@@ -84,8 +84,6 @@ class Annotation(models.BaseEntity):
     optional_parts_done = db.BooleanProperty()
 
     # for exemplaries:
-    comment = db.ReferenceProperty(WikiComment, collection_name="exemplary_marks")
-
     # for flags:
     reason = db.StringProperty()
 
@@ -118,12 +116,12 @@ class Annotation(models.BaseEntity):
         return q
 
     @classmethod
-    def exemplary(cls, what, who, comment):
+    def exemplary(cls, what, who, reason):
         ann = Annotation()
         ann.why = 'exemplary'
         ann.who = who
         ann.what = what
-        ann.comment = comment
+        ann.reason = reason
         ann.put()
 
     @classmethod
