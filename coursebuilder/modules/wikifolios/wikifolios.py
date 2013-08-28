@@ -366,6 +366,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         page = self._find_page(query)
         # TODO: use wtforms for comments
+        # with a validator: wtf.validators.Length(min=10)
         comment = WikiComment(
                 author=user,
                 topic=page,

@@ -21,7 +21,7 @@ class FormSubmission(db.Expando):
 
 class PreAssignmentForm(wtf.Form):
     curricular_aim = wtf.TextAreaField("Curricular Aim", [wtf.validators.Length(min=10)])
-    introduction = wtf.TextAreaField("Introduce Yourself")
+    introduction = wtf.TextAreaField("Introduce Yourself", [wtf.validators.Length(min=10)])
     page = wtf.HiddenField(default="pre")
 
 
