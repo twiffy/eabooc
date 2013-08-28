@@ -47,6 +47,7 @@ ALLOWED_TAGS = (
         'tbody',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'div', 'big', 'small', 'tt', 'pre',
+        'br',
         )
 ALLOWED_ATTRIBUTES = {
         # bleach.ALLOWED_ATTRIBUTES:
@@ -81,6 +82,7 @@ COMMENT_TAGS = (
         'blockquote', 'i',
         'li', 'ol', 'ul',
         'p', 'tt',
+        'br',
         )
 COMMENT_ATTRIBUTES = {
         # bleach.ALLOWED_ATTRIBUTES:
