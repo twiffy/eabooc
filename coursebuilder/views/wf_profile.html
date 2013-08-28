@@ -10,11 +10,19 @@
     margin-top: 4px;
   }
 </style>
-<ul id="wiki-notifications">
-  {% for note in notifications %}
-  <li>{{ note | safe }}</li>
-  {% endfor %}
-</ul>
+{#% set notifications = ['<a>Here is an example notification</a>', '<a>Here is another one</a>', '<a>Here is another one</a>', '<a>Here is another one</a>'] %#}
+{% if notifications %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-3"></div>
+    <div id="wiki-notifications" class="gcb-col-4">
+      {% for note in notifications %}
+      <span>{{ note | safe }}</span><br>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 {% block main_content %}
 {% if alert %}
