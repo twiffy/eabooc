@@ -41,7 +41,7 @@
       </div>
       <div id="exemplaries" class="gcb-col-5">
         {% for e in exemplaries %}
-        {% if loop.first %}<br><span style="font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
+        {% if loop.first %}<span style="float:left; font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
         {% if loop.last and not loop.first %} and {% endif %}
         <a href="wikiprofile?student={{ e.who.wiki_id }}">{{ e.who.name }}</a>{% if not loop.last%},{%endif%}
         {% if loop.last %}<br>{% endif %}
