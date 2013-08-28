@@ -665,3 +665,8 @@ li.comment {
 
 li.comment p {
   margin-top: 8px; }
+
+div#assignment-completion {
+  background: #cbbbab; }
+  div#assignment-completion > div > div {
+    border: thin solid black; }

@@ -781,3 +781,11 @@ li.comment p {
   margin-top: 8px;
 }
 
+div#assignment-completion {
+  background: lighten($page-bg-color, 10%);
+
+  &>div>div {
+    border: thin solid black;
+  }
+}
+

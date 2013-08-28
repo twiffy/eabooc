@@ -17,31 +17,46 @@
       {{ content | safe }}
     </div>
   </div>
-  <div id="assignment-completion">
-    {% for e in endorsements %}
-    {% if loop.first %}This page has been endorsed as complete by{% endif %}
-    {% if loop.last and not loop.first %} and {% endif %}
-    <a href="wikiprofile?student={{ e.who.wiki_id }}">{{ e.who.name }}</a>{% if not loop.last%},{%endif%}
-    {% else %}
-    This page has not yet been marked as complete.
-    {% endfor %}
-    <br>
-    {% if endorsement_view == 'has_endorsed' %}
-    You have marked this page as complete.
-    {% elif endorsement_view == 'can_endorse' %}
-    <form action="{{ action_url('endorse') }}" method=POST>
-      <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('endorse') }}">
-      Click here to endorse that the author has completed
-      <input type="submit" name="required_done" class="gcb-button" value="the required parts">, or
-      <input type="submit" name="all_done" class="gcb-button" value="the required AND optional parts"> of the assignment.
-    </form>
-    {% endif %}
-    {% for e in exemplaries %}
-    {% if loop.first %}<br><span style="font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
-    {% if loop.last and not loop.first %} and {% endif %}
-    <a href="wikiprofile?student={{ e.who.wiki_id }}">{{ e.who.name }}</a>{% if not loop.last%},{%endif%}
-    {% else %}<!-- no exemplaries -->
-    {% endfor %}
+  <div class="gcb-cols">
+    <div id="assignment-completion" class="gcb-col-11 gcb-aside">
+      <div id="endorsements" class="gcb-col-5">
+        {% for e in endorsements %}
+        {% if loop.first %}This page has been endorsed as complete by{% endif %}
+        {% if loop.last and not loop.first %} and {% endif %}
+        <a href="wikiprofile?student={{ e.who.wiki_id }}">{{ e.who.name }}</a>{% if not loop.last%},{%endif%}
+        {% else %}
+        <b>This page has not yet been marked as complete.</b>
+        {% endfor %}
+        <br>
+        {% if endorsement_view == 'has_endorsed' %}
+        You have marked this page as complete.
+        {% elif endorsement_view == 'can_endorse' %}
+        <form action="{{ action_url('endorse') }}" method="POST">
+          <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('endorse') }}">
+          Click here to endorse that the author has completed
+          <input type="submit" name="required_done" class="gcb-button" value="the required parts">, or
+          <input type="submit" name="all_done" class="gcb-button" value="the required AND optional parts"> of the assignment.
+        </form>
+        {% endif %}
+      </div>
+      <div id="exemplaries" class="gcb-col-5">
+        {% for e in exemplaries %}
+        {% if loop.first %}<br><span style="font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
+        {% if loop.last and not loop.first %} and {% endif %}
+        <a href="wikiprofile?student={{ e.who.wiki_id }}">{{ e.who.name }}</a>{% if not loop.last%},{%endif%}
+        {% if loop.last %}<br>{% endif %}
+        {% else %}<!-- no exemplaries -->
+        {% endfor %}
+        {% if endorsement_view in ('can_endorse', 'has_endorsed') %}
+        You can mark this page as exemplary!<br>
+        <form action="{{ action_url('exemplary') }}" method="POST">
+          <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('exemplary') }}">
+          <textarea name="comment" style="width: 100%" rows="2"></textarea><br>
+          <input type="submit" class="gcb-button" value="Exemplary">
+        </form>
+        {% endif %}
+      </div>
+    </div>
 
   </div>
   {% include "comment_area.html" %}
