@@ -46,6 +46,7 @@ class ConfirmationForm(wtf.Form):
     book_other = wtf.TextField()
     accept_location = wtf.BooleanField("Location", default=True)
 
+MAXIMUM_PARTICIPANTS = 500
 PARTICIPANT_COUNT = "participant-count"
 def get_student_count():
     count = generalcounter.get_count(PARTICIPANT_COUNT)
@@ -56,6 +57,9 @@ def get_student_count():
 
 def inc_student_count():
     generalcounter.increment(PARTICIPANT_COUNT)
+
+def course_is_full():
+    return get_student_count() >= MAXIMUM_PARTICIPANTS
 
 def on_pre_assignment_submission(handler, user, form):
     submission = FormSubmission(form_name='pre', user=user)
@@ -120,6 +124,9 @@ class ConfirmationHandler(BaseHandler):
                 users.create_login_url(self.request.uri), normalize=False)
             return
         user = self.personalize_page_and_get_enrolled()
+        if course_is_full():
+            self.render_full_course_sadness_page()
+            return
         if not user:
             # there is a user, but they are not enrolled
             self.redirect('/register')
@@ -143,6 +150,7 @@ class ConfirmationHandler(BaseHandler):
         self.template_value['navbar'] = {'registration': True}
         self.template_value['form'] = form
         self.template_value['list'] = list
+        self.template_value['max_student_count'] = MAXIMUM_PARTICIPANTS
         self.template_value['student_count'] = get_student_count()
         self.template_value['xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('register-conf-post-' + self._page()))
@@ -155,6 +163,9 @@ class ConfirmationHandler(BaseHandler):
             return
         if not self.assert_xsrf_token_or_fail(self.request, 'register-conf-post-' + self._page()):
             return
+        if course_is_full():
+            self.render_full_course_sadness_page()
+            return
 
         page = self._page()
 
@@ -164,6 +175,12 @@ class ConfirmationHandler(BaseHandler):
         else:
             # Validation errors will be included in the 'form' object
             self.do_render(form, self.templates[page])
+
+    def render_full_course_sadness_page(self):
+        self.template_value['course_status'] = 'full'
+        self.template_value['navbar'] = {'registration': True}
+        self.render('confirmation.html')
+
 
 class StudentCountHandler(BaseHandler):
     def get(self):
