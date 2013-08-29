@@ -494,16 +494,16 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.template_value['is_author'] = True
                 self.template_value['endorsement_view'] = 'author'
                 self.template_value['exemplary_view'] = 'author'
-            elif Annotation.endorsements(page, user).count(limit=1) > 0:
-                self.template_value['endorsement_view'] = 'has_endorsed'
             else:
-                self.template_value['endorsement_view'] = 'can_endorse'
+                if Annotation.endorsements(page, user).count(limit=1) > 0:
+                    self.template_value['endorsement_view'] = 'has_endorsed'
+                else:
+                    self.template_value['endorsement_view'] = 'can_endorse'
 
-            if Annotation.exemplaries(page, user).count(limit=1) > 0:
-                self.template_value['exemplary_view'] = 'has_exemplaried'
-            else:
-                self.template_value['exemplary_view'] = 'can_exemplary'
-
+                if Annotation.exemplaries(page, user).count(limit=1) > 0:
+                    self.template_value['exemplary_view'] = 'has_exemplaried'
+                else:
+                    self.template_value['exemplary_view'] = 'can_exemplary'
         else:
             content = "The page you requested could not be found."
             self.error(404)
