@@ -488,7 +488,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['endorsements'] = prefetch.prefetch_refprops(
                     Annotation.endorsements(page), Annotation.who)
 
-            self.template_value['exemplaries'] = Annotation.exemplaries(page)
+            self.template_value['exemplaries'] = prefetch.prefetch_refprops(
+                    Annotation.exemplaries(page), Annotation.who)
 
             if query['student'] == user.wiki_id:
                 self.template_value['is_author'] = True
