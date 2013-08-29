@@ -68,10 +68,11 @@ class WikiComment(models.BaseEntity):
     topic = db.ReferenceProperty(WikiPage, collection_name="comments")
     added_time = db.DateTimeProperty(auto_now_add=True)
     text = db.TextProperty()
-    # May need to store some stuff about the author in this model,
-    # so that it isn't fetched all the time?
-    # Or maybe cache it???  Can ReferenceProperty be smart enough
-    # to consult the cache?
+
+    editor = db.ReferenceProperty(models.Student, collection_name="wiki_comments_edited")
+    edited_time = db.DateTimeProperty(auto_now=True)
+    is_edited = db.BooleanProperty()
+    is_deleted = db.BooleanProperty()
 
 class Annotation(models.BaseEntity):
     """Endorsements, flags-as-abuse, and exemplaries."""

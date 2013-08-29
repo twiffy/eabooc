@@ -2,15 +2,25 @@
   <div class="gcb-col-11 gcb-aside">
     <ol>
       {% for comment in comments %}
-      <li class="comment"><b><a name="comment-{{ comment.key().id() }}" href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b> said:
+      <li class="comment"><b><a name="comment-{{ comment.key().id() }}"
+          href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b> said:
+      {% if comment.is_deleted %}
+      <span class="deleted">(This comment was deleted by {{ student_link(comment.editor) }})</span>
+      {% else %}
       {{ comment.text | safe }}
       <div class="comment-actions">
+        <div style="float: left;">{{ humanize.naturaltime(comment.added_time) }}
+        {% if comment.is_edited %}
+          - <b>edited</b> {{ humanize.naturaltime(comment.edited_time) }} by {{ student_link(comment.editor) }}
+        {% endif %}
+        </div>
         {% if user_can_edit_comment(comment) %}
         <a href="wikicomment?comment_id={{ comment.key().id() }}">edit</a>
         <a href="wikicomment?comment_id={{ comment.key().id() }}&action=delete" class="delete-link">delete</a>
         {% endif %}
         <a href="{{ action_url('view') }}#comment-{{ comment.key().id() }}">permalink</a>
       </div>
+      {% endif %}
       </li>
       {% else %}
       <li><em>No comments yet.</em></li>

@@ -287,6 +287,10 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
             return
 
         comment = self._find_comment()
+        if comment.is_deleted:
+            self.template_value['content'] = 'You cannot edit a deleted comment'
+            self.render('bare.html')
+            return
 
         query = {
                 'student': comment.author.wiki_id,
@@ -312,6 +316,10 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
             return
 
         comment = self._find_comment()
+        if comment.is_deleted:
+            self.template_value['content'] = 'You cannot edit a deleted comment'
+            self.render('bare.html')
+            return
 
         query = {
                 'student': comment.author.wiki_id,
@@ -321,6 +329,8 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         old_text = comment.text
         comment.text = bleach_comment(self.request.get('text', ''))
+        comment.is_edited = True
+        comment.editor = user
         comment.put()
 
         EventEntity.record(
@@ -369,11 +379,6 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 }
         self.assert_editor_role(query, user)
 
-        new_text = Markup('''<span class="deleted">This comment was deleted by
-                <a href="wikiprofile?student=%d">%s</a>.
-                </span>''')
-        new_text = new_text % (user.wiki_id, user.name)
-
         EventEntity.record(
                 'wiki-comment-delete', users.get_current_user(), transforms.dumps({
                     'comment-author': comment.author.key().name(),
@@ -382,7 +387,9 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     'text': comment.text,
                     }))
 
-        comment.text = new_text
+        comment.is_deleted = True
+        comment.is_edited = True
+        comment.editor = user
         comment.put()
         self.redirect(comment.topic.link)
 
