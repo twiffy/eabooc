@@ -3,6 +3,11 @@
 {% include "notifications_area.html" %}
 {% endblock %}
 {% block main_content %}
+<style>
+  div#exemplary-text {
+    display: none;
+  }
+</style>
 {% if editor_role and can_do_assignments %}
 <a href="{{action_url('edit')}}">edit</a> as {{ editor_role }}
 {% endif %}
@@ -43,8 +48,10 @@
         {% for e in exemplaries %}
         {% if loop.first %}<span style="float:left; font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
         {% if loop.last and not loop.first %} and {% endif %}
-        <a href="wikiprofile?student={{ e.who.wiki_id }}">{{ e.who.name }}</a>{% if not loop.last%},{%endif%}
-        {% if loop.last %}<br>{% endif %}
+        {{ author_link(e.who) }}{% if not loop.last%},{%endif%}
+        {% if loop.last %}
+        <br><a onclick="$('div#exemplary-text').toggle()">Show reasons</a><br>
+        {% endif %}
         {% else %}<!-- no exemplaries -->
         {% endfor %}
         {% if exemplary_view == 'can_exemplary' %}
@@ -57,6 +64,11 @@
         {% elif exemplary_view == 'has_exemplaried' %}
         You have marked this page as exemplary.
         {% endif %}
+      </div>
+      <div id="exemplary-text" class="gcb-col-11">
+        {% for e in exemplaries %}
+        {{ author_link(e.who) }} says: {{ e.reason | safe }}
+        {% endfor %}
       </div>
     </div>
 
