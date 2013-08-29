@@ -9,6 +9,7 @@ from models.roles import Roles
 from common import ckeditor, prefetch
 import bleach
 import webapp2
+import humanize
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
 from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
 from google.appengine.api import users, mail
@@ -102,6 +103,7 @@ class WikiBaseHandler(BaseHandler):
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
         self.template_value['student_link'] = filters.student_link
+        self.template_value['humanize'] = humanize
         if hasattr(self, 'create_xsrf_token'):
             # TODO: refactor to split more complicated pages out from the profile list handler
             self.template_value['create_xsrf_token'] = self.create_xsrf_token

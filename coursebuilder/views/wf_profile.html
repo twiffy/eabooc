@@ -50,11 +50,11 @@
         {% endif %}
       </div>
       <div class="gcb-col-5">
-        Recent activity by {{ author_name }}:
+        Recent endorsements by {{ author_name }}:
         <ul>
           {% for e in endorsements %}
           <li>{% if e.why == 'exemplary' %}<span style="color: #fc0;">&#9733;</span>{%endif%}
-          <a href="{{ e.what.link }}">{{ e.what.title }}</a> by {{ e.what.author.name }} at {{ e.timestamp }}</li>
+          <a href="{{ e.what.link }}">{{ e.what.title }}</a> by {{ e.what.author.name }},  {{ humanize.naturaltime(e.timestamp) }}</li>
           {% endfor %}
         </ul>
       </div>

@@ -61,6 +61,7 @@ class _Library(object):
 # Third-party library zip files.
 THIRD_PARTY_LIBS = [
     _Library('babel-0.9.6.zip'),
+    _Library('humanize-0.5.zip', relative_path='humanize-0.5'),
     _Library('html5lib-0.95.zip'),
     _Library('httplib2-0.8.zip', relative_path='httplib2-0.8/python2'),
     _Library('gaepytz-2011h.zip'),
