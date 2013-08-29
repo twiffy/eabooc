@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import jinja2
 
-def author_link(author, text=None):
+def student_link(author, text=None):
     '''
     Create a link to the wikifolio page of the author.
 

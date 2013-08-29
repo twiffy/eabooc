@@ -18,7 +18,7 @@
       <h1>Unit {{ unit.unit_id }} - {{ unit.title | safe }} <small class="wiki-unit-link">
           <a href="unit?unit={{ unit.unit_id }}">(prompt)</a></small></h1>
       {% endif %}
-      <div>by {{ author_link(author) }}</div>
+      <div>by {{ student_link(author) }}</div>
       {{ content | safe }}
     </div>
   </div>
@@ -48,7 +48,7 @@
         {% for e in exemplaries %}
         {% if loop.first %}<span style="float:left; font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
         {% if loop.last and not loop.first %} and {% endif %}
-        {{ author_link(e.who) }}{% if not loop.last%},{%endif%}
+        {{ student_link(e.who) }}{% if not loop.last%},{%endif%}
         {% if loop.last %}
         <br><a onclick="$('div#exemplary-text').toggle()">Show reasons</a><br>
         {% endif %}
@@ -67,7 +67,7 @@
       </div>
       <div id="exemplary-text" class="gcb-col-11">
         {% for e in exemplaries %}
-        {{ author_link(e.who) }} says: {{ e.reason | safe }}
+        {{ student_link(e.who) }} says: {{ e.reason | safe }}
         {% endfor %}
       </div>
     </div>

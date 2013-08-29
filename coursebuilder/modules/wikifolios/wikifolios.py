@@ -101,7 +101,7 @@ class WikiBaseHandler(BaseHandler):
         user = self.personalize_page_and_get_enrolled()
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
-        self.template_value['author_link'] = filters.author_link
+        self.template_value['student_link'] = filters.student_link
         if hasattr(self, 'create_xsrf_token'):
             # TODO: refactor to split more complicated pages out from the profile list handler
             self.template_value['create_xsrf_token'] = self.create_xsrf_token
