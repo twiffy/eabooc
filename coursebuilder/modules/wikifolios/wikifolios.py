@@ -895,7 +895,6 @@ class WikiCommentStreamHandler(WikiBaseHandler):
         latest_comments = WikiComment.all().order('added_time').run(limit=10)
 
         self.template_value['comments'] = latest_comments
-        self.template_value['action_url'] = lambda x: ''
 
         self.render('wf_admin_comment_list.html')
 
