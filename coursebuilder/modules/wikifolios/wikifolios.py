@@ -562,13 +562,28 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.abort(403, "You are not allowed to mark your own page complete.")
 
         page = self._find_page(query)
-        if Annotation.endorsements(page, user).count(limit=1) > 0:
-            logging.warning("Attempt to mark complete multiple times.")
-            self.abort(403, "You've already marked this page complete.")
+        existing_endorsement = Annotation.endorsements(page, user).get()
+        if 'undo' in self.request.POST:
+            if existing_endorsement:
+                existing_endorsement.delete()
+                EventEntity.record(
+                        'wiki-endorse-delete', users.get_current_user(),
+                        transforms.dumps({
+                            'endorsed-page': str(page.key())
+                            }))
+        else:
+            if existing_endorsement:
+                logging.warning("Attempt to mark complete multiple times.")
+                self.abort(403, "You've already marked this page complete.")
+            Annotation.endorse(page, user, 'all_done' in self.request.POST)
+            EventEntity.record(
+                    'wiki-endorse', users.get_current_user(),
+                    transforms.dumps({
+                        'all_done': 'all_done' in self.request.POST,
+                        'endorsed-page': str(page.key())
+                        }))
 
-        Annotation.endorse(page, user, 'all_done' in self.request.POST)
         self.redirect(self._create_action_url(query, 'view'))
-
 
     def get_edit(self):
         user = self.personalize_page_and_get_wiki_user()

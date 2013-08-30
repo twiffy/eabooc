@@ -33,14 +33,17 @@
         <b>This page has not yet been marked as complete.</b>
         {% endfor %}
         <br>
-        {% if endorsement_view == 'has_endorsed' %}
-        You have marked this page as complete.
-        {% elif endorsement_view == 'can_endorse' %}
+        {% if endorsement_view != 'author' %}
         <form action="{{ action_url('endorse') }}" method="POST">
           <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('endorse') }}">
+          {% if endorsement_view == 'has_endorsed' %}
+          You have marked this page as complete.  You can
+          <input type="submit" name="undo" class="gcb-button" value="undo"> the endorsement.
+          {% elif endorsement_view == 'can_endorse' %}
           Click here to endorse that the author has completed
           <input type="submit" name="required_done" class="gcb-button" value="the required parts">, or
           <input type="submit" name="all_done" class="gcb-button" value="the required AND optional parts"> of the assignment.
+          {% endif %}
         </form>
         {% endif %}
       </div>
@@ -59,7 +62,7 @@
         <form action="{{ action_url('exemplary') }}" method="POST">
           <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('exemplary') }}">
           <textarea name="comment" style="width: 100%" rows="2" placeholder="This is great because..."></textarea><br>
-          <input type="submit" class="gcb-button" value="Exemplary">
+          <input type="submit" class="gcb-button" value="&#9733; Exemplary">
         </form>
         {% elif exemplary_view == 'has_exemplaried' %}
         You have marked this page as exemplary.
