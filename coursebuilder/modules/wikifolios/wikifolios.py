@@ -884,6 +884,21 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         what = Markup("profile page")
         return whose + what
 
+class WikiCommentStreamHandler(WikiBaseHandler):
+    def get(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+        if not Roles.is_course_admin(self.app_context):
+            self.abort(403)
+
+        latest_comments = WikiComment.all().order('added_time').run(limit=10)
+
+        self.template_value['comments'] = latest_comments
+        self.template_value['action_url'] = lambda x: ''
+
+        self.render('wf_admin_comment_list.html')
+
 module = None
 
 def register_module():
@@ -894,6 +909,7 @@ def register_module():
             ('/wikicomment', WikiCommentHandler),
             ('/wikiprofile', WikiProfileHandler),
             ('/participants', WikiProfileListHandler),
+            ('/comment_stream', WikiCommentStreamHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",
