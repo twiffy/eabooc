@@ -186,7 +186,6 @@ class Student(BaseEntity):
 
     def __init__(self, *args, **kwargs):
         super(Student, self).__init__(*args, **kwargs)
-        self.ensure_wiki_id()
 
     def ensure_wiki_id(self):
         if not self.wiki_id:
@@ -216,6 +215,7 @@ class Student(BaseEntity):
 
     def put(self):
         """Do the normal put() and also add the object to memcache."""
+        self.ensure_wiki_id()
         result = super(Student, self).put()
         MemcacheManager.set(self._memcache_key(self.key().name()), self)
         MemcacheManager.set(self._memcache_key(self.wiki_id, by='wiki_id'), self)
