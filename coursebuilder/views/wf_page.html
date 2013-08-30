@@ -64,14 +64,14 @@
           <textarea name="comment" style="width: 100%" rows="2" placeholder="This is great because..."></textarea><br>
           <input type="submit" class="gcb-button" value="&#9733; Exemplary">
         </form>
+        <div id="exemplary-text" class="gcb-col-11">
+          {% for e in exemplaries %}
+          {{ student_link(e.who) }} says: {{ e.reason | safe }}
+          {% endfor %}
+        </div>
         {% elif exemplary_view == 'has_exemplaried' %}
         You have marked this page as exemplary.
         {% endif %}
-      </div>
-      <div id="exemplary-text" class="gcb-col-11">
-        {% for e in exemplaries %}
-        {{ student_link(e.who) }} says: {{ e.reason | safe }}
-        {% endfor %}
       </div>
     </div>
 
