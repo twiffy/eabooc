@@ -67,7 +67,7 @@ def on_pre_assignment_submission(handler, user, form):
         setattr(submission, k, db.Text(v))
     submission.put()
 
-    allowed_tags = ['p', 'i', 'b', 'a']
+    allowed_tags = ['p', 'i', 'b', 'a', 'br']
     profile_page = WikiPage.get_page(user, unit=None, create=True)
     profile_page.text = bleach.clean(form.introduction.data,
             tags=allowed_tags)
