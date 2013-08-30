@@ -15,7 +15,6 @@
 {% if editor_role == 'admin' %}
 <center><div id="alerts-bar">You are editing someone else's page, as an admin.</div></center>
 {% endif %}
-<span id="wikifolio-links"><a href="students">&larr; All students</a></span>
 <h1>{{ author_name }}</h1>
 <form method="POST" action="{{ action_url('save') }}">
   <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
