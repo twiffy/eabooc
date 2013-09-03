@@ -24,6 +24,7 @@ import functools
 import urllib
 import wtforms as wtf
 from jinja2 import Markup
+from wiki_bleach import *
 
 NO_OBJECT = {}
 
@@ -39,65 +40,6 @@ def get_student_by_wiki_id(wiki_id):
 def student_profile_link(wiki_id):
     return "wikiprofile?" + urllib.urlencode({'student': wiki_id})
 
-ALLOWED_TAGS = (
-        # bleach.ALLOWED_TAGS:
-        'a', 'abbr', 'acronym', 'b',
-        'blockquote', 'code', 'em', 'i',
-        'li', 'ol', 'strong', 'ul',
-        # more:
-        'p', 'strike', 'img', 'table',
-        'thead', 'tr', 'td', 'th',
-        'hr', 'caption', 'summary',
-        'tbody',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'div', 'big', 'small', 'tt', 'pre',
-        )
-ALLOWED_ATTRIBUTES = {
-        # bleach.ALLOWED_ATTRIBUTES:
-        'a': ['href', 'title'],
-        'abbr': ['title'],
-        'acronym': ['title'],
-        # more:
-        'img': ['src', 'alt', 'title'],
-        'table': ['border', 'cellpadding', 'cellspacing', 'style',
-            'bordercolor'],
-        'th': ['scope'],
-        'p': ['style'],
-        'div': ['style'],
-        }
-ALLOWED_STYLES = (
-        # (Bleach's default is no styles allowed)
-        'color', 'width', 'height', 'background-color',
-        'border-collapse', 'padding', 'border',
-        'font-style',
-        )
-
-def bleach_entry(html):
-    cleaned = bleach.clean(html,
-            tags=ALLOWED_TAGS,
-            attributes=ALLOWED_ATTRIBUTES,
-            styles=ALLOWED_STYLES,
-            )
-    return bleach.linkify(cleaned)
-
-COMMENT_TAGS = (
-        'a', 'b',
-        'blockquote', 'i',
-        'li', 'ol', 'ul',
-        'p', 'tt',
-        )
-COMMENT_ATTRIBUTES = {
-        # bleach.ALLOWED_ATTRIBUTES:
-        'a': ['href', 'title'],
-        }
-COMMENT_STYLES = ()
-
-def bleach_comment(html):
-    return bleach.clean(html,
-            tags=COMMENT_TAGS,
-            attributes=COMMENT_ATTRIBUTES,
-            styles=COMMENT_STYLES,
-            )
 
 class WikiBaseHandler(BaseHandler):
     # I don't like how leaky this is, always having to check for the None return.
