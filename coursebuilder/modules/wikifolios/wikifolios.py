@@ -12,6 +12,7 @@ import webapp2
 import humanize
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
 from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
+from modules.regconf.regconf import FormSubmission
 from google.appengine.api import users, mail
 from google.appengine.ext import db
 from modules.wikifolios import page_templates
@@ -780,6 +781,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not profile_page:
             # e.g. there is no student by that ID.
             self.abort(404)
+        self._ensure_curricular_aim(profile_page.author, profile_page)
         self.template_value['fields'] = page_templates.viewable_model(profile_page)
         #self.template_value['fields'] = {
                 #'text': 'hi',
@@ -821,6 +823,16 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         self.render(page_templates.templates['profile'])
 
+    def _ensure_curricular_aim(self, student, page):
+        if not hasattr(page, 'curricular_aim'):
+            pre_assignment = (FormSubmission.all()
+                .filter('form_name', 'pre')
+                .filter('user', student.key())
+                .order('-submitted').get())
+            page.curricular_aim = bleach_entry(
+                    pre_assignment.curricular_aim)
+
+
     def get_edit(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
@@ -840,6 +852,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         profile_page = self._find_page(query, create=True)
         assert profile_page
+        self._ensure_curricular_aim(profile_page.author, profile_page)
         student_model = profile_page.author
 
         self.template_value['editing'] = True
