@@ -672,3 +672,9 @@ div#assignment-completion {
 .comment .deleted {
   color: #999;
   font-style: italic; }
+
+div.wiki-user-content {
+  padding: 4px;
+  border: thin dashed #d5c796; }
+  div.wiki-user-content > :first-child {
+    margin-top: 0; }

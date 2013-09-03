@@ -789,3 +789,12 @@ div#assignment-completion {
   color: #999;
   font-style: italic;
 }
+
+div.wiki-user-content {
+  padding: 4px;
+  border: thin dashed darken($content-bg-color, 20%);
+  &> :first-child {
+    margin-top: 0;
+  }
+}
+

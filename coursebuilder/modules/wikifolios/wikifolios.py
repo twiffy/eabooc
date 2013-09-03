@@ -465,7 +465,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.error(404)
             self.render("wf_page.html")
 
-        self.render("wf_temp_u1.html")
+        self.render(page_templates.templates[query['unit']])
 
     def post_exemplary(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -579,20 +579,27 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             return
         page = self._find_page(query, create=True)
 
-        old_text = page.text
-        page.text = bleach_entry(self.request.get('text', ''))
-        page.unit = query['unit']
-        page.title = self.get_unit(query['unit']).title
+        form_init = page_templates.forms[query['unit']]
+        form = form_init(self.request.POST)
+        if not form.validate():
+            self.abort(403, 'Form did not validate.........')
 
+        old_page = db.to_dict(page)
+        # TODO fix
+        del old_page['edited_timestamp']
+        for k,v in form.data.items():
+            setattr(page, k, db.Text(v))
+        page.unit = query['unit']
         page.put()
         EventEntity.record(
                 'edit-wiki-page', users.get_current_user(), transforms.dumps({
                     'page-author': page.author.key().name(),
                     'page-editor': user.key().name(),
                     'unit': page.unit,
-                    'before': old_text,
-                    'after': page.text,
+                    'before': old_page,
+                    'after': form.data,
                     }))
+
         self.redirect(self._create_action_url(query, 'view'))
 
 

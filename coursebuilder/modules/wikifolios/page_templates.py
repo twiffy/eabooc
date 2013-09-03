@@ -7,6 +7,7 @@ from wiki_bleach import BleachedTextAreaField
 
 templates = {}
 forms = {}
+
 class ProfilePageForm(wtf.Form):
     text = BleachedTextAreaField('Introduction')
     curricular_aim = BleachedTextAreaField('Curricular Aim')
@@ -15,10 +16,16 @@ forms['profile'] = ProfilePageForm
 templates['profile'] = 'wf_profile.html'
 
 class UnitOnePageForm(wtf.Form):
-    role = BleachedTextAreaField('Curricular Aim')
-    setting = BleachedTextAreaField('Curricular Aim')
-    curricular_aim = BleachedTextAreaField('Curricular Aim')
-    instructional_context = BleachedTextAreaField('Curricular Aim')
+    role = BleachedTextAreaField()
+    setting = BleachedTextAreaField()
+    curricular_aim = BleachedTextAreaField()
+    instructional_context = BleachedTextAreaField()
+    educational_standards = BleachedTextAreaField()
+    what_to_assess = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
 
 forms[1] = UnitOnePageForm
 templates[1] = 'wf_temp_u1.html'
