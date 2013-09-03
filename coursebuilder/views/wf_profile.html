@@ -27,7 +27,7 @@
       <div><a href="{{ action_url('edit') }}">edit</a> as {{ editor_role }}</div>
       {% endif %}
       {% if editing %}
-      <form action="{{ action_url('save') }}" method="POST">
+      <form id="wiki-form" action="{{ action_url('save') }}" method="POST">
         {% endif %}
         <label><h2>Introduction</h2>
           {{ fields.text }}</label>
@@ -89,11 +89,13 @@
 </div>
 {% if editing %}
 <script src="/assets/ckeditor/ckeditor.js"></script>
+<script src="/assets/ckeditor/adapters/jquery.js"></script>
 <script>
-  // TODO
- // CKEDITOR.replace('editor', {
- //  allowedContent: '{{ ckeditor_allowed_content }}'
-//});
+  $(document).ready( function() {
+    $('#wiki-form textarea').ckeditor({
+      allowedContent: '{{ ckeditor_allowed_content }}'
+    });
+  });
 </script>
 {% endif %}
 {% endblock %}
