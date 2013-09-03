@@ -426,7 +426,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         page = self._find_page(query)
         if page:
-            content = page.text
+            self.template_value['fields'] = page_templates.viewable_model(page)
 
             self.show_notifications(user)
             self.template_value['comments'] = prefetch.prefetch_refprops(
@@ -460,11 +460,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 else:
                     self.template_value['exemplary_view'] = 'can_exemplary'
         else:
-            content = "The page you requested could not be found."
+            self.template_value['fields'] = {}
+            self.template_value['content'] = "The page you requested could not be found."
             self.error(404)
+            self.render("wf_page.html")
 
-        self.template_value['content'] = content
-        self.render("wf_page.html")
+        self.render("wf_temp_u1.html")
 
     def post_exemplary(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -547,13 +548,13 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         # We call with create=True to eliminate a conditional on how
         # to set the author_name later.  But we don't .put() it.
         page = self._find_page(query, create=True)
-        content = page.text or ''
 
-        self.template_value['author_name'] = page.author.name
-        self.template_value['author_link'] = student_profile_link(
-                query['student'])
-        self.template_value['content'] = content
-        self.render("wf_edit.html")
+        form_init = page_templates.forms[1]
+        self.template_value['fields'] = form_init(None, page)
+
+        self.template_value['author'] = page.author
+        self.template_value['editing'] = True
+        self.render(page_templates.templates[query['unit']])
 
     def get_unit(self, unit_id):
         # TODO find_unit_by_id??

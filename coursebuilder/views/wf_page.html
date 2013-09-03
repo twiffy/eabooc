@@ -8,6 +8,7 @@
     display: none;
   }
 </style>
+<script src="assets/js/collapsibles.js"></script>
 {% if editor_role and can_do_assignments %}
 <a href="{{action_url('edit')}}">edit</a> as {{ editor_role }}
 {% endif %}
@@ -19,7 +20,17 @@
           <a href="unit?unit={{ unit.unit_id }}">(prompt)</a></small></h1>
       {% endif %}
       <div>by {{ student_link(author) }}</div>
-      {{ content | safe }}
+      {% if editing %}
+      <form action="{{ action_url('save') }}" method="POST" id="wiki-form">
+        <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
+        {% endif %}
+        {% block wiki_content %}
+        {% endblock %}
+        {% if editing %}
+        <br>
+        <input type="submit" name="Save" value="Save" class="gcb-button">
+      </form>
+      {% endif %}
     </div>
   </div>
   <div class="gcb-cols">
@@ -89,4 +100,15 @@
   </center>
 </div>
 <script src="/assets/lib/Placeholders.min.js"></script>
+{% if editing %}
+<script src="/assets/ckeditor/ckeditor.js"></script>
+<script src="/assets/ckeditor/adapters/jquery.js"></script>
+<script>
+  $(document).ready( function() {
+    $('#wiki-form textarea').ckeditor({
+      allowedContent: '{{ ckeditor_allowed_content }}'
+    });
+  });
+</script>
+{% endif %}
 {% endblock %}
