@@ -13,6 +13,8 @@ import humanize
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
 from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
 from google.appengine.api import users, mail
+from google.appengine.ext import db
+from modules.wikifolios import page_templates
 import itertools, collections
 import textwrap
 import filters
@@ -778,11 +780,11 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not profile_page:
             # e.g. there is no student by that ID.
             self.abort(404)
-        if not profile_page.text:
-            # The profile is brand new or is blank
-            self.template_value['content'] = "This user has not created a profile yet."
-        else:
-            self.template_value['content'] = profile_page.text
+        self.template_value['fields'] = page_templates.viewable_model(profile_page)
+        #self.template_value['fields'] = {
+                #'text': 'hi',
+                #'curricular_aim': 'bye'
+                #}
 
         self.template_value['author_name'] = profile_page.author.name
         self.template_value['author_link'] = student_profile_link(
@@ -817,7 +819,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     ckeditor.allowed_content(COMMENT_TAGS,
                         COMMENT_ATTRIBUTES, COMMENT_STYLES))
 
-        self.render("wf_profile.html")
+        self.render(page_templates.templates['profile'])
 
     def get_edit(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -840,13 +842,16 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         assert profile_page
         student_model = profile_page.author
 
+        self.template_value['editing'] = True
         self.template_value['author_name'] = student_model.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
 
-        self.template_value['content'] = profile_page.text
+        form_init = page_templates.forms['profile']
 
-        self.render("wf_profile_edit.html")
+        self.template_value['fields'] = form_init(None, profile_page)
+
+        self.render(page_templates.templates['profile'])
 
     def post_save(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -860,16 +865,23 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         page = self._find_page(query, create=True)
 
-        old_text = page.text
-        page.text = bleach_entry(self.request.get('text', ''))
+        form_init = page_templates.forms['profile']
+        form = form_init(self.request.POST)
+        if not form.validate():
+            self.abort(403, 'Form did not validate.........')
 
+        old_page = db.to_dict(page)
+        # TODO fix
+        del old_page['edited_timestamp']
+        for k,v in form.data.items():
+            setattr(page, k, db.Text(v))
         page.put()
         EventEntity.record(
                 'edit-wiki-profile', users.get_current_user(), transforms.dumps({
                     'page-author': page.author.key().name(),
                     'page-editor': user.key().name(),
-                    'before': old_text,
-                    'after': page.text,
+                    'before': old_page,
+                    'after': form.data,
                     }))
         self.redirect(self._create_action_url(query, 'view'))
         return

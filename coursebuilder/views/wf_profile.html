@@ -13,6 +13,9 @@
 {% include "notifications_area.html" %}
 {% endblock %}
 {% block main_content %}
+{% if editing and editor_role == 'admin' %}
+<center><div id="alerts-bar">You are editing someone else's page, as an admin.</div></center>
+{% endif %}
 {% if alert %}
 <center><div id="alerts-bar">{{ alert | safe }}</div></center>
 {% endif %}
@@ -20,10 +23,22 @@
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
       <h1>{{ author_name }}</h1>
-      {% if editor_role %}
+      {% if editor_role and not editing %}
       <div><a href="{{ action_url('edit') }}">edit</a> as {{ editor_role }}</div>
       {% endif %}
-      <div>{{ content | safe }}</div>
+      {% if editing %}
+      <form action="{{ action_url('save') }}" method="POST">
+        {% endif %}
+        <label><h2>Introduction</h2>
+          {{ fields.text }}</label>
+        <label><h2>Curricular Aim</h2>
+          {{ fields.curricular_aim }}</label>
+        {% if editing %}
+        <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
+        <br>
+        <input class="gcb-button" type="submit" value="Save">
+      </form>
+      {% endif %}
     </div>
   </div>
   <div class="gcb-cols">
@@ -72,5 +87,13 @@
     </div>
   </center>
 </div>
-
+{% if editing %}
+<script src="/assets/ckeditor/ckeditor.js"></script>
+<script>
+  // TODO
+ // CKEDITOR.replace('editor', {
+ //  allowedContent: '{{ ckeditor_allowed_content }}'
+//});
+</script>
+{% endif %}
 {% endblock %}

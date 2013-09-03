@@ -3,10 +3,9 @@ from google.appengine.ext import db
 import urllib
 import logging
 
-class WikiPage(models.BaseEntity):
-    text = db.TextProperty()
-    title = db.StringProperty()
+class WikiPage(db.Expando):
     unit = db.IntegerProperty()
+    edited_timestamp = db.DateTimeProperty(auto_now=True)
     # keep update time?  keep history????
 
     @property
