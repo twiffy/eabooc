@@ -783,10 +783,6 @@ li.comment p {
 
 div#assignment-completion {
   background: lighten($page-bg-color, 10%);
-
-  &>div>div {
-    border: thin solid black;
-  }
 }
 
 .comment .deleted {
