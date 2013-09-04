@@ -689,6 +689,8 @@ div#wiki-title-and-edit {
     margin: 5px;
     float: right; }
 
+.ui-helper-reset span {
+  line-height: 1.54; }
 .ui-helper-reset h1 {
   font-size: 200%;
   font-weight: bold; }
@@ -703,4 +705,4 @@ div#wiki-title-and-edit {
   font-weight: bold; }
 
 h1.ui-state-default, h2.ui-state-default, h3.ui-state-default, h4.ui-state-default {
-  color: #000; }
+  color: #444; }

@@ -813,6 +813,9 @@ div#wiki-title-and-edit {
 }
 
 .ui-helper-reset {
+  span {
+    line-height: 1.54;
+  }
   h1 {
     font-size: 200%;
     font-weight: bold;
@@ -833,6 +836,6 @@ div#wiki-title-and-edit {
 
 h1, h2, h3, h4 {
   &.ui-state-default {
-    color: #000;
+    color: #444;
   }
 }
