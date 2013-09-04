@@ -22,7 +22,7 @@
             <a href="unit?unit={{ unit.unit_id }}">(prompt)</a></small></h1>
         {% endif %}
         <div>
-          {% if editor_role and can_do_assignments %}
+          {% if editor_role and can_do_assignments and not editing %}
           <a class="gcb-button"
             href="{{action_url('edit')}}">edit</a>
           {% if editor_role != 'author' %} as {{ editor_role }}{% endif %}
