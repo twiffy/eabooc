@@ -271,7 +271,16 @@
 
 <script>
   $(document).ready(function() {
-    $('.wiki-question').accordion({ collapsible: true, active: false, heightStyle: 'content' });
+    var icons = {
+      header: "ui-icon-circle-triangle-e",
+      activeHeader: "ui-icon-circle-triangle-s"
+    };
+    $('.wiki-question').accordion({
+      collapsible: true,
+      active: false,
+      heightStyle: 'content',
+      icons: icons,
+    });
   });
 </script>
 {% endblock %}

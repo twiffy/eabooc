@@ -674,19 +674,20 @@ div#assignment-completion {
   font-style: italic; }
 
 div.wiki-user-content {
-  margin-left: -10px;
-  margin-right: -10px; }
+  padding: 10px; }
   div.wiki-user-content > :first-child {
     margin-top: 0; }
 
 div#wiki-title-and-edit {
   width: 100%;
-  float: left; }
+  float: left;
+  margin: 10px; }
   div#wiki-title-and-edit h1 {
     margin-top: 0;
     float: left; }
   div#wiki-title-and-edit div {
-    margin: 5px;
+    margin-top: 5px;
+    margin-right: 20px;
     float: right; }
 
 .ui-helper-reset span {
@@ -706,3 +707,34 @@ div#wiki-title-and-edit {
 
 h1.ui-state-default, h2.ui-state-default, h3.ui-state-default, h4.ui-state-default {
   color: #444; }
+
+.wiki-area {
+  border: 1px solid;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  margin: 10px 0;
+  position: relative;
+  top: -1px; }
+
+.gcb-cols .wiki-area {
+  margin-top: 10px; }
+
+.wiki-area > :first-child {
+  margin-top: 0; }
+
+.wiki-area > :last-child {
+  margin-bottom: 0; }
+
+.wiki-area {
+  background: #f2eedf;
+  border-color: #333;
+  border-width: 2px; }
+  .wiki-area h2, .wiki-area h3, .wiki-area h4, .wiki-area h5, .wiki-area h6, .wiki-area div {
+    margin-left: 10px;
+    margin-right: 10px; }
+    .wiki-area h2.wiki-question, .wiki-area h2.ui-accordion-header, .wiki-area h3.wiki-question, .wiki-area h3.ui-accordion-header, .wiki-area h4.wiki-question, .wiki-area h4.ui-accordion-header, .wiki-area h5.wiki-question, .wiki-area h5.ui-accordion-header, .wiki-area h6.wiki-question, .wiki-area h6.ui-accordion-header, .wiki-area div.wiki-question, .wiki-area div.ui-accordion-header {
+      margin-left: 0;
+      margin-right: 0;
+      border-left: none;
+      border-right: none; }

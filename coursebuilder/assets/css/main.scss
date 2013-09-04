@@ -791,8 +791,7 @@ div#assignment-completion {
 }
 
 div.wiki-user-content {
-  margin-left: -10px;
-  margin-right: -10px;
+  padding: 10px;
   &> :first-child {
     margin-top: 0;
   }
@@ -801,13 +800,15 @@ div.wiki-user-content {
 div#wiki-title-and-edit {
   width: 100%;
   float: left;
+  margin: 10px;
 
   & h1 {
     margin-top: 0;
     float: left;
   }
   & div {
-    margin: 5px;
+    margin-top: 5px;
+    margin-right: 20px;
     float: right;
   }
 }
@@ -839,3 +840,42 @@ h1, h2, h3, h4 {
     color: #444;
   }
 }
+
+.wiki-area {
+  border: 1px solid;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  margin: 10px 0;
+  position: relative;
+  top: -1px;
+}
+
+.gcb-cols .wiki-area {
+  margin-top: 10px;
+}
+
+.wiki-area>:first-child {
+  margin-top: 0;
+}
+
+.wiki-area>:last-child {
+  margin-bottom: 0;
+}
+
+.wiki-area {
+  background: $content-bg-color;
+  border-color: #333;
+  border-width: 2px;
+  h2, h3, h4, h5, h6, div {
+    margin-left: 10px;
+    margin-right: 10px;
+    &.wiki-question, &.ui-accordion-header {
+      margin-left: 0;
+      margin-right: 0;
+      border-left: none;
+      border-right: none;
+    }
+  }
+}
+
