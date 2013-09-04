@@ -797,6 +797,10 @@ div.wiki-user-content {
   }
 }
 
+form div.wiki-user-content {
+  padding: 0px;
+}
+
 div#wiki-title-and-edit {
   width: 100%;
   float: left;
@@ -867,10 +871,10 @@ h1, h2, h3, h4 {
   background: $content-bg-color;
   border-color: #333;
   border-width: 2px;
-  h2, h3, h4, h5, h6, div {
+  h2, h3, h4, h5, h6, > div {
     margin-left: 10px;
     margin-right: 10px;
-    &.wiki-question, &.ui-accordion-header {
+    &.wiki-question, &.ui-accordion-header, &.wiki-user-content {
       margin-left: 0;
       margin-right: 0;
       border-left: none;
