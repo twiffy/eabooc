@@ -791,8 +791,8 @@ div#assignment-completion {
 }
 
 div.wiki-user-content {
-  padding: 4px;
-  border: thin dashed darken($content-bg-color, 20%);
+  margin-left: -10px;
+  margin-right: -10px;
   &> :first-child {
     margin-top: 0;
   }

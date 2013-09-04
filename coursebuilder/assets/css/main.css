@@ -674,8 +674,8 @@ div#assignment-completion {
   font-style: italic; }
 
 div.wiki-user-content {
-  padding: 4px;
-  border: thin dashed #d5c796; }
+  margin-left: -10px;
+  margin-right: -10px; }
   div.wiki-user-content > :first-child {
     margin-top: 0; }
 
