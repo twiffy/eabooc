@@ -61,6 +61,15 @@ def bleach_comment(html):
             styles=COMMENT_STYLES,
             )
 
+
+# Monkey patch wtforms.Field so that each field gets a Title attribute
+def _awesome_field_call(field_self, **kwargs):
+    args = {'title': field_self.label.text}
+    args.update(kwargs)
+    return field_self.widget(field_self, **args)
+
+wtf.Field.__call__ = _awesome_field_call
+
 class BleachedTextAreaField(wtf.TextAreaField):
     def process_formdata(self, valuelist):
         if valuelist:
