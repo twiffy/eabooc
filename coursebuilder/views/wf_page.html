@@ -12,16 +12,22 @@
   }
 </style>
 <script src="assets/js/collapsibles.js"></script>
-{% if editor_role and can_do_assignments %}
-<a href="{{action_url('edit')}}">edit</a> as {{ editor_role }}
-{% endif %}
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
-      {% if unit %}
-      <h1>Unit {{ unit.unit_id }} - {{ unit.title | safe }} <small class="wiki-unit-link">
-          <a href="unit?unit={{ unit.unit_id }}">(prompt)</a></small></h1>
-      {% endif %}
+      <div id="wiki-title-and-edit">
+        {% if unit %}
+        <h1>Unit {{ unit.unit_id }} - {{ unit.title | safe }} <small class="wiki-unit-link">
+            <a href="unit?unit={{ unit.unit_id }}">(prompt)</a></small></h1>
+        {% endif %}
+        <div>
+          {% if editor_role and can_do_assignments %}
+          <a class="gcb-button"
+            href="{{action_url('edit')}}">edit</a>
+          {% if editor_role != 'author' %} as {{ editor_role }}{% endif %}
+          {% endif %}
+        </div>
+      </div>
       <div>by {{ student_link(author) }}</div>
       {% if editing %}
       <form action="{{ action_url('save') }}" method="POST" id="wiki-form">

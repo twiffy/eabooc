@@ -678,3 +678,13 @@ div.wiki-user-content {
   border: thin dashed #d5c796; }
   div.wiki-user-content > :first-child {
     margin-top: 0; }
+
+div#wiki-title-and-edit {
+  width: 100%;
+  float: left; }
+  div#wiki-title-and-edit h1 {
+    margin-top: 0;
+    float: left; }
+  div#wiki-title-and-edit div {
+    margin: 5px;
+    float: right; }

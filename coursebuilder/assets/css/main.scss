@@ -798,3 +798,17 @@ div.wiki-user-content {
   }
 }
 
+div#wiki-title-and-edit {
+  width: 100%;
+  float: left;
+
+  & h1 {
+    margin-top: 0;
+    float: left;
+  }
+  & div {
+    margin: 5px;
+    float: right;
+  }
+}
+
