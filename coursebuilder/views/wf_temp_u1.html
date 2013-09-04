@@ -22,8 +22,9 @@ ol{margin:0;padding:0}
   </style>
     <h2>Context</h2>
 
+    <div class="wiki-question">
   <h3>ROLE</h3>
-  <p class="c3 collapsible"><span class="c0">1. Define your ROLE.</span>
+  <p class="c3"><span class="c0">1. Define your ROLE.</span>
   <span>Describe your current or future role (for instance,
   Educator, Administrator, Researcher). You will use this role as
   your lens to the material we cover in this course. It is
@@ -33,10 +34,12 @@ ol{margin:0;padding:0}
   course. When you explain your role, be sure to state how you
   imagine the role will influence your understanding of Educational
   Assessment.</span></p>
+</div>
 <div class="wiki-user-content">{{ fields.role }}</div>
 
   <p class="c1"></p>
 
+    <div class="wiki-question">
   <h3>SETTING</h3>
   <p class="c3 collapsible"><span class="c0">2.</span> <span class="c0">Define
   your SETTING.</span> <span>Describe the setting in which you plan
@@ -46,10 +49,12 @@ ol{margin:0;padding:0}
   understand your setting. You may choose to include a link, or you
   can describe your setting abstractly (that is, you may
   keep</span> <span>your actual setting unknown).</span></p>
+</div>
 <div class="wiki-user-content">{{ fields.setting }}</div>
 
   <p class="c1"></p>
 
+    <div class="wiki-question">
   <h3>CURRICULAR AIM</h3>
   <p class="c3 collapsible c13"><span class="c0">3. &nbsp;Refine your</span>
   <span class="c0">C</span><span class="c0">URRICULAR AIM.</span>
@@ -67,17 +72,21 @@ ol{margin:0;padding:0}
   what Popham describes as a “broad scope” curricular aim.</span>
   <span class="c4">&nbsp;</span><span>(see Curricular Aim
   FAQs)</span></p>
+</div>
 <div class="wiki-user-content">{{ fields.curricular_aim }}</div>
 
+    <div class="wiki-question">
   <h3>INSTRUCTIONAL CONTEXT</h3>
   <p class="c13 c3 collapsible"><span class="c0">4. &nbsp;Define your
   INSTRUCTIONAL CONTEXT.</span> <span>Provide some context for your
   curricular aim by describing a lesson or project that you might
   assign to accomplish your curricular aim.</span></p>
+</div>
 <div class="wiki-user-content">{{ fields.instructional_context }}</div>
 
   <h2>Concepts</h2>
 
+    <div class="wiki-question">
   <h3>RELEVENT EDUCATIONAL STANDARD</h3>
   <div class="collapsible">
     <p class="c3"><span class="c0">5. &nbsp;Locate a RELEVANT
@@ -112,10 +121,12 @@ ol{margin:0;padding:0}
     language arts teacher, read about the common core standards and
     say a few things about your standard.</span></p>
   </div>
+</div>
   <div class="wiki-user-content">{{ fields.educational_standards }}</div>
 
   <p class="c1"></p>
 
+    <div class="wiki-question">
   <h3>WHAT-TO-ASSESS CONSIDERATIONS</h3>
   <div class="collapsible">
     <p class="c3"><span class="c0">6. &nbsp;Apply WHAT-TO-ASSESS
@@ -154,10 +165,12 @@ ol{margin:0;padding:0}
     <span>relevant,</span> <span>keeping in mind your role and
     context.</span></p>
   </div>
+</div>
   <div class="wiki-user-content">{{ fields.what_to_assess }}</div>
 
   <p class="c1"></p>
 
+    <div class="wiki-question">
   <h2>Big Ideas</h2>
 
   <p class="c3 collapsible"><span class="c0">7. &nbsp;Describe the three most
@@ -173,10 +186,12 @@ ol{margin:0;padding:0}
   summary at the end of Chapter 2.</span> <span class="c11">Try to
   insert your experience and academic domain into this
   discussion.</span></p>
+</div>
 <div class="wiki-user-content">{{ fields.big_ideas }}</div>
 
   <p class="c1"></p>
 
+    <div class="wiki-question">
 <h2>Self-Check
   (Optional)</h2>
 
@@ -186,10 +201,12 @@ ol{margin:0;padding:0}
   go back over that section.</span> <span class="c0">Add an an
   entry in your wikifolio saying which ones you got wrong and
   why.</span><span>.</span></p>
+</div>
 <div class="wiki-user-content">{{ fields.self_check }}</div>
 
   <p class="c1"></p>
 
+    <div class="wiki-question">
   <h2>Pondertime
     (Optional)</h2>
 
@@ -200,8 +217,10 @@ ol{margin:0;padding:0}
   question that is most relevant to you. &nbsp;</span><span class=
   "c0">Add an entry for the most relevant question and state the
   question and explain why it is most relevant.</span></p>
+</div>
 <div class="wiki-user-content">{{ fields.pondertime }}</div>
 
+    <div class="wiki-question">
 <h2>Reflection
   (Optional)</h2>
 
@@ -247,5 +266,12 @@ ol{margin:0;padding:0}
   should serve as a review and help you better connect the ideas of
   the chapter to your practice.</span></p>
 </div>
+</div>
 <div class="wiki-user-content">{{ fields.reflection }}</div>
+
+<script>
+  $(document).ready(function() {
+    $('.wiki-question').accordion({ collapsible: true, active: false });
+  });
+</script>
 {% endblock %}
