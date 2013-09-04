@@ -410,6 +410,18 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
     def show_unit(self, query):
         self.template_value['unit'] = self.find_unit_by_id(query['unit'])
 
+    def show_comments(self, page):
+        self.template_value['comments'] = prefetch.prefetch_refprops(
+                page.comments.order("added_time").fetch(limit=1000),
+                WikiComment.author)
+
+    def show_all_endorsements(self, page):
+        self.template_value['endorsements'] = prefetch.prefetch_refprops(
+                Annotation.endorsements(page), Annotation.who)
+
+        self.template_value['exemplaries'] = prefetch.prefetch_refprops(
+                Annotation.exemplaries(page), Annotation.who)
+
     def get_view(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
@@ -431,9 +443,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['fields'] = page_templates.viewable_model(page)
 
             self.show_notifications(user)
-            self.template_value['comments'] = prefetch.prefetch_refprops(
-                    page.comments.order("added_time").fetch(limit=1000),
-                    WikiComment.author)
+            self.show_comments(page)
 
             if self._can_comment(query, user):
                 self.template_value['can_comment'] = True
@@ -441,11 +451,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                         ckeditor.allowed_content(COMMENT_TAGS,
                             COMMENT_ATTRIBUTES, COMMENT_STYLES))
 
-            self.template_value['endorsements'] = prefetch.prefetch_refprops(
-                    Annotation.endorsements(page), Annotation.who)
-
-            self.template_value['exemplaries'] = prefetch.prefetch_refprops(
-                    Annotation.exemplaries(page), Annotation.who)
+            self.show_all_endorsements(page)
 
             if query['student'] == user.wiki_id:
                 self.template_value['is_author'] = True
@@ -545,11 +551,14 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.abort(404)
 
         self.assert_editor_role(query, user)
-        self.show_unit(query)
 
         # We call with create=True to eliminate a conditional on how
         # to set the author_name later.  But we don't .put() it.
         page = self._find_page(query, create=True)
+
+        self.show_unit(query)
+        self.show_comments(page)
+        self.show_all_endorsements(page)
 
         form_init = page_templates.forms[1]
         self.template_value['fields'] = form_init(None, page)
