@@ -407,6 +407,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         return page
 
+    def show_unit(self, query):
+        self.template_value['unit'] = self.find_unit_by_id(query['unit'])
 
     def get_view(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -421,7 +423,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             # from personalize_page_etc above
             self.abort(403)
         editor_role = self._editor_role(query, user)
-        self.template_value['unit'] = list([u for u in self.get_units() if u.unit_id == unicode(query['unit'])])[0]
+        self.show_unit(query)
         self.template_value['author'] = get_student_by_wiki_id(query['student'])
 
         page = self._find_page(query)
@@ -543,6 +545,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.abort(404)
 
         self.assert_editor_role(query, user)
+        self.show_unit(query)
 
         # We call with create=True to eliminate a conditional on how
         # to set the author_name later.  But we don't .put() it.
