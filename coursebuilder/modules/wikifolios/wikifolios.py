@@ -459,13 +459,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     self.template_value['exemplary_view'] = 'has_exemplaried'
                 else:
                     self.template_value['exemplary_view'] = 'can_exemplary'
+            self.render(page_templates.templates[query['unit']])
         else:
             self.template_value['fields'] = {}
             self.template_value['content'] = "The page you requested could not be found."
             self.error(404)
             self.render("wf_page.html")
-
-        self.render(page_templates.templates[query['unit']])
 
     def post_exemplary(self):
         user = self.personalize_page_and_get_wiki_user()
