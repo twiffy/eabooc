@@ -1,17 +1,17 @@
 id,type,unit_id,title,release_date,now_available
 1,O,,<b>Part One - Assessment Practices</b>,,False
-2,U,1,Curricular Aim and Standard Selection,available September 10,True
-3,U,2,Selected-Response Formats,available September 11,True
-4,U,3,Constructed-Response Formats,available September 12,False
-5,U,4,Performance and Portfolio Assessment,available September 12,False
+2,U,1,Curricular Aim and Standard Selection,opens September 9,True
+3,U,2,Selected-Response Formats,opens September 16,False
+4,U,3,Constructed-Response Formats,opens September 23,False
+5,U,4,Performance and Portfolio Assessment,opens September 30,False
 6,O,,<b>Part Two - Assessment Principles</b>,,False
-7,U,5,Reliability and Bias,available September 17,True
-8,U,6,Validity,available September 18,False
-9,U,7,Formative Assessment,available September 19,False
+7,U,5,Reliability and Bias,opens October 7,False
+8,U,6,Validity,opens October 14,False
+9,U,7,Formative Assessment,opens October 21,False
 10,A,Mid,Mid-course assessment,,False
 11,O,,<b>Part Three - Assessment Policies</b>,,False
-12,U,8,Standardized Testing,available September 19,True
-13,U,9,Test Preparation,available September 19,False
-14,U,10,Evaluation of Instruction and Teachers,available September 19,False
-15,U,11,Assessment-Based Grading,available September 19,False
+12,U,8,Standardized Testing,opens October 28,False
+13,U,9,Test Preparation,opens November 4,False
+14,U,10,Evaluation of Instruction and Teachers,opens November 11,False
+15,U,11,Assessment-Based Grading,opens November 18,False
 16,O,Fin,Post-course assessment,,False
