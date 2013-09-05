@@ -692,7 +692,8 @@ li.comment {
   background: #f9f8f1;
   border: thin solid #e3dbbb;
   padding: 4px;
-  margin: 1px; }
+  margin: 1px;
+  list-style: none; }
 
 li.comment p {
   margin-top: 8px; }
