@@ -250,7 +250,7 @@ ul#front-nav {
   h2, h3, h4, h5, h6, > div {
     margin-left: 10px;
     margin-right: 10px;
-    &.wiki-question, &.ui-accordion-header, &.wiki-user-content {
+    &.wiki-question, &.ui-accordion-header, &.wiki-user-content, &.wiki-info-collapsible {
       margin-left: 0;
       margin-right: 0;
       border-left: none;
@@ -809,7 +809,7 @@ div.comment-actions {
   padding: 1px;
 }
 
-li.comment {
+#comment-area li {
   background: lighten($content-bg-color, 5%);
   border: thin solid darken($content-bg-color, 10%);
   padding: 4px;
@@ -831,7 +831,7 @@ div#assignment-completion {
 }
 
 div.wiki-user-content {
-  padding: 10px;
+  padding: 10px 20px;
   &> :first-child {
     margin-top: 0;
   }
@@ -861,20 +861,16 @@ div#wiki-title-and-edit {
   span {
     line-height: 1.54;
   }
-  h1 {
-    font-size: 200%;
-    font-weight: bold;
-  }
   h2 {
-    font-size: 180%;
-    font-weight: bold;
-  }
-  h3 {
     font-size: 150%;
     font-weight: bold;
   }
-  h4 {
+  h3 {
     font-size: 130%;
+    font-weight: bold;
+  }
+  h4 {
+    font-size: 120%;
     font-weight: bold;
   }
 }
@@ -885,3 +881,6 @@ h1, h2, h3, h4 {
   }
 }
 
+.wiki-area h2 {
+  text-align: center;
+}

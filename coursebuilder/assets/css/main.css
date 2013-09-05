@@ -204,7 +204,7 @@ ul#front-nav {
   .wiki-area h2, .wiki-area h3, .wiki-area h4, .wiki-area h5, .wiki-area h6, .wiki-area > div {
     margin-left: 10px;
     margin-right: 10px; }
-    .wiki-area h2.wiki-question, .wiki-area h2.ui-accordion-header, .wiki-area h2.wiki-user-content, .wiki-area h3.wiki-question, .wiki-area h3.ui-accordion-header, .wiki-area h3.wiki-user-content, .wiki-area h4.wiki-question, .wiki-area h4.ui-accordion-header, .wiki-area h4.wiki-user-content, .wiki-area h5.wiki-question, .wiki-area h5.ui-accordion-header, .wiki-area h5.wiki-user-content, .wiki-area h6.wiki-question, .wiki-area h6.ui-accordion-header, .wiki-area h6.wiki-user-content, .wiki-area > div.wiki-question, .wiki-area > div.ui-accordion-header, .wiki-area > div.wiki-user-content {
+    .wiki-area h2.wiki-question, .wiki-area h2.ui-accordion-header, .wiki-area h2.wiki-user-content, .wiki-area h2.wiki-info-collapsible, .wiki-area h3.wiki-question, .wiki-area h3.ui-accordion-header, .wiki-area h3.wiki-user-content, .wiki-area h3.wiki-info-collapsible, .wiki-area h4.wiki-question, .wiki-area h4.ui-accordion-header, .wiki-area h4.wiki-user-content, .wiki-area h4.wiki-info-collapsible, .wiki-area h5.wiki-question, .wiki-area h5.ui-accordion-header, .wiki-area h5.wiki-user-content, .wiki-area h5.wiki-info-collapsible, .wiki-area h6.wiki-question, .wiki-area h6.ui-accordion-header, .wiki-area h6.wiki-user-content, .wiki-area h6.wiki-info-collapsible, .wiki-area > div.wiki-question, .wiki-area > div.ui-accordion-header, .wiki-area > div.wiki-user-content, .wiki-area > div.wiki-info-collapsible {
       margin-left: 0;
       margin-right: 0;
       border-left: none;
@@ -688,7 +688,7 @@ div.comment-actions {
   margin: 0px;
   padding: 1px; }
 
-li.comment {
+#comment-area li {
   background: #f9f8f1;
   border: thin solid #e3dbbb;
   padding: 4px;
@@ -706,7 +706,7 @@ div#assignment-completion {
   font-style: italic; }
 
 div.wiki-user-content {
-  padding: 10px; }
+  padding: 10px 20px; }
   div.wiki-user-content > :first-child {
     margin-top: 0; }
 
@@ -727,18 +727,18 @@ div#wiki-title-and-edit {
 
 .ui-helper-reset span {
   line-height: 1.54; }
-.ui-helper-reset h1 {
-  font-size: 200%;
-  font-weight: bold; }
 .ui-helper-reset h2 {
-  font-size: 180%;
-  font-weight: bold; }
-.ui-helper-reset h3 {
   font-size: 150%;
   font-weight: bold; }
-.ui-helper-reset h4 {
+.ui-helper-reset h3 {
   font-size: 130%;
+  font-weight: bold; }
+.ui-helper-reset h4 {
+  font-size: 120%;
   font-weight: bold; }
 
 h1.ui-state-default, h2.ui-state-default, h3.ui-state-default, h4.ui-state-default {
   color: #444; }
+
+.wiki-area h2 {
+  text-align: center; }
