@@ -38,8 +38,12 @@ class ConfirmationForm(wtf.Form):
     book_option = wtf.RadioField("Book Option",
             choices=[
                 ('paperback-7th', '7th edition paperback (currently $93 new at Amazon, $110 at Pearson)'),
-                ('coursesmart', '7th edition e-text from CourseSmart (currently 180-day rental with options to print, $42)'),
-                ('courseload', '7th edition e-text from CourseLoad (IU-enrolled participants automatically receive this e-text; $38 charged to Bursar)'),
+                ('coursesmart', '''7th edition e-text from CourseSmart (currently 180-day rental with options to print, $42).
+                    International Students, please use <a href=
+                    "http://www.coursesmart.co.uk/classroom-assessment-what-teachers-need-to/w-james-popham/dp/9780133492514"
+                    target="_blank">CourseSmart UK</a>.'''),
+                ('courseload', '''7th edition e-text from CourseLoad (IU-enrolled participants automatically receive this e-text;
+                    $38 charged to Bursar)'''),
                 ('paperback-6th', '6th edition paperback (2010, currently $14 used on Amazon)'),
                 ('no-book', 'No book'),
                 ])
