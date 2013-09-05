@@ -14,3 +14,4 @@ curl 'https://docs.google.com/document/d/118I4eHLcjgrdyj06vYDTzp2frKnR9wMIf9-Ydw
 # 10
 # 11
 
+# tidy -utf8 -i -m file-to-modify
