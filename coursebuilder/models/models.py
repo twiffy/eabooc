@@ -182,6 +182,9 @@ class Student(BaseEntity):
     # current notifications!
     notifications = db.StringListProperty(indexed=False)
 
+    is_teaching_assistant = db.BooleanProperty(default=False)
+    group_id = db.StringProperty(indexed=True)
+
     _memcache_ids = set(('email', 'wiki_id'))
 
     def __init__(self, *args, **kwargs):

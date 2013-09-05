@@ -622,8 +622,15 @@ class WikiProfileListHandler(WikiBaseHandler):
                 'researcher': 'Researchers',
                 'student': 'Students',
                 'other': 'Other',
+
+                # these are names, rather than values, of columns
+                'group_id': 'My Group',
+                'is_teaching_assistant': 'Teaching Assistants',
+                None: 'All Students',
                 }
-    allowed_groups = frozenset(('role',))
+    # Gotta change None to 'all' or something... which means messing with conditionals lots
+    allowed_groups = frozenset(('role', None, 'group_id', 'is_teaching_assistant'))
+    default_group = None
 
     def group_name(self, db_val):
         return self.group_names.get(db_val, None) or db_val.title()
@@ -639,7 +646,7 @@ class WikiProfileListHandler(WikiBaseHandler):
         logging.debug(repr(group_by))
         if group_by not in self.allowed_groups:
             logging.debug('Not accepting requested grouping %s', group_by)
-            group_by = None
+            group_by = self.default_group
 
         self.template_value['group_by'] = group_by
 
@@ -649,9 +656,14 @@ class WikiProfileListHandler(WikiBaseHandler):
         student_list = Student.all()
         student_list.filter('is_enrolled =', True)
         student_list.filter('is_participant =', True)
-        if group_by:
+        # TODO refactor to switch & stuff???
+        if group_by == 'role':
             student_list.order(group_by)
             projection.append(group_by)
+        if group_by == 'group_id':
+            student_list.filter('group_id =', user.group_id)
+        elif group_by == 'is_teaching_assistant':
+            student_list.filter('is_teaching_assistant =', True)
         student_list.order('name')
 
         # our course is capped at 500 students, so...
@@ -661,12 +673,12 @@ class WikiProfileListHandler(WikiBaseHandler):
                 limit=FETCH_LIMIT,
                 projection=projection,
                 )
-        if group_by:
+        if group_by == 'role':
             lazy_groups = itertools.groupby(all_students,
                     lambda student: getattr(student, group_by))
             self.template_value['groups'] = lazy_groups
         else:
-            self.template_value['groups'] = [ ('All Students', all_students) ]
+            self.template_value['groups'] = [ (self.group_names[group_by], all_students) ]
 
 
         self.render("wf_list.html")
