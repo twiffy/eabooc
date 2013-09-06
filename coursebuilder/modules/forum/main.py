@@ -817,7 +817,7 @@ routes = [
         Route('/<:[^/]+>/postundel', PostDelUndel, name="PostDelUndel"),
         Route('/<:[^/]+>/post', PostForm, name="PostForm"),
         Route('/<:[^/]+>/topic', TopicForm, name="TopicForm"),
-        Route('/<:[^/]+>/email', EmailForm, name="EmailForm"),
+        #Route('/<:[^/]+>/email', EmailForm, name="EmailForm"),
         Route('/<:[^/]+/?>', TopicList, name="TopicList")]
 
 def main():
