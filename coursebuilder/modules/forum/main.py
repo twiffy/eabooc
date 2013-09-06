@@ -2,7 +2,8 @@
 import os, string, Cookie, sha, time, random, cgi, urllib, datetime, StringIO, pickle
 import wsgiref.handlers
 from google.appengine.api import users
-from google.appengine.api import memcache
+#from google.appengine.api import memcache
+from models.models import MemcacheManager as memcache
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 from google.appengine.ext.webapp import template
@@ -55,7 +56,7 @@ FORUMS_MEMCACHE_KEY = "fo"
 FORUMS_ROOT = "/forum"
 
 def rss_memcache_key(forum):
-    return "rss" + str(forum.key().id)
+    return "rss" + str(forum.key().id())
 
 def topics_memcache_key(forum):
   return "to" + str(forum.key().id())
