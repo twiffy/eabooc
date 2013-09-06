@@ -100,6 +100,10 @@ class Forum(db.Model):
   # Note: import_secret is obsolete
   import_secret = db.StringProperty()
 
+  @property
+  def title_or_url(self):
+      return self.title or self.url
+
 # A forum is collection of topics
 class Topic(db.Model):
   forum = db.Reference(Forum, required=True)
@@ -438,7 +442,6 @@ class ManageForums(FofouBase):
     forumsq = db.GqlQuery("SELECT * FROM Forum")
     forums = []
     for f in forumsq:
-      f.title_or_url = f.title or f.url
       edit_url = FORUMS_ROOT + "/manageforums?forum_key=" + str(f.key())
       if f.is_disabled:
         f.enable_disable_txt = "enable"
@@ -473,8 +476,6 @@ class ForumList(FofouBase):
       return self.redirect(FORUMS_ROOT + "/manageforums")
     MAX_FORUMS = 256 # if you need more, tough
     forums = db.GqlQuery("SELECT * FROM Forum").fetch(MAX_FORUMS)
-    for f in forums:
-        f.title_or_url = f.title or f.url
     tvals = {
       'forums' : forums,
       'isadmin' : users.is_current_user_admin(),
@@ -569,7 +570,6 @@ class TopicList(FofouBase):
     is_moderator = users.is_current_user_admin()
     MAX_TOPICS = 75
     (topics, new_off) = get_topics_for_forum(forum, is_moderator, off, MAX_TOPICS)
-    forum.title_or_url = forum.title or forum.url
     tvals = {
       'siteroot' : siteroot,
       'siteurl' : self.request.url,
@@ -591,7 +591,6 @@ class TopicForm(FofouBase):
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
-    forum.title_or_url = forum.title or forum.url
 
     topic_id = self.request.get('id')
     if not topic_id:
@@ -655,7 +654,6 @@ class EmailForm(FofouBase):
     if not post: return self.redirect(siteroot)
     to_name = post.user_name or post.user_homepage
     subject = "Re: " + (forum.title or forum.url) + " - " + post.topic.subject
-    forum.title_or_url = forum.title or forum.url
     tvals = {
       'siteroot' : siteroot,
       'forum' : forum,
@@ -713,7 +711,6 @@ class PostForm(FofouBase):
     prevEmail = ""
     prevName = ""
     (num1, num2) = (random.randint(1,9), random.randint(1,9))
-    forum.title_or_url = forum.title or forum.url
     tvals = {
       'siteroot' : siteroot,
       'forum' : forum,
