@@ -6,8 +6,6 @@ from google.appengine.api import memcache
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 from google.appengine.ext.webapp import template
-from django.utils import feedgenerator
-from django.template import Context, Template
 import logging
 from offsets import *
 from markupsafe import Markup
@@ -655,84 +653,6 @@ class TopicForm(FofouBase):
     tmpl = os.path.join(tmpldir, "topic.html")
     self.template_out(tmpl, tvals)
 
-# responds to /<forumurl>/rss, returns an RSS feed of recent topics
-# (taking into account only the first post in a topic - that's what
-# joelonsoftware forum rss feed does)
-class RssFeed(webapp.RequestHandler):
-
-  def get(self, *args):
-    (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
-    if not forum or forum.is_disabled:
-      return self.error(HTTP_NOT_FOUND)
-
-    cached_feed = memcache.get(rss_memcache_key(forum))
-    if cached_feed is not None:
-      self.response.headers['Content-Type'] = 'text/xml'
-      self.response.out.write(cached_feed)
-      return
-
-    feed = feedgenerator.Atom1Feed(
-      title = forum.title or forum.url,
-      link = my_hostname() + siteroot + "rss",
-      description = forum.tagline)
-
-    topics = Topic.gql("WHERE forum = :1 AND is_deleted = False ORDER BY created_on DESC", forum).fetch(25)
-    for topic in topics:
-      title = topic.subject
-      link = my_hostname() + siteroot + "topic?id=" + str(topic.key().id())
-      first_post = Post.gql("WHERE topic = :1 ORDER BY created_on", topic).get()
-      msg = first_post.message
-      # TODO: a hack: using a full template to format message body.
-      # There must be a way to do it using straight django APIs
-      name = topic.created_by
-      if name:
-        t = Template("<strong>{{ name }}</strong>: {{ msg|striptags|escape|urlize|linebreaksbr }}")
-      else:
-        t = Template("{{ msg|striptags|escape|urlize|linebreaksbr }}")
-      c = Context({"msg": msg, "name" : name})
-      description = t.render(c)
-      pubdate = topic.created_on
-      feed.add_item(title=title, link=link, description=description, pubdate=pubdate)
-    feedtxt = feed.writeString('utf-8')
-    self.response.headers['Content-Type'] = 'text/xml'
-    self.response.out.write(feedtxt)
-    memcache.add(rss_memcache_key(forum), feedtxt)
-
-# responds to /<forumurl>/rssall, returns an RSS feed of all recent posts
-# This is good for forum admins/moderators who want to monitor all posts
-class RssAllFeed(webapp.RequestHandler):
-
-  def get(self, *args):
-    (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
-    if not forum or forum.is_disabled:
-      return self.error(HTTP_NOT_FOUND)
-
-    feed = feedgenerator.Atom1Feed(
-      title = forum.title or forum.url,
-      link = my_hostname() + siteroot + "rssall",
-      description = forum.tagline)
-
-    posts = Post.gql("WHERE forum = :1 AND is_deleted = False ORDER BY created_on DESC", forum).fetch(25)
-    for post in posts:
-      topic = post.topic
-      title = topic.subject
-      link = my_hostname() + siteroot + "topic?id=" + str(topic.key().id())
-      msg = post.message
-      # TODO: a hack: using a full template to format message body.
-      # There must be a way to do it using straight django APIs
-      name = post.user_name
-      if name:
-        t = Template("<strong>{{ name }}</strong>: {{ msg|striptags|escape|urlize|linebreaksbr }}")
-      else:
-        t = Template("{{ msg|striptags|escape|urlize|linebreaksbr }}")
-      c = Context({"msg": msg, "name" : name})
-      description = t.render(c)
-      pubdate = post.created_on
-      feed.add_item(title=title, link=link, description=description, pubdate=pubdate)
-    feedtxt = feed.writeString('utf-8')
-    self.response.headers['Content-Type'] = 'text/xml'
-    self.response.out.write(feedtxt)
-
 # responds to /<forumurl>/email[?post_id=<post_id>]
 class EmailForm(FofouBase):
 
@@ -962,23 +882,6 @@ class PostForm(FofouBase):
     else:
       self.redirect(siteroot)
 
-class WeMoved(webapp.RequestHandler):
-  def get(self):
-    url = self.request.path_info
-    if url in ["/sumatrapdf/rss", "/sumatrapdf/rssall"]:
-      return self.redirect("http://forums.fofou.org" + url, permanent=True)
-
-    self.response.headers['Content-Type'] = 'text/html'
-    new_url = "http://forums.fofou.org" + url
-    s = """<html><body>This forum has moved! Please try
-<a href="%s">%s</a><body></html>""" % (new_url, new_url)
-    self.response.out.write(s)
-
-def main_moved():
-  application = webapp.WSGIApplication(
-     [('/.*', WeMoved)],
-     debug=False)
-  wsgiref.handlers.CGIHandler().run(application)
 
 from webapp2 import Route
 routes = [
@@ -989,8 +892,6 @@ routes = [
         Route('/<:[^/]+>/post', PostForm, name="PostForm"),
         Route('/<:[^/]+>/topic', TopicForm, name="TopicForm"),
         Route('/<:[^/]+>/email', EmailForm, name="EmailForm"),
-        Route('/<:[^/]+>/rss', RssFeed, name="RssFeed"),
-        Route('/<:[^/]+>/rssall', RssAllFeed, name="RssAllFeed"),
         Route('/<:[^/]+/?>', TopicList, name="TopicList")]
 
 def main():
