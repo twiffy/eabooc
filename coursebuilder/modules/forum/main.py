@@ -548,7 +548,8 @@ def get_topics_for_forum(forum, is_moderator, off, count):
     q = Topic.gql("WHERE forum = :1 ORDER BY created_on DESC", forum)
     topics = q.fetch(1000)
     if topics:
-      memcache.set(key, topics) # TODO: should I pickle?
+      #memcache.set(key, topics) # TODO: should I pickle?
+      pass # Not caching this for now :(
   if not topics:
     return (None, 0)
   if topics and not is_moderator:
