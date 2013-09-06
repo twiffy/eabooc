@@ -11,6 +11,9 @@ from offsets import *
 from markupsafe import Markup
 
 from models.models import Student
+from controllers.utils import BaseHandler
+import controllers.sites
+import humanize
 
 # Structure of urls:
 #
@@ -282,7 +285,14 @@ def get_log_in_out(url):
   else:
     return Markup("<a href=\"%s\">Log in or register</a>") % users.create_login_url(url)
 
-class FofouBase(webapp.RequestHandler):
+def pluralize(n, suffix="s"):
+    logging.info("plur %d %s", n, suffix)
+    return suffix if n != 1 else ''
+
+class FofouBase(BaseHandler):
+  def __init__(self, *args, **kwargs):
+    self.app_context = controllers.sites.get_all_courses()[0]
+    super(FofouBase, self).__init__(*args, **kwargs)
 
   _cookie = None
   # returns either a FOFOU_COOKIE sent by the browser or a newly created cookie
@@ -310,23 +320,28 @@ class FofouBase(webapp.RequestHandler):
     c = self.get_cookie()
     return c.value
 
+  def mess_with_template_environ(self, environ):
+    environ.filters['linebreaksbr'] = str
+    environ.filters['date'] = humanize.naturaltime
+    environ.filters['pluralize'] = pluralize
+
   def template_out(self, template_name, template_values):
+    """Renders a template."""
     self.response.headers['Content-Type'] = 'text/html'
     if None != self._cookie_to_set:
       # a hack extract the cookie part from the whole "Set-Cookie: val" header
       c = str(self._cookie_to_set)
       c = c.split(": ", 1)[1]
       self.response.headers["Set-Cookie"] = c
-    path = os.path.join(os.path.dirname(__file__), template_name)
-    #path = template_name
-    #logging.info("tmpl: %s" % path)
-    res = template.render(path, template_values)
-    self.response.out.write(unicode(res))
+    #path = os.path.join(os.path.dirname(__file__), template_name)
+    path = template_name
+    template = self.get_template(path, additional_dirs=[os.path.dirname(__file__)])
+    template_values.update(self.template_value)
+    self.response.out.write(template.render(template_values))
+
 
   #def redirect(self, where):
     #super(FofouBase, self).redirect("/forum" + where)
-
-
 
 # responds to GET /manageforums[?forum=<key>&disable=yes&enable=yes]
 # and POST /manageforums with values from the form
