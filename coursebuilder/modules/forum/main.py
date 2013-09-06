@@ -406,6 +406,8 @@ class ManageForums(FofouBase):
     return self.redirect(FORUMS_ROOT + url)
 
   def get(self, *args):
+    if not self.personalize_page_and_get_enrolled():
+      return
     if not users.is_current_user_admin():
       return self.redirect(FORUMS_ROOT + "/")
 
@@ -474,6 +476,8 @@ class ManageForums(FofouBase):
 # forum management page if user is admin
 class ForumList(FofouBase):
   def get(self):
+    if not self.personalize_page_and_get_enrolled():
+      return
     if users.is_current_user_admin():
       return self.redirect(FORUMS_ROOT + "/manageforums")
     MAX_FORUMS = 256 # if you need more, tough
@@ -491,6 +495,8 @@ class ForumList(FofouBase):
 # responds to GET /postdel?<post_id> and /postundel?<post_id>
 class PostDelUndel(webapp.RequestHandler):
   def get(self, *args):
+    if not self.personalize_page_and_get_enrolled():
+      return
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
@@ -565,6 +571,8 @@ def get_topics_for_forum(forum, is_moderator, off, count):
 class TopicList(FofouBase):
 
   def get(self, forum):
+    if not self.personalize_page_and_get_enrolled():
+      return
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
@@ -589,6 +597,8 @@ class TopicList(FofouBase):
 class TopicForm(FofouBase):
 
   def get(self, *args):
+    if not self.personalize_page_and_get_enrolled():
+      return
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
@@ -644,6 +654,8 @@ class TopicForm(FofouBase):
 class EmailForm(FofouBase):
 
   def get(self, *args):
+    if not self.personalize_page_and_get_enrolled():
+      return
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
@@ -670,6 +682,8 @@ class EmailForm(FofouBase):
     self.template_out(tmpl, tvals)
 
   def post(self):
+    if not self.personalize_page_and_get_enrolled():
+      return
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
@@ -693,6 +707,8 @@ class EmailForm(FofouBase):
 class PostForm(FofouBase):
 
   def get(self, *args):
+    if not self.personalize_page_and_get_enrolled():
+      return
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
@@ -724,6 +740,8 @@ class PostForm(FofouBase):
     self.template_out(tmpl, tvals)
 
   def post(self, *args):
+    if not self.personalize_page_and_get_enrolled():
+      return
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
