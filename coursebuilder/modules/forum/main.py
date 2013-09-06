@@ -247,7 +247,7 @@ def valid_email(txt):
     return False
   return True
 
-def forum_root(forum): return "/" + forum.url + "/"
+def forum_root(forum): return "/forum/" + forum.url + "/"
 
 def clear_forums_memcache():
   memcache.delete(FORUMS_MEMCACHE_KEY)
@@ -271,7 +271,7 @@ def get_forum_by_url(forumurl):
 
 def forum_siteroot_tmpldir_from_url(url):
   assert '/' == url[0]
-  path = url[1:]
+  path = url[len('/forum/'):]
   if '/' in path:
     (forumurl, rest) = path.split("/", 1)
   else:
@@ -354,6 +354,11 @@ class FofouBase(webapp.RequestHandler):
     res = template.render(path, template_values)
     self.response.out.write(unicode(res))
 
+  def redirect(self, where):
+    super(FofouBase, self).redirect("/forum" + where)
+
+
+
 # responds to GET /manageforums[?forum=<key>&disable=yes&enable=yes]
 # and POST /manageforums with values from the form
 class ManageForums(FofouBase):
@@ -414,7 +419,7 @@ class ManageForums(FofouBase):
     url = "/manageforums?msg=%s" % urllib.quote(to_utf8(msg))
     return self.redirect(url)
 
-  def get(self):
+  def get(self, *args):
     if not users.is_current_user_admin():
       return self.redirect("/")
 
@@ -499,7 +504,7 @@ class ForumList(FofouBase):
 
 # responds to GET /postdel?<post_id> and /postundel?<post_id>
 class PostDelUndel(webapp.RequestHandler):
-  def get(self):
+  def get(self, *args):
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect("/")
@@ -572,7 +577,8 @@ def get_topics_for_forum(forum, is_moderator, off, count):
 # shows a list of topics, potentially starting from topic N
 class TopicList(FofouBase):
 
-  def get(self):
+  def get(self, forum):
+    logging.info("aklsdjfkajskdfjasjdfkjaskdfkjaskdfjkajsdfkjasdkfj")
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect("/")
@@ -596,7 +602,7 @@ class TopicList(FofouBase):
 # responds to /<forumurl>/topic?id=<id>
 class TopicForm(FofouBase):
 
-  def get(self):
+  def get(self, *args):
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect("/")
@@ -653,7 +659,7 @@ class TopicForm(FofouBase):
 # joelonsoftware forum rss feed does)
 class RssFeed(webapp.RequestHandler):
 
-  def get(self):
+  def get(self, *args):
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.error(HTTP_NOT_FOUND)
@@ -695,7 +701,7 @@ class RssFeed(webapp.RequestHandler):
 # This is good for forum admins/moderators who want to monitor all posts
 class RssAllFeed(webapp.RequestHandler):
 
-  def get(self):
+  def get(self, *args):
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.error(HTTP_NOT_FOUND)
@@ -729,7 +735,7 @@ class RssAllFeed(webapp.RequestHandler):
 # responds to /<forumurl>/email[?post_id=<post_id>]
 class EmailForm(FofouBase):
 
-  def get(self):
+  def get(self, *args):
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect("/")
@@ -778,7 +784,7 @@ class EmailForm(FofouBase):
 # responds to /<forumurl>/post[?id=<topic_id>]
 class PostForm(FofouBase):
 
-  def get(self):
+  def get(self, *args):
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect("/")
@@ -977,14 +983,14 @@ from webapp2 import Route
 routes = [
         Route('/', ForumList, name="ForumList"),
         Route('/manageforums', ManageForums, name="ManageForums"),
-        Route('/[^/]+/postdel', PostDelUndel, name="PostDelUndel"),
-        Route('/[^/]+/postundel', PostDelUndel, name="PostDelUndel"),
-        Route('/[^/]+/post', PostForm, name="PostForm"),
-        Route('/[^/]+/topic', TopicForm, name="TopicForm"),
-        Route('/[^/]+/email', EmailForm, name="EmailForm"),
-        Route('/[^/]+/rss', RssFeed, name="RssFeed"),
-        Route('/[^/]+/rssall', RssAllFeed, name="RssAllFeed"),
-        Route('/[^/]+/?', TopicList, name="TopicList")]
+        Route('/<:[^/]+>/postdel', PostDelUndel, name="PostDelUndel"),
+        Route('/<:[^/]+>/postundel', PostDelUndel, name="PostDelUndel"),
+        Route('/<:[^/]+>/post', PostForm, name="PostForm"),
+        Route('/<:[^/]+>/topic', TopicForm, name="TopicForm"),
+        Route('/<:[^/]+>/email', EmailForm, name="EmailForm"),
+        Route('/<:[^/]+>/rss', RssFeed, name="RssFeed"),
+        Route('/<:[^/]+>/rssall', RssAllFeed, name="RssAllFeed"),
+        Route('/<:[^/]+/?>', TopicList, name="TopicList")]
 
 def main():
   application = webapp.WSGIApplication(routes,

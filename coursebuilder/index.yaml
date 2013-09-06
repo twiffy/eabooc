@@ -83,6 +83,12 @@ indexes:
   - name: name
   - name: wiki_id
 
+- kind: Topic
+  properties:
+  - name: forum
+  - name: created_on
+    direction: desc
+
 - kind: WikiComment
   properties:
   - name: topic
