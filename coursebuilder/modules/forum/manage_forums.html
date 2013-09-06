@@ -1,13 +1,13 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>Create a forum</title>
-	<link href="/forum/static/default.css" rel="stylesheet" type="text/css">
-	<script language="javascript" src="/forum/static/default.js" type="text/javascript"></script>
-  <base href="/forum/"/>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block subtitle %}
+List of Forums
+{% endblock %}
+
+{% block main_content %}
+<link href="/forum/static/new.css" rel="stylesheet" type="text/css">
+<script language="javascript" src="/forum/static/default.js" type="text/javascript"></script>
+<div class="gcb-aux">
+  <div class="gcb-aside">
 <script>
 function onUrlFieldChange() {
 	var val = $("urlFieldId").value;
@@ -52,11 +52,11 @@ function onSidebarFieldChange() {
 				Existing forums:
 				<ul>
 					{% for f in forums %}
-					<li> <a href="{{ f.url }}">{{ f.title_or_url }}</a>
+					<li> <a href="/forum/{{ f.url }}">{{ f.title_or_url }}</a>
 						{% if f.no_edit_link %}
 							edit
 						{% else %}
-						  <a href="/manageforums?forum_key={{ f.key }}">edit</a>
+						  <a href="/forum/manageforums?forum_key={{ f.key() }}">edit</a>
 						{% endif %}
 						&nbsp;<a href="{{ f.enable_disable_url }}">{{ f.enable_disable_txt }}</a></li>
 					{% endfor %}
@@ -116,5 +116,10 @@ function onSidebarFieldChange() {
 (<b><font color="blue">Fo</font></b>rums <b><font color="blue">Fo</font></b>r Yo<b><font color="blue">u</font></b>,
 created by <a href="http://blog.kowalczyk.info">Krzysztof Kowalczyk</a>)</center>
 <br>
-</body>
-</html>
+</div>
+</div>
+{% endblock main_content %}
+{% block footer_list_items %}
+<li>Forum by <a href="http://blog.kowalczyk.info/software/fofou">fofou</a></li>
+{% endblock %}
+
