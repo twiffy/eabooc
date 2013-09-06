@@ -293,6 +293,7 @@ class FofouBase(BaseHandler):
   def __init__(self, *args, **kwargs):
     self.app_context = controllers.sites.get_all_courses()[0]
     super(FofouBase, self).__init__(*args, **kwargs)
+    self.template_value['navbar'] = {'forum': True}
 
   _cookie = None
   # returns either a FOFOU_COOKIE sent by the browser or a newly created cookie

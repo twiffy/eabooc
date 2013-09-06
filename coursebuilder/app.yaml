@@ -36,11 +36,7 @@ handlers:
   secure: always
 - url: /forum/img
   static_dir: modules/forum/img
-- url: /img
-  static_dir: modules/forum/img
 - url: /forum/static
-  static_dir: modules/forum/static
-- url: /static
   static_dir: modules/forum/static
 - url: /.*
   script: main.app
