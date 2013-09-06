@@ -217,15 +217,6 @@ def valid_forum_url(url):
   except:
     return False
 
-def sanitize_homepage(s):
-    # prevent javascript injection
-    if not (s.startswith("http://") or s.startswith("https://")):
-        return ""
-    # 'http://' is the default value we put, so if unchanged, consider it
-    # as not given at all
-    if s == "http://": return ""
-    return s
-
 # very simplistic check for <txt> being a valid e-mail address
 def valid_email(txt):
   # allow empty strings
@@ -636,7 +627,7 @@ class TopicForm(FofouBase):
             if 0 != p.user_ip:
               p.user_ip_str = long2ip(p.user_ip)
             if p.user_homepage:
-                p.user_homepage = sanitize_homepage(p.user_homepage)
+                p.user_homepage = p.user_homepage
     tvals = {
       'siteroot' : siteroot,
       'forum' : forum,
@@ -808,7 +799,8 @@ class PostForm(FofouBase):
       topic.put()
 
     user_ip_str = get_remote_ip()
-    p = Post(topic=topic, forum=forum, user=user, user_ip=0, user_ip_str=user_ip_str, message=message, sha1_digest=sha1_digest, user_name = user.name, user_email = user_id.email(), user_homepage = '')
+    user_profile_link = '/wikiprofile?student=%d' % user.wiki_id
+    p = Post(topic=topic, forum=forum, user=user, user_ip=0, user_ip_str=user_ip_str, message=message, sha1_digest=sha1_digest, user_name = user.name, user_email = user_id.email(), user_homepage = user_profile_link)
     p.put()
     memcache.delete(rss_memcache_key(forum))
     clear_topics_memcache(forum)
