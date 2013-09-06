@@ -1,0 +1,30 @@
+application: booc-stage
+module: forum
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: no
+instance_class: B1
+basic_scaling:
+  max_instances: 4
+  idle_timeout: 10m
+
+libraries:
+- name: django
+  version: "1.4"
+- name: markupsafe
+  version: "latest"
+
+builtins:
+- remote_api: on
+
+handlers:
+- url: /static
+  static_dir: static
+
+- url: /img
+  static_dir: img
+
+- url: .*
+  script: main.py
+

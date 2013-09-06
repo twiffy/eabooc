@@ -62,6 +62,11 @@ modules.oauth2.oauth2.register_module()
 # compute all possible routes
 global_routes, namespaced_routes = custom_modules.Registry.get_all_routes()
 
+import modules.forum.main
+global_routes += [
+        ('/forum/(.*)', modules.forum.main.routes),
+        ]
+
 # routes available at '/%namespace%/' context paths
 sites.ApplicationRequestHandler.bind(namespaced_routes)
 app_routes = [(r'(.*)', sites.ApplicationRequestHandler)]
