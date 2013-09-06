@@ -19,7 +19,7 @@
 	</td>
 </tr>
 <tr>
-	<td class="sidebar">{{ forum.sidebar}}
+	<td class="sidebar">{{ forum.sidebar |safe }}
 	</td>
 	<td class="contents">
 	<div class="form">
@@ -73,10 +73,10 @@
 </tr>
 </tbody>
 </table>
-<hr>
-<center>Powered by <a href="http://blog.kowalczyk.info/software/fofou">fofou</a> 
-(<b><font color="blue">Fo</font></b>rums <b><font color="blue">Fo</font></b>r Yo<b><font color="blue">u</font></b>,
-created by <a href="http://blog.kowalczyk.info">Krzysztof Kowalczyk</a>)</center>
 </div>
 </div>
 {% endblock main_content %}
+{% block footer_list_items %}
+<li>Forum by <a href="http://blog.kowalczyk.info/software/fofou">fofou</a></li>
+{% endblock %}
+
