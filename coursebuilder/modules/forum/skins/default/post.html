@@ -38,13 +38,6 @@
 		<table class="form" cellspacing="0">
 			<tbody>
 			<tr>
-			<th><label for="Captcha">{{ num1 }} + {{ num2 }} is? (hint: {{ num3 }})</label></th>
-			<td colspan="2">
-				<input class="{{ captcha_class }}" size="60" maxlength="64" name="Captcha" id="Captcha" style="width: 39em;" value="{{ prevCaptcha }}" type="edit">
-					<div>Are you human? (sorry we have to ask). Tell us how much
-					is {{ num1 }} + {{ num2 }} by entering <b>{{ num3 }}</b> above.</div>
-					&nbsp;
-			</td>
 			</tr>
 			{% if not prevTopicId %} 
 			<tr>
@@ -61,34 +54,6 @@
 				<td colspan="2">
 					<textarea class="{{ message_class }}" name="Message" id="Message" style="width: 39em;" rows="16" cols="60" wrap="virtual">{{ prevMessage|escape }}</textarea>
 					<div style="width: 300px;">Don't use HTML. Surround URLs with spaces.</div>
-					&nbsp;
-				</td>
-			</tr>
-			<tr>
-				<th><label for="Name">Full name:</label></th>
-				<td style="width: 29em;">
-					<input class="{{ name_class }}" size="60" maxlength="32" name="Name" id="Name" style="width: 29em;" value="{{ prevName|escape }}" type="edit">
-				</td>
-				<td style="width: 10em;">
-					<span class="formCheckBoxPair"><input name="Remember" id="Remember" value="Remeber" {{ rememberChecked }} type="checkbox"> <label for="Remember">Remember me</label></span>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="Email">Email:</label>
-				</th>
-				<td colspan="2">
-					<input class="{{ email_class }}" size="60" maxlength="64" name="Email" id="Email" style="width: 29em;" value="{{ prevEmail|escape }}" type="edit">
-					<div style="width: 300px;">Allows other people to email you through our web site. Your address is never revealed.</div>
-					&nbsp;
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="Url">Home Page:</label>
-				</th>
-				<td colspan="2">
-					<input class="Url" size="60" maxlength="128" name="Url" id="Url" style="width: 29em;" value="{{ prevUrl|escape }}" type="edit">
 					&nbsp;
 				</td>
 			</tr>

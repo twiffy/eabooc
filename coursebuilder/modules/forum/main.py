@@ -10,6 +10,8 @@ import logging
 from offsets import *
 from markupsafe import Markup
 
+from models.models import Student
+
 # Structure of urls:
 #
 # Top-level urls
@@ -73,22 +75,6 @@ def my_hostname():
         h += ":%s" % port
     return h
 
-class FofouUser(db.Model):
-  # according to docs UserProperty() cannot be optional, so for anon users
-  # we set it to value returned by anonUser() function
-  # user is uniquely identified by either user property (if not equal to
-  # anonUser()) or cookie
-  user = db.UserProperty()
-  cookie = db.StringProperty()
-  # email, as entered in the post form, can be empty string
-  email = db.StringProperty()
-  # name, as entered in the post form
-  name = db.StringProperty()
-  # homepage - as entered in the post form, can be empty string
-  homepage = db.StringProperty()
-  # value of 'remember_me' checkbox selected during most recent post
-  remember_me = db.BooleanProperty(default=True)
-
 class Forum(db.Model):
   # Urls for forums are in the form /<urlpart>/<rest>
   url = db.StringProperty(required=True)
@@ -143,7 +129,7 @@ class Post(db.Model):
   # we'll user user_ip
   user_ip = db.IntegerProperty(required=True)
 
-  user = db.Reference(FofouUser, required=True)
+  user = db.Reference(Student, required=True)
   # user_name, user_email and user_homepage might be different than
   # name/homepage/email fields in user object, since they can be changed in
   # FofouUser
@@ -323,23 +309,6 @@ class FofouBase(webapp.RequestHandler):
   def get_cookie_val(self):
     c = self.get_cookie()
     return c.value
-
-  def get_fofou_user(self):
-    # get user either by google user id or cookie
-    user_id = users.get_current_user()
-    user = None
-    if user_id:
-      user = FofouUser.gql("WHERE user = :1", user_id).get()
-      #if user: logging.info("Found existing user for by user_id '%s'" % str(user_id))
-    else:
-      cookie = self.get_cookie_val()
-      if cookie:
-        user = FofouUser.gql("WHERE cookie = :1", cookie).get()
-        #if user:
-        #  logging.info("Found existing user for cookie '%s'" % cookie)
-        #else:
-        #  logging.info("Didn't find user for cookie '%s'" % cookie)
-    return user
 
   def template_out(self, template_name, template_values):
     self.response.headers['Content-Type'] = 'text/html'
@@ -720,26 +689,11 @@ class PostForm(FofouBase):
     prevUrl = "http://"
     prevEmail = ""
     prevName = ""
-    user = self.get_fofou_user()
-    if user and user.remember_me:
-      rememberChecked = "checked"
-      prevUrl = user.homepage
-      if not prevUrl:
-        prevUrl = "http://"
-      prevName = user.name
-      prevEmail = user.email
     (num1, num2) = (random.randint(1,9), random.randint(1,9))
     forum.title_or_url = forum.title or forum.url
     tvals = {
       'siteroot' : siteroot,
       'forum' : forum,
-      'num1' : num1,
-      'num2' : num2,
-      'num3' : int(num1) + int(num2),
-      'rememberChecked' : rememberChecked,
-      'prevUrl' : prevUrl,
-      'prevEmail' : prevEmail,
-      'prevName' : prevName,
       'log_in_out' : get_log_in_out(self.request.url)
     }
     topic_id = self.request.get('id')
@@ -764,47 +718,21 @@ class PostForm(FofouBase):
 
     self.send_cookie()
 
-    vals = ['TopicId', 'num1', 'num2', 'Captcha', 'Subject', 'Message', 'Remember', 'Email', 'Name', 'Url']
-    (topic_id, num1, num2, captcha, subject, message, remember_me, email, name, homepage) = req_get_vals(self.request, vals)
+    vals = ['TopicId', 'Subject', 'Message', ]
+    (topic_id, subject, message) = req_get_vals(self.request, vals)
     message = to_unicode(message)
 
-    remember_me = True
-    if remember_me == "": remember_me = False
-    rememberChecked = ""
-    if remember_me: rememberChecked = "checked"
-
-    validCaptcha = True
-    try:
-      captcha = int(captcha)
-      num1 = int(num1)
-      num2 = int(num2)
-    except ValueError:
-      validCaptcha = False
-
-    homepage = sanitize_homepage(homepage)
     tvals = {
       'siteroot' : siteroot,
       'forum' : forum,
-      'num1' : num1,
-      'num2' : num2,
-      'num3' : int(num1) + int(num2),
-      "prevCaptcha" : captcha,
       "prevSubject" : subject,
       "prevMessage" : message,
-      "rememberChecked" : rememberChecked,
-      "prevEmail" : email,
-      "prevUrl" : homepage,
-      "prevName" : name,
-      "prevTopicId" : topic_id,
       "log_in_out" : get_log_in_out(siteroot + "post")
     }
 
     # validate captcha and other values
     errclass = None
-    if not validCaptcha or (captcha != (num1 + num2)): errclass = 'captcha_class'
     if not message: errclass = "message_class"
-    if not name: errclass = "name_class"
-    if not valid_email(email): errclass = "email_class"
     # first post must have subject
     if not topic_id and not subject: errclass = "subject_class"
 
@@ -825,46 +753,17 @@ class PostForm(FofouBase):
     # already exist
     existing_user = False
     user_id = users.get_current_user()
-    if user_id:
-      user = FofouUser.gql("WHERE user = :1", user_id).get()
-      if not user:
-        #logging.info("Creating new user for '%s'" % str(user_id))
-        user = FofouUser(user=user_id, remember_me = remember_me, email=email, name=name, homepage=homepage)
-        user.put()
-      else:
-        existing_user = True
-        #logging.info("Found existing user for '%s'" % str(user_id))
-    else:
-      cookie = self.get_cookie_val()
-      user = FofouUser.gql("WHERE cookie = :1", cookie).get()
-      if not user:
-        #logging.info("Creating new user for cookie '%s'" % cookie)
-        user = FofouUser(cookie=cookie, remember_me = remember_me, email=email, name=name, homepage=homepage)
-        user.put()
-      else:
-        existing_user = True
-        #logging.info("Found existing user for cookie '%s'" % cookie)
+    if not user_id:
+      self.redirect("/")
+      return
 
-    if existing_user:
-      need_update = False
-      if user.remember_me != remember_me:
-        user.remember_me = remember_me
-        need_update = True
-      if user.email != email:
-        user.email = email
-        need_update = True
-      if user.name != name:
-        user.name = name
-        need_update = True
-      if user.homepage != homepage:
-        user.homepage = homepage
-        need_update = True
-      if need_update:
-        #logging.info("User needed an update")
-        user.put()
+    user = Student.get_enrolled_student_by_email(user_id.email())
+    if not user:
+      self.redirect("/")
+      return
 
     if not topic_id:
-      topic = Topic(forum=forum, subject=subject, created_by=name)
+      topic = Topic(forum=forum, subject=subject, created_by=user.name)
       topic.put()
     else:
       topic = db.get(db.Key.from_path('Topic', int(topic_id)))
@@ -873,7 +772,7 @@ class PostForm(FofouBase):
       topic.put()
 
     user_ip_str = get_remote_ip()
-    p = Post(topic=topic, forum=forum, user=user, user_ip=0, user_ip_str=user_ip_str, message=message, sha1_digest=sha1_digest, user_name = name, user_email = email, user_homepage = homepage)
+    p = Post(topic=topic, forum=forum, user=user, user_ip=0, user_ip_str=user_ip_str, message=message, sha1_digest=sha1_digest, user_name = user.name, user_email = user_id.email(), user_homepage = '')
     p.put()
     memcache.delete(rss_memcache_key(forum))
     clear_topics_memcache(forum)
