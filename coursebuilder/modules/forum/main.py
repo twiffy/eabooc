@@ -486,8 +486,6 @@ class ForumList(FofouBase):
 # responds to GET /postdel?<post_id> and /postundel?<post_id>
 class PostDelUndel(webapp.RequestHandler):
   def get(self, *args):
-    if not self.personalize_page_and_get_enrolled():
-      return
     (forum, siteroot, tmpldir) = forum_siteroot_tmpldir_from_url(self.request.path_info)
     if not forum or forum.is_disabled:
       return self.redirect(FORUMS_ROOT + "/")
