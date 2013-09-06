@@ -20,6 +20,24 @@ indexes:
   - name: submitted
     direction: desc
 
+- kind: Post
+  properties:
+  - name: forum
+  - name: is_deleted
+  - name: topic
+  - name: created_on
+
+- kind: Post
+  properties:
+  - name: forum
+  - name: topic
+  - name: created_on
+
+- kind: Post
+  properties:
+  - name: topic
+  - name: created_on
+
 - kind: ReviewStep
   properties:
   - name: assigner_kind
@@ -86,6 +104,13 @@ indexes:
 - kind: Topic
   properties:
   - name: forum
+  - name: created_on
+    direction: desc
+
+- kind: Topic
+  properties:
+  - name: forum
+  - name: is_deleted
   - name: created_on
     direction: desc
 
