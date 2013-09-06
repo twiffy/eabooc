@@ -63,9 +63,11 @@ modules.oauth2.oauth2.register_module()
 global_routes, namespaced_routes = custom_modules.Registry.get_all_routes()
 
 import modules.forum.main
+from webapp2_extras.routes import PathPrefixRoute
 global_routes += [
-        ('/forum/(.*)', modules.forum.main.routes),
+        PathPrefixRoute('/forum', modules.forum.main.routes),
         ]
+
 
 # routes available at '/%namespace%/' context paths
 sites.ApplicationRequestHandler.bind(namespaced_routes)

@@ -348,8 +348,8 @@ class FofouBase(webapp.RequestHandler):
       c = str(self._cookie_to_set)
       c = c.split(": ", 1)[1]
       self.response.headers["Set-Cookie"] = c
-    #path = os.path.join(os.path.dirname(__file__), template_name)
-    path = template_name
+    path = os.path.join(os.path.dirname(__file__), template_name)
+    #path = template_name
     #logging.info("tmpl: %s" % path)
     res = template.render(path, template_values)
     self.response.out.write(unicode(res))
@@ -973,19 +973,18 @@ def main_moved():
      debug=False)
   wsgiref.handlers.CGIHandler().run(application)
 
+from webapp2 import Route
 routes = [
-        ('/', ForumList),
-        ('/manageforums', ManageForums),
-        ('/[^/]+/postdel', PostDelUndel),
-        ('/[^/]+/postundel', PostDelUndel),
-        ('/[^/]+/post', PostForm),
-        ('/[^/]+/topic', TopicForm),
-        ('/[^/]+/email', EmailForm),
-        ('/[^/]+/rss', RssFeed),
-        ('/[^/]+/rssall', RssAllFeed),
-        ('/[^/]+/?', TopicList)],
-     ]
-
+        Route('/', ForumList, name="ForumList"),
+        Route('/manageforums', ManageForums, name="ManageForums"),
+        Route('/[^/]+/postdel', PostDelUndel, name="PostDelUndel"),
+        Route('/[^/]+/postundel', PostDelUndel, name="PostDelUndel"),
+        Route('/[^/]+/post', PostForm, name="PostForm"),
+        Route('/[^/]+/topic', TopicForm, name="TopicForm"),
+        Route('/[^/]+/email', EmailForm, name="EmailForm"),
+        Route('/[^/]+/rss', RssFeed, name="RssFeed"),
+        Route('/[^/]+/rssall', RssAllFeed, name="RssAllFeed"),
+        Route('/[^/]+/?', TopicList, name="TopicList")]
 
 def main():
   application = webapp.WSGIApplication(routes,
