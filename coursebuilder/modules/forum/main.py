@@ -52,6 +52,7 @@ HTTP_NOT_ACCEPTABLE = 406
 HTTP_NOT_FOUND = 404
 
 FORUMS_MEMCACHE_KEY = "fo"
+MAX_FORUMS = 256 # if you need more, tough
 
 FORUMS_ROOT = "/forum"
 
@@ -474,8 +475,7 @@ class ForumList(FofouBase):
       return
     if users.is_current_user_admin():
       return self.redirect(FORUMS_ROOT + "/manageforums")
-    MAX_FORUMS = 256 # if you need more, tough
-    forums = db.GqlQuery("SELECT * FROM Forum").fetch(MAX_FORUMS)
+    forums = db.GqlQuery("SELECT * FROM Forum where is_disabled = False").fetch(MAX_FORUMS)
     tvals = {
       'forums' : forums,
       'isadmin' : users.is_current_user_admin(),
@@ -575,6 +575,7 @@ class TopicList(FofouBase):
       'siteurl' : self.request.url,
       'forum' : forum,
       'topics' : topics,
+      'forums' : db.GqlQuery("SELECT * FROM Forum where is_disabled = False").fetch(MAX_FORUMS),
       'analytics_code' : forum.analytics_code or "",
       'new_from' : new_off,
       'log_in_out' : get_log_in_out(siteroot)
@@ -628,6 +629,7 @@ class TopicForm(FofouBase):
     tvals = {
       'siteroot' : siteroot,
       'forum' : forum,
+      'forums' : db.GqlQuery("SELECT * FROM Forum where is_disabled = False").fetch(MAX_FORUMS),
       'analytics_code' : forum.analytics_code or "",
       'topic' : topic,
       'is_moderator' : is_moderator,
@@ -714,6 +716,7 @@ class PostForm(FofouBase):
     tvals = {
       'siteroot' : siteroot,
       'forum' : forum,
+      'forums' : db.GqlQuery("SELECT * FROM Forum where is_disabled = False").fetch(MAX_FORUMS),
       'log_in_out' : get_log_in_out(self.request.url)
     }
     topic_id = self.request.get('id')
@@ -746,6 +749,7 @@ class PostForm(FofouBase):
 
     tvals = {
       'siteroot' : siteroot,
+      'forums' : db.GqlQuery("SELECT * FROM Forum where is_disabled = False").fetch(MAX_FORUMS),
       'forum' : forum,
       "prevSubject" : subject,
       "prevMessage" : message,

@@ -19,7 +19,13 @@
 	</td>
 </tr>
 <tr>
-	<td class="sidebar">{{ forum.sidebar|safe}}
+  <td class="sidebar">
+    <ul class="forum-list">
+      {% for f in forums %}
+      <li> <a href="/forum/{{ f.url }}"> {{ f.title_or_url }}</a></li>
+      {% endfor %}
+    </ul>
+    {{ forum.sidebar|safe }}
 	</td>
 	<td class="contents">
 		<script language="javascript" type="text/javascript">
