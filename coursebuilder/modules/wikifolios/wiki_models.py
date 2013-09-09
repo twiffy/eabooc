@@ -124,19 +124,21 @@ class WikiComment(models.BaseEntity):
         #if not self.thread_id and self.is_saved():
             #self.thread_id = self.key().id()
 
-    def _find_sort_key(self):
-        if self.sort_key:
-            return self.sort_key
-
-        time_fmt = '%Y-%j-%H-%M-%S-%f'
-        self_key = self.added_time.strftime(time_fmt)
-        if not self.is_reply():
-            return self_key
-        else:
-            return self.parent_comment._find_sort_key() + "/" + self_key
+    def _set_sort_key(self, put=False):
+        if not self.sort_key:
+            time_fmt = '%Y-%j-%H-%M-%S-%f'
+            self_key = self.added_time.strftime(time_fmt)
+            if not self.is_reply():
+                self.sort_key = self_key
+            else:
+                self.parent_comment._set_sort_key(put=True)
+                self.sort_key = self.parent_comment.sort_key + "/" + self_key
+            if put:
+                self.put()
+        return self.sort_key
 
     def put(self):
-        self.sort_key = self._find_sort_key()
+        self._set_sort_key()
         super(WikiComment, self).put()
 
     def is_reply(self):
