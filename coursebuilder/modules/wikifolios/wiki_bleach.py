@@ -39,6 +39,7 @@ def bleach_entry(html):
             tags=ALLOWED_TAGS,
             attributes=ALLOWED_ATTRIBUTES,
             styles=ALLOWED_STYLES,
+            strip=True,
             )
     return bleach.linkify(cleaned)
 
@@ -59,6 +60,7 @@ def bleach_comment(html):
             tags=COMMENT_TAGS,
             attributes=COMMENT_ATTRIBUTES,
             styles=COMMENT_STYLES,
+            strip=True,
             )
 
 
