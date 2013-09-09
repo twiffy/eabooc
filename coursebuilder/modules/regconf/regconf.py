@@ -73,8 +73,8 @@ def on_pre_assignment_submission(handler, user, form):
 
     allowed_tags = ['p', 'i', 'b', 'a', 'br']
     profile_page = WikiPage.get_page(user, unit=None, create=True)
-    profile_page.text = bleach.clean(form.introduction.data,
-            tags=allowed_tags)
+    profile_page.text = db.Text(bleach.clean(form.introduction.data,
+            tags=allowed_tags))
     profile_page.put()
 
     handler.redirect('confirm?page=conf')
