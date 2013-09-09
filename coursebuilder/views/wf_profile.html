@@ -51,7 +51,7 @@
         {% if can_do_assignments %}
         <ul>
           {% for unit in units %}
-          {%   if unit.type == 'U' %}
+          {%   if unit.type == 'U' and unit.now_available %}
           {%     if unit._wiki_exists or editor_role %}
           <li><a href="{{unit._wiki_link}}">Unit {{ unit.unit_id }}: {{unit.title|safe}}</a>
           {%       if not unit._wiki_exists %}(not created yet){% endif %}</li>
