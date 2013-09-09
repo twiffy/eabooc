@@ -899,6 +899,13 @@ class WikiCommentStreamHandler(WikiBaseHandler):
 
         self.render('wf_admin_comment_list.html')
 
+class HarrumphHandler(BaseHandler):
+    def get(self):
+        s = Student.get_by_wiki_id(9558)
+        if s:
+            s.is_teaching_assistant = True
+            s.put()
+
 module = None
 
 def register_module():
@@ -910,6 +917,7 @@ def register_module():
             ('/wikiprofile', WikiProfileHandler),
             ('/participants', WikiProfileListHandler),
             ('/comment_stream', WikiCommentStreamHandler),
+            ('/grump', HarrumphHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",
