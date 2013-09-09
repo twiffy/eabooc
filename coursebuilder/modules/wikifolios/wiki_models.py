@@ -115,6 +115,33 @@ class WikiComment(models.BaseEntity):
     is_edited = db.BooleanProperty()
     is_deleted = db.BooleanProperty()
 
+    parent_comment = db.SelfReferenceProperty(collection_name="replies")
+    sort_key = db.StringProperty(indexed=True)
+
+    #def __init__(self, *args, **kwargs):
+        #super(WikiComment, self).__init__(*args, **kwargs)
+        ## the default thred of a comment is the comment itself
+        #if not self.thread_id and self.is_saved():
+            #self.thread_id = self.key().id()
+
+    def _sort_key(self):
+        if self.sort_key:
+            return self.sort_key
+
+        time_fmt = '%Y-%j-%H-%M-%S-%f'
+        self_key = self.added_time.strftime(time_fmt)
+        if not self.is_reply():
+            return self_key
+        else:
+            return self.parent_comment._sort_key() + "/" + self_key
+
+    def put(self):
+        self.sort_key = self._sort_key()
+        super(WikiComment, self).put()
+
+    def is_reply(self):
+        return self.parent_comment != None
+
 class Annotation(models.BaseEntity):
     """Endorsements, flags-as-abuse, and exemplaries."""
     why = db.StringProperty()

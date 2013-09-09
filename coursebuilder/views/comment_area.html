@@ -1,8 +1,20 @@
+{% macro reply_placeholder(parent) %}
+{% if can_comment %}
+<li class="comment is-reply"><div class="reply-placeholder">REPLY HERE to thread {{ parent }}</div></li>
+{% endif %}
+{% endmacro %}
+
 <div class="gcb-cols">
   <div class="gcb-col-11 gcb-aside" id="comment-area">
     <ol>
       {% for comment in comments %}
-      <li class="comment"><b><a name="comment-{{ comment.key().id() }}"
+      {% if not comment.is_reply() %}
+      {%   if not loop.first %}
+      {{     reply_placeholder(parent_id) }}
+      {%   endif %}
+      {%   set parent_id = comment.key().id() %}
+      {% endif %}
+      <li class="comment {% if comment.is_reply() %}is-reply{% endif %}"><b><a name="comment-{{ comment.key().id() }}"
           href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b> said:
       {% if comment.is_deleted %}
       <span class="deleted">(This comment was deleted by {{ student_link(comment.editor) }})</span>
@@ -26,6 +38,9 @@
       </div>
       {% endif %}
       </li>
+      {% if loop.last %}
+      {{   reply_placeholder(parent_id) }}
+      {% endif %}
       {% else %}
       <li><em>No comments yet.</em></li>
       {% endfor %}

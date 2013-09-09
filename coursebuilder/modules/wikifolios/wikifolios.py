@@ -432,7 +432,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
     def show_comments(self, page):
         self.template_value['comments'] = prefetch.prefetch_refprops(
-                page.comments.order("added_time").fetch(limit=1000),
+                page.comments.order("sort_key").order("added_time").fetch(limit=1000),
                 WikiComment.author)
 
     def show_all_endorsements(self, page):
