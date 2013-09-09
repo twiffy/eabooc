@@ -807,7 +807,10 @@ class PostForm(FofouBase):
       topic.put()
 
     user_ip_str = get_remote_ip()
-    user_profile_link = '/wikiprofile?student=%d' % user.wiki_id
+    if user.wiki_id:
+        user_profile_link = '/wikiprofile?student=%d' % user.wiki_id
+    else:
+        user_profile_link = ''
     p = Post(topic=topic, forum=forum, user=user, user_ip=0, user_ip_str=user_ip_str, message=message, sha1_digest=sha1_digest, user_name = user.name, user_email = user_id.email(), user_homepage = user_profile_link)
     p.put()
     memcache.delete(rss_memcache_key(forum))
