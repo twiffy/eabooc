@@ -802,9 +802,12 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 .filter('form_name', 'pre')
                 .filter('user', student.key())
                 .order('-submitted').get())
-            page.curricular_aim = bleach_entry(
-                    pre_assignment.curricular_aim)
-
+            if pre_assignment:
+                page.curricular_aim = bleach_entry(
+                        pre_assignment.curricular_aim)
+            else:
+                page.curricular_aim = "(no curricular aim found! database error?)"
+                logging.warning("Couldn't find a pre assignment form for %s", student.key().name())
 
     def get_edit(self):
         user = self.personalize_page_and_get_wiki_user()
