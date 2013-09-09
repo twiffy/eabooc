@@ -2,12 +2,15 @@
 {% if can_comment %}
 <li class="comment is-reply">
 <div class="reply-placeholder">
-  <form action="{{ action_url('comment') }}" method="POST">
-    <textarea name="text" class="comment-textarea" rows="2" cols="50"></textarea>
-    <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
-    <input type="hidden" name="parent" value="{{ parent }}">
-    <div class="gcb-pull-right"><input type="submit" class="gcb-button" value="Reply"></div>
-  </form>
+  <div class="accordion-reply">
+    <div class="comment-expand-heading">Click here to reply to this thread.</div>
+    <form action="{{ action_url('comment') }}" method="POST">
+      <textarea name="text" class="comment-textarea" rows="2" cols="50"></textarea>
+      <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
+      <input type="hidden" name="parent" value="{{ parent }}">
+      <div class="gcb-pull-right"><input type="submit" class="gcb-button" value="Reply"></div>
+    </form>
+  </div>
 </div>
 </li>
 {% endif %}
@@ -66,20 +69,30 @@
         <input type="submit" class="gcb-button" value="Comment">
       </fieldset>
     </form>
+    <script src="assets/lib/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="/assets/ckeditor/ckeditor.js"></script>
     <script src="/assets/ckeditor/adapters/jquery.js"></script>
+    <link rel="stylesheet" href="assets/lib/jquery-ui-1.10.3.custom/css/booc-theme/jquery-ui-1.10.3.custom.min.css">
     <script>
       CKEDITOR.replace('comment_editor', {
         allowedContent: '{{ ckeditor_comment_content }}',
         removePlugins: 'pastefromword,undo,image,magicline,format',
       });
       $(document).ready(function() {
-        $('textarea.comment-textarea').focus(function() {
-          $(this).parents('li.comment').addClass('expanded');
-          $(this).ckeditor({
-            allowedContent: '{{ ckeditor_comment_content }}',
-            removePlugins: 'pastefromword,undo,image,magicline,format',
-          });
+        var icons = {
+          header: "ui-icon-circle-triangle-e",
+          activeHeader: "ui-icon-circle-triangle-s"
+        };
+        $('.accordion-reply').accordion({
+          collapsible: true,
+          active: false,
+          heightStyle: 'content',
+          icons: icons,
+        });
+        //$(this).parents('li.comment').addClass('expanded');
+        $('textarea.comment-textarea').ckeditor({
+          allowedContent: '{{ ckeditor_comment_content }}',
+          removePlugins: 'pastefromword,undo,image,magicline,format',
         });
       });
     </script>
