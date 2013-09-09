@@ -15,6 +15,7 @@ from models.models import Student
 from controllers.utils import BaseHandler
 import controllers.sites
 import humanize
+import bleach
 
 # Structure of urls:
 #
@@ -282,9 +283,16 @@ def get_log_in_out(url):
   else:
     return Markup("<a href=\"%s\">Log in or register</a>") % users.create_login_url(url)
 
+def linebreaksbr(s):
+    return s.replace("\n", Markup("<br>"))
+
 def pluralize(n, suffix="s"):
-    logging.info("plur %d %s", n, suffix)
     return suffix if n != 1 else ''
+
+def better_striptags(s):
+    return bleach.clean(s,
+            tags=[],
+            strip=True)
 
 class FofouBase(BaseHandler):
   def __init__(self, *args, **kwargs):
@@ -319,9 +327,10 @@ class FofouBase(BaseHandler):
     return c.value
 
   def mess_with_template_environ(self, environ):
-    environ.filters['linebreaksbr'] = str
+    environ.filters['linebreaksbr'] = linebreaksbr
     environ.filters['date'] = humanize.naturaltime
     environ.filters['pluralize'] = pluralize
+    environ.filters['striptags'] = better_striptags
 
   def template_out(self, template_name, template_values):
     """Renders a template."""
