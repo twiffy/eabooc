@@ -1,6 +1,15 @@
 {% macro reply_placeholder(parent) %}
 {% if can_comment %}
-<li class="comment is-reply"><div class="reply-placeholder">REPLY HERE to thread {{ parent }}</div></li>
+<li class="comment is-reply">
+<div class="reply-placeholder">
+  <form action="{{ action_url('comment') }}" method="POST">
+    <textarea name="text" class="comment-textarea" rows="2" cols="50"></textarea>
+    <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
+    <input type="hidden" name="parent" value="{{ parent }}">
+    <div class="gcb-pull-right"><input type="submit" class="gcb-button" value="Reply"></div>
+  </form>
+</div>
+</li>
 {% endif %}
 {% endmacro %}
 
@@ -58,10 +67,20 @@
       </fieldset>
     </form>
     <script src="/assets/ckeditor/ckeditor.js"></script>
+    <script src="/assets/ckeditor/adapters/jquery.js"></script>
     <script>
       CKEDITOR.replace('comment_editor', {
         allowedContent: '{{ ckeditor_comment_content }}',
         removePlugins: 'pastefromword,undo,image,magicline,format',
+      });
+      $(document).ready(function() {
+        $('textarea.comment-textarea').focus(function() {
+          $(this).parents('li.comment').addClass('expanded');
+          $(this).ckeditor({
+            allowedContent: '{{ ckeditor_comment_content }}',
+            removePlugins: 'pastefromword,undo,image,magicline,format',
+          });
+        });
       });
     </script>
     {% endif %}

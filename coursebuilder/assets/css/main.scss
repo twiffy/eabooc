@@ -825,6 +825,10 @@ li.comment p {
   margin-left: 30px;
 }
 
+#comment-area li.expanded {
+  padding-bottom: 3em;
+}
+
 div#assignment-completion {
   background: lighten($page-bg-color, 10%);
 }

@@ -118,3 +118,9 @@ indexes:
   properties:
   - name: topic
   - name: added_time
+
+- kind: WikiComment
+  properties:
+  - name: topic
+  - name: sort_key
+  - name: added_time

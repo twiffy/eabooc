@@ -130,6 +130,14 @@ class WikiBaseHandler(BaseHandler):
         if not query:
             self.abort(404)
 
+        parent = None
+        try:
+            parent_id = int(self.request.get('parent', ''))
+            parent = WikiComment.get_by_id(parent_id)
+        except:
+            pass
+
+
         if not self._can_comment(query, user):
             logging.warning("Attempt to comment illegally")
             self.abort(403, "You are not allowed to comment on this page.")
@@ -138,10 +146,13 @@ class WikiBaseHandler(BaseHandler):
         if not page:
             self.abort(404)
 
+
+
         # TODO: use wtforms for comments
         comment = WikiComment(
                 author=user,
                 topic=page,
+                parent_comment=parent,
                 text=bleach_comment(self.request.get('text', '')))
         comment.put()
 
@@ -153,6 +164,7 @@ class WikiBaseHandler(BaseHandler):
                     'commenter': user.key().name(),
                     'text': comment.text,
                     'unbleached-text': self.request.get('text', ''),
+                    'parent-comment': parent.key().id() if parent else None,
                     }))
 
         if query['student'] != user.wiki_id:

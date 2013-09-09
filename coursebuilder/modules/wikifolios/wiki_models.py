@@ -124,7 +124,7 @@ class WikiComment(models.BaseEntity):
         #if not self.thread_id and self.is_saved():
             #self.thread_id = self.key().id()
 
-    def _sort_key(self):
+    def _find_sort_key(self):
         if self.sort_key:
             return self.sort_key
 
@@ -133,10 +133,10 @@ class WikiComment(models.BaseEntity):
         if not self.is_reply():
             return self_key
         else:
-            return self.parent_comment._sort_key() + "/" + self_key
+            return self.parent_comment._find_sort_key() + "/" + self_key
 
     def put(self):
-        self.sort_key = self._sort_key()
+        self.sort_key = self._find_sort_key()
         super(WikiComment, self).put()
 
     def is_reply(self):
