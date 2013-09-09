@@ -68,7 +68,7 @@ class MemcacheManager(object):
     @classmethod
     def get(cls, key, namespace=None):
         """Gets an item from memcache if memcache is enabled."""
-        logging.debug("MemcacheManager:get(%s, ns=%s)", key, namespace)
+        #logging.debug("MemcacheManager:get(%s, ns=%s)", key, namespace)
         if not CAN_USE_MEMCACHE.value:
             return None
         if not namespace:
@@ -79,7 +79,7 @@ class MemcacheManager(object):
         # real objects, '{}' for example. Count a cache miss only in a case when
         # an object is None.
         if value != None:  # pylint: disable-msg=g-equals-none
-            logging.debug('Cache HIT, key: %s. %s', key, Exception())
+            #logging.debug('Cache HIT, key: %s. %s', key, Exception())
             CACHE_HIT.inc()
         else:
             logging.info('Cache miss, key: %s. %s', key, Exception())
@@ -89,7 +89,7 @@ class MemcacheManager(object):
     @classmethod
     def set(cls, key, value, ttl=DEFAULT_CACHE_TTL_SECS, namespace=None):
         """Sets an item in memcache if memcache is enabled."""
-        logging.debug("MemcacheManager:set(%s, (val), ns=%s)", key, namespace)
+        #logging.debug("MemcacheManager:set(%s, (val), ns=%s)", key, namespace)
         if CAN_USE_MEMCACHE.value:
             CACHE_PUT.inc()
             if not namespace:
@@ -99,7 +99,7 @@ class MemcacheManager(object):
     @classmethod
     def incr(cls, key, delta, namespace=None):
         """Incr an item in memcache if memcache is enabled."""
-        logging.debug("MemcacheManager:incr(%s, %s, ns=%s)", key, str(delta), namespace)
+        #logging.debug("MemcacheManager:incr(%s, %s, ns=%s)", key, str(delta), namespace)
         if CAN_USE_MEMCACHE.value:
             if not namespace:
                 namespace = appengine_config.DEFAULT_NAMESPACE_NAME
@@ -108,7 +108,7 @@ class MemcacheManager(object):
     @classmethod
     def delete(cls, key, namespace=None):
         """Deletes an item from memcache if memcache is enabled."""
-        logging.debug("MemcacheManager:delete(%s, ns=%s)", key, namespace)
+        #logging.debug("MemcacheManager:delete(%s, ns=%s)", key, namespace)
         if CAN_USE_MEMCACHE.value:
             CACHE_DELETE.inc()
             if not namespace:
