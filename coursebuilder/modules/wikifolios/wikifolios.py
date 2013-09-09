@@ -244,8 +244,8 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.assert_editor_role(query, user)
 
         self.template_value['ckeditor_allowed_content'] = (
-                ckeditor.allowed_content(ALLOWED_TAGS,
-                    ALLOWED_ATTRIBUTES, ALLOWED_STYLES))
+                ckeditor.allowed_content(COMMENT_TAGS,
+                    COMMENT_ATTRIBUTES, COMMENT_STYLES))
 
         self.template_value['author_name'] = comment.author.name
         self.template_value['author_link'] = student_profile_link(
