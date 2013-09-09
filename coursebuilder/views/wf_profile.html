@@ -22,7 +22,8 @@
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
-      <h1>{{ author_name }}</h1>
+      <h1>{{ author_name }}
+        {% if is_course_admin %}<small>({{ author.key().name() }})</small>{% endif %}</h1>
       {% if editor_role and not editing %}
       <div><a href="{{ action_url('edit') }}">edit</a> as {{ editor_role }}</div>
       {% endif %}

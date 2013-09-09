@@ -47,7 +47,10 @@ class WikiBaseHandler(BaseHandler):
         user = self.personalize_page_and_get_enrolled()
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
-        self.template_value['student_link'] = filters.student_link
+        if Roles.is_course_admin(self.app_context):
+            self.template_value['student_link'] = filters.student_link_for_admins
+        else:
+            self.template_value['student_link'] = filters.student_link
         self.template_value['humanize'] = humanize
         if hasattr(self, 'create_xsrf_token'):
             # TODO: refactor to split more complicated pages out from the profile list handler
@@ -761,6 +764,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 #'curricular_aim': 'bye'
                 #}
 
+        self.template_value['author'] = profile_page.author
         self.template_value['author_name'] = profile_page.author.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
