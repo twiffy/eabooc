@@ -473,8 +473,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.render(page_templates.templates[query['unit']])
         else:
             self.template_value['fields'] = {}
-            self.template_value['content'] = "The page you requested could not be found."
-            self.error(404)
+            if not editor_role:
+                self.template_value['alert'] = "This user has not created this wikifolio page yet!"
+            self.error(200)
             self.render(page_templates.templates[query['unit']])
 
     def post_exemplary(self):

@@ -884,3 +884,12 @@ h1, h2, h3, h4 {
 .wiki-area h2 {
   text-align: center;
 }
+
+div#alerts-bar {
+  background-color: #ffffB7;
+  border: solid #cccca0 1px;
+  display: inline-block;
+  padding: 0.4em;
+  border-radius: 5px;
+  margin-top: 4px;
+}

@@ -742,3 +742,11 @@ h1.ui-state-default, h2.ui-state-default, h3.ui-state-default, h4.ui-state-defau
 
 .wiki-area h2 {
   text-align: center; }
+
+div#alerts-bar {
+  background-color: #ffffB7;
+  border: solid #cccca0 1px;
+  display: inline-block;
+  padding: 0.4em;
+  border-radius: 5px;
+  margin-top: 4px; }

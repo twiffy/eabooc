@@ -3,6 +3,12 @@
 {% include "notifications_area.html" %}
 {% endblock %}
 {% block main_content %}
+{% if editor_role == 'admin' and editing %}
+<center><div id="alerts-bar">You are editing someone else's page, as an admin.</div></center>
+{% endif %}
+{% if alert %}
+<center><div id="alerts-bar">{{ alert }}</div></center>
+{% endif %}
 <script src="assets/lib/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
 <link rel="stylesheet" href="assets/lib/jquery-ui-1.10.3.custom/css/booc-theme/jquery-ui-1.10.3.custom.min.css">
 <style>
