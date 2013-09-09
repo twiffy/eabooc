@@ -13,8 +13,8 @@
       <h1>Participants</h1>
       <table>
         <tr>
-          <td {% if group_by == 'group_id' %}class="hilight"{% endif %}>
-            <a href="participants?group=group_id">My Group</a></td>
+          {# <td {% if group_by == 'group_id' %}class="hilight"{% endif %}>
+            <a href="participants?group=group_id">My Group</a></td> #}
           <td {% if not group_by %}class="hilight"{% endif %}>
             <a href="participants">All Participants</a></td>
           <td {% if group_by == 'role' %}class="hilight"{% endif %}>
