@@ -901,7 +901,7 @@ class WikiCommentStreamHandler(WikiBaseHandler):
 
 class HarrumphHandler(BaseHandler):
     def get(self):
-        s = Student.get_by_wiki_id(9558)
+        s = Student.get_by_wiki_id(11292)
         if s:
             s.is_teaching_assistant = True
             s.put()
