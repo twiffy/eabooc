@@ -250,6 +250,7 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 ckeditor.allowed_content(COMMENT_TAGS,
                     COMMENT_ATTRIBUTES, COMMENT_STYLES))
 
+        self.template_value['author'] = comment.author
         self.template_value['author_name'] = comment.author.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
@@ -837,6 +838,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         student_model = profile_page.author
 
         self.template_value['editing'] = True
+        self.template_value['author'] = student_model
         self.template_value['author_name'] = student_model.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
