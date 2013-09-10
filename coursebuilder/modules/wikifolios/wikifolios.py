@@ -906,7 +906,10 @@ class WikiCommentStreamHandler(WikiBaseHandler):
         if not Roles.is_course_admin(self.app_context):
             self.abort(403)
 
-        latest_comments = WikiComment.all().order('-added_time').run(limit=100)
+        latest_comments = WikiComment.all().order('-added_time').fetch(limit=100)
+
+        latest_comments = prefetch.prefetch_refprops(latest_comments,
+                WikiComment.author)
 
         self.template_value['comments'] = latest_comments
 
