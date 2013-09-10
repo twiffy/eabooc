@@ -124,6 +124,7 @@ class WikiBaseHandler(BaseHandler):
     def show_comments(self, page):
         query = page.comments
         query.order("sort_key")
+        query.order("added_time")
         #self.template_value['comments'] = prefetch.prefetch_refprops(
                 #query.fetch(limit=1000),
                 #WikiComment.author)
