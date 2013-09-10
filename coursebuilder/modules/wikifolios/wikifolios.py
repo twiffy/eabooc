@@ -87,6 +87,8 @@ class WikiBaseHandler(BaseHandler):
     def assert_editor_role(self, *args, **kwargs):
         role = self._editor_role(*args, **kwargs)
         if not role:
+            logging.warning("Denying edit, no editor role.")
+            logging.info("%s", repr(args))
             self.abort(403, "You cannot edit this page.")
         return role
 
@@ -375,6 +377,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             data = form.data
         else:
             # TODO maybe log why it's not good
+            logging.warning("Denied query, it did not validate.")
+            logging.info("%s", repr(self.request.params))
             self.template_value['content'] = 'Sorry, that page was not found.'
             self.error(403)
             data = None
@@ -598,6 +602,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         form_init = page_templates.forms[query['unit']]
         form = form_init(self.request.POST)
         if not form.validate():
+            logging.warning("Denied post because form did not validate")
+            logging.info("%s", repr(self.request.params))
             self.abort(403, 'Form did not validate.........')
 
         old_page = db.to_dict(page)
