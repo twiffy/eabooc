@@ -31,6 +31,7 @@ from models import custom_modules
 import modules.wikifolios.wikifolios
 import modules.admin.admin
 import modules.announcements.announcements
+import modules.booctools.booctools
 import modules.courses.courses
 import modules.dashboard.dashboard
 import modules.oauth2.oauth2
@@ -55,6 +56,7 @@ modules.courses.courses.register_module().enable()
 modules.wikifolios.wikifolios.register_module().enable()
 modules.csv.student_csv.register_module().enable()
 modules.regconf.regconf.register_module().enable()
+modules.booctools.booctools.register_module().enable()
 
 # register modules that are not enabled by default.
 modules.oauth2.oauth2.register_module()

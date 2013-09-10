@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <center><h2>Current student count: {{ student_count }}</h2></center>
+      <h3><a href="/student_csv">All students CSV file (includes pre-registered)</a></h3>
+      <h3><a href="/comment_stream">Most recent 100 comments</a></h3>
+    </div>
+  </div>
+</div>
+{% endblock %}
