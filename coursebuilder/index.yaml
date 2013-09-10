@@ -116,6 +116,13 @@ indexes:
 
 - kind: WikiComment
   properties:
+  - name: page
+  - name: topic
+  - name: sort_key
+    direction: desc
+
+- kind: WikiComment
+  properties:
   - name: topic
   - name: added_time
 
@@ -123,4 +130,15 @@ indexes:
   properties:
   - name: topic
   - name: sort_key
+
+- kind: WikiComment
+  properties:
+  - name: topic
+  - name: sort_key
   - name: added_time
+
+- kind: WikiComment
+  properties:
+  - name: topic
+  - name: sort_key
+    direction: desc

@@ -701,11 +701,16 @@ li.comment p {
 #comment-area li.is-reply {
   margin-left: 30px; }
 
-#comment-area li.expanded {
+#comment-area .ui-accordion-content-active {
   padding-bottom: 3em; }
 
 div#assignment-completion {
   background: #cbbbab; }
+
+#comment-area .comment-expand-heading {
+  color: #444;
+  text-decoration: underline;
+  cursor: pointer; }
 
 .comment .deleted {
   color: #999;

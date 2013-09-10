@@ -121,6 +121,16 @@ class WikiBaseHandler(BaseHandler):
                 self.request.path,
                 urllib.urlencode(params)))
 
+    def show_comments(self, page):
+        query = page.comments
+        query.order("sort_key")
+        #self.template_value['comments'] = prefetch.prefetch_refprops(
+                #query.fetch(limit=1000),
+                #WikiComment.author)
+        the_comments = list(query.fetch(limit=1000))
+        logging.warning(",".join([c.sort_key for c in the_comments]))
+        self.template_value['comments'] = the_comments
+
     def post_comment(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
@@ -441,11 +451,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
     def show_unit(self, query):
         self.template_value['unit'] = self.find_unit_by_id(query['unit'])
-
-    def show_comments(self, page):
-        self.template_value['comments'] = prefetch.prefetch_refprops(
-                page.comments.order("sort_key").fetch(limit=1000),
-                WikiComment.author)
 
     def show_all_endorsements(self, page):
         self.template_value['endorsements'] = prefetch.prefetch_refprops(
@@ -838,9 +843,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['endorsements'] = profile_page.author.own_annotations.filter('why IN', ['endorse', 'exemplary']).run(limit=10)
 
         self.show_notifications(user)
-        self.template_value['comments'] = prefetch.prefetch_refprops(
-                profile_page.comments.order("added_time").fetch(limit=1000),
-                WikiComment.author)
+        self.show_comments(profile_page)
 
         if self._can_comment(query, user):
             self.template_value['can_comment'] = True

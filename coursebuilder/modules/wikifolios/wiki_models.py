@@ -132,7 +132,7 @@ class WikiComment(models.BaseEntity):
                 self.sort_key = self_key
             else:
                 self.parent_comment._set_sort_key(put=True)
-                self.sort_key = self.parent_comment.sort_key + "/" + self_key
+                self.sort_key = self.parent_comment.sort_key
             if put:
                 self.put()
         return self.sort_key

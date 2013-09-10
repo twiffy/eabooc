@@ -825,12 +825,19 @@ li.comment p {
   margin-left: 30px;
 }
 
-#comment-area li.expanded {
+#comment-area .ui-accordion-content-active {
+  // Space for the reply button
   padding-bottom: 3em;
 }
 
 div#assignment-completion {
   background: lighten($page-bg-color, 10%);
+}
+
+#comment-area .comment-expand-heading {
+  color: #444;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .comment .deleted {
