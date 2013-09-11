@@ -78,6 +78,8 @@ def sort_comments(comments):
     parent
       reply-1
       reply-2.
+
+    This is a flat list, the template notices whether they are replies at a later point.
     """
     first_sort = sorted(comments, key=attrgetter('added_time'))
     def final_sort_key(comment):
