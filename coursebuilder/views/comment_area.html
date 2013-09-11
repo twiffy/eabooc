@@ -21,7 +21,7 @@
         {% if action_url %}
         <a href="{{ action_url('view') }}#comment-{{ comment.key().id() }}">permalink</a>
         {% else %}
-        <a href="{{ comment.topic.link }}#comment-{{ comment.key().id() }}">permalink</a>
+        <a href="{{ comment_permalink(comment) }}">permalink</a>
         {% endif %}
       </div>
       {% endif %}
