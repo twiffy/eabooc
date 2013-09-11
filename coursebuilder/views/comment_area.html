@@ -5,10 +5,13 @@
   <div class="accordion-reply">
     <div class="comment-expand-heading">Click here to reply to this thread.</div>
     <form action="{{ action_url('comment') }}" method="POST">
-      <textarea name="text" class="comment-textarea" rows="2" cols="50"></textarea>
-      <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
-      <input type="hidden" name="parent" value="{{ parent }}">
-      <div class="gcb-pull-right"><input type="submit" class="gcb-button" value="Reply"></div>
+      <fieldset>
+        <legend>Reply</legend>
+        <textarea name="text" class="comment-textarea" rows="2" cols="50"></textarea>
+        <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
+        <input type="hidden" name="parent" value="{{ parent }}">
+        <div class="gcb-pull-right"><input type="submit" class="gcb-button" value="Reply"></div>
+      </fieldset>
     </form>
   </div>
 </div>
