@@ -16,6 +16,7 @@ from modules.regconf.regconf import FormSubmission
 from google.appengine.api import users, mail
 from google.appengine.ext import db
 from modules.wikifolios import page_templates
+from operator import attrgetter
 import itertools, collections
 import textwrap
 import filters
@@ -45,6 +46,22 @@ def comment_permalink(comment):
         'action': 'permalink',
         'comment_id': comment.key().id(),
         })
+
+def sort_comments(comments):
+    """
+    Sort comments so that they are in the order:
+    parent
+      reply-1
+      reply-2.
+    """
+    first_sort = sorted(comments, key=attrgetter('added_time'))
+    def final_sort_key(comment):
+        if comment.parent_added_time:
+            return comment.parent_added_time
+        if comment.parent_comment:
+            logging.warning("comment has parent_comment but no parent_added_time, this shouldn't happen")
+        return comment.added_time
+    return sorted(first_sort, key=final_sort_key)
 
 class WikiBaseHandler(BaseHandler):
     # I don't like how leaky this is, always having to check for the None return.
@@ -123,13 +140,13 @@ class WikiBaseHandler(BaseHandler):
 
     def show_comments(self, page):
         query = page.comments
-        query.order("sort_key")
-        query.order("added_time")
-        #self.template_value['comments'] = prefetch.prefetch_refprops(
-                #query.fetch(limit=1000),
-                #WikiComment.author)
-        the_comments = list(query.fetch(limit=1000))
-        logging.warning(",".join([c.sort_key for c in the_comments]))
+        #query.order("added_time")
+        the_comments = query.fetch(limit=1000)
+        the_comments = prefetch.prefetch_refprops(
+                the_comments,
+                WikiComment.author)
+        the_comments = sort_comments(the_comments)
+
         self.template_value['comments'] = the_comments
 
     def post_comment(self):
@@ -186,7 +203,8 @@ class WikiBaseHandler(BaseHandler):
                 'what': self.describe_query(query, page.author),
                 }))
 
-        self.redirect(self._create_action_url(query, 'view'))
+        self.redirect(self._create_action_url(query, 'view')
+                + '#comment-%d' % comment.key().id())
 
     def post_flag(self):
         user = self.personalize_page_and_get_wiki_user()

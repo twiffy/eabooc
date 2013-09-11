@@ -116,7 +116,7 @@ class WikiComment(models.BaseEntity):
     is_deleted = db.BooleanProperty()
 
     parent_comment = db.SelfReferenceProperty(collection_name="replies")
-    sort_key = db.StringProperty(indexed=True)
+    parent_added_time = db.DateTimeProperty()
 
     #def __init__(self, *args, **kwargs):
         #super(WikiComment, self).__init__(*args, **kwargs)
@@ -124,18 +124,9 @@ class WikiComment(models.BaseEntity):
         #if not self.thread_id and self.is_saved():
             #self.thread_id = self.key().id()
 
-    def _set_sort_key(self, put=False):
-        if not self.sort_key:
-            time_fmt = '%Y-%j-%H-%M-%S-%f'
-            self_key = self.added_time.strftime(time_fmt)
-            if not self.is_reply():
-                self.sort_key = self_key
-            else:
-                self.parent_comment._set_sort_key(put=True)
-                self.sort_key = self.parent_comment.sort_key
-            if put:
-                self.put()
-        return self.sort_key
+    def _set_sort_key(self):
+        if self.is_reply() and not self.parent_added_time:
+            self.parent_added_time = self.parent_comment.added_time
 
     def put(self):
         self._set_sort_key()
