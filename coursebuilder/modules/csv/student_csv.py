@@ -67,7 +67,8 @@ class AnalyticsHandler(BaseHandler):
         query = wtf.RadioField('Analytics query',
                 choices=[(k, k) for k in analytics_queries.keys()])
         view = wtf.RadioField('View',
-                choices=[('csv', 'csv'), ('table', 'table')])
+                choices=[('csv', 'csv'), ('table', 'table')],
+                default='table')
 
     def _get_nav(self):
         form = self.NavForm(self.request.GET)
@@ -106,11 +107,14 @@ class AnalyticsHandler(BaseHandler):
         self.prettify()
         form_fields = Markup("<p>\n").join(
                 Markup(field.label) + Markup(field) for field in self.NavForm())
-        self.template_value['content'] = Markup("\n").join((
-                Markup('<form action="/analytics" method="GET">'),
-                form_fields,
-                Markup('<input type="submit"></form>'),
-                ))
+        self.template_value['content'] = Markup('''
+                <div class="gcb-aside">
+                <form action="/analytics" method="GET">
+                %s
+                <input type="submit" value="Run">
+                </form>
+                </div>
+                ''') % form_fields
         self.render('bare.html')
 
     def render_as_csv(self, fields, items):
