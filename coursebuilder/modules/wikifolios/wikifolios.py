@@ -40,6 +40,11 @@ def get_student_by_wiki_id(wiki_id):
 def student_profile_link(wiki_id):
     return "wikiprofile?" + urllib.urlencode({'student': wiki_id})
 
+def comment_permalink(comment):
+    return 'wikicomment?' + urllib.urlencode({
+        'action': 'permalink',
+        'comment_id': comment.key().id(),
+        })
 
 class WikiBaseHandler(BaseHandler):
     # I don't like how leaky this is, always having to check for the None return.
@@ -51,6 +56,7 @@ class WikiBaseHandler(BaseHandler):
             self.template_value['student_link'] = filters.student_link_for_admins
         else:
             self.template_value['student_link'] = filters.student_link
+        self.template_value['comment_permalink'] = comment_permalink
         self.template_value['humanize'] = humanize
         if hasattr(self, 'create_xsrf_token'):
             # TODO: refactor to split more complicated pages out from the profile list handler
@@ -214,7 +220,7 @@ class WikiBaseHandler(BaseHandler):
 
 class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = 'edit'
-    get_actions = ['edit', 'delete']
+    get_actions = ['edit', 'delete', 'permalink']
     post_actions = ['save', 'delete']
 
     class _NavForm(wtf.Form):
@@ -260,6 +266,12 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['action_url'] = functools.partial(
                 self._create_action_url, query)
         self.render("wf_comment_edit.html")
+
+    def get_permalink(self):
+        comment = self._find_comment()
+        root = comment.topic.link
+        anchor = '#comment-%d' % comment.key().id()
+        return self.redirect(root + anchor)
 
     def post_save(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -906,7 +918,10 @@ class WikiCommentStreamHandler(WikiBaseHandler):
         if not Roles.is_course_admin(self.app_context):
             self.abort(403)
 
-        latest_comments = WikiComment.all().order('-added_time').run(limit=100)
+        latest_comments = WikiComment.all().order('-added_time').fetch(limit=100)
+
+        latest_comments = prefetch.prefetch_refprops(latest_comments,
+                WikiComment.author)
 
         self.template_value['comments'] = latest_comments
 
