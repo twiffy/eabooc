@@ -26,6 +26,7 @@ from google.appengine.api import memcache
 from google.appengine.api import users
 from google.appengine.api import images
 from google.appengine.ext import db
+from google.appengine.ext import deferred
 
 import hashlib
 import random
@@ -323,6 +324,10 @@ class Student(BaseEntity):
         """Checks if the key of the student and the given key are equal."""
         return key == self.get_key()
 
+    @staticmethod
+    def deferred_notify(student_key, note):
+        deferred.defer(student_notify_helper, student_key, note)
+
     @db.transactional
     def notify(self, html):
         self.notifications.append(html)
@@ -335,6 +340,10 @@ class Student(BaseEntity):
             self.notifications = []
             self.put()
         return notes
+
+def student_notify_helper(student_key, note):
+    student = Student.get(student_key)
+    student.notify(note)
 
 
 class EventEntity(BaseEntity):

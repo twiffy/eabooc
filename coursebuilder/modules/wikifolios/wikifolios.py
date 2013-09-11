@@ -55,18 +55,18 @@ def notify_other_people_in_thread(parent, new, exclude=[]):
     exclude_authors = set(a.key() for a in exclude)
 
     if author(parent) not in exclude_authors:
-        # TODO: do this deferred.
+        exclude_authors.add(author(parent))
         note = Markup('<a href="%(url)s"><b>%(commenter)s</b> replied to your comment.</a>')
-        parent.author.notify(unicode(note % {
+        Student.deferred_notify(author(parent), unicode(note % {
             'url': comment_permalink(new),
             'commenter': new_author_name,
             }))
 
     for comment in parent.replies:
         if author(comment) not in exclude_authors:
-            # TODO: do this deferred.
+            exclude_authors.add(author(comment))
             note = Markup('<a href="%(url)s"><b>%(commenter)s</b> also replied to a comment.</a>')
-            comment.author.notify(unicde(note % {
+            Student.deferred_notify(author(comment), unicode(note % {
                 'url': comment_permalink(new),
                 'commenter': new_author_name,
                 }))
@@ -222,11 +222,13 @@ class WikiBaseHandler(BaseHandler):
 
         if query['student'] != user.wiki_id:
             note = Markup('<a href="%(url)s"><b>%(commenter)s</b> commented on %(what)s</a>')
-            page.author.notify(unicode(note % {
-                'url': self._create_action_url(query, 'view'),
-                'commenter': user.name,
-                'what': self.describe_query(query, page.author),
-                }))
+            Student.deferred_notify(
+                    page.author_key,
+                    unicode(note % {
+                        'url': comment_permalink(comment),
+                        'commenter': user.name,
+                        'what': self.describe_query(query, page.author),
+                        }))
 
         if parent:
             notify_other_people_in_thread(parent, comment,
