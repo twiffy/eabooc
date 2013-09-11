@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-aside">
+    <table>
+      <tr>
+        {% for f in fields %}
+        <th>{{ f }}</th>
+        {% endfor %}
+      </tr>
+      {% for item in items %}
+      <tr>
+        {% for f in fields %}
+        <td>{{ item[f] }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}
