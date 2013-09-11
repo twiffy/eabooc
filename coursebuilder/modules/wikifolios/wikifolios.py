@@ -47,6 +47,31 @@ def comment_permalink(comment):
         'comment_id': comment.key().id(),
         })
 
+def notify_other_people_in_thread(parent, new, exclude=[]):
+    def author(comment):
+        return WikiComment.author.get_value_for_datastore(comment)
+    new_author = author(new)
+    new_author_name = new.author.name
+    exclude_authors = set(a.key() for a in exclude)
+
+    if author(parent) not in exclude_authors:
+        # TODO: do this deferred.
+        note = Markup('<a href="%(url)s"><b>%(commenter)s</b> replied to your comment.</a>')
+        parent.author.notify(unicode(note % {
+            'url': comment_permalink(new),
+            'commenter': new_author_name,
+            }))
+
+    for comment in parent.replies:
+        if author(comment) not in exclude_authors:
+            # TODO: do this deferred.
+            note = Markup('<a href="%(url)s"><b>%(commenter)s</b> also replied to a comment.</a>')
+            comment.author.notify(unicde(note % {
+                'url': comment_permalink(new),
+                'commenter': new_author_name,
+                }))
+
+
 def sort_comments(comments):
     """
     Sort comments so that they are in the order:
@@ -202,6 +227,10 @@ class WikiBaseHandler(BaseHandler):
                 'commenter': user.name,
                 'what': self.describe_query(query, page.author),
                 }))
+
+        if parent:
+            notify_other_people_in_thread(parent, comment,
+                    exclude=[page.author, comment.author])
 
         self.redirect(self._create_action_url(query, 'view')
                 + '#comment-%d' % comment.key().id())
