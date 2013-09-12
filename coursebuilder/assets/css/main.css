@@ -750,3 +750,7 @@ div#alerts-bar {
   padding: 0.4em;
   border-radius: 5px;
   margin-top: 4px; }
+
+.undo-link {
+  color: #cc6666;
+  text-decoration: underline; }

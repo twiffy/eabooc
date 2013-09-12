@@ -64,8 +64,8 @@
         <form action="{{ action_url('endorse') }}" method="POST">
           <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('endorse') }}">
           {% if endorsement_view == 'has_endorsed' %}
-          You have marked this page as complete.  You can
-          <input type="submit" name="undo" class="gcb-button" value="undo"> the endorsement.
+          You have marked this page as complete.
+          <input type="submit" name="undo" class="undo-link" value="undo" title="Undo completion mark">
           {% elif endorsement_view == 'can_endorse' %}
           Click here to endorse that the author has completed
           <input type="submit" name="required_done" class="gcb-button" value="the required parts">, or
@@ -82,9 +82,8 @@
           <textarea name="comment" style="width: 100%" rows="2" placeholder="This is great because..."></textarea><br>
           <input type="submit" class="gcb-button" value="&#9733; Exemplary">
           {% elif exemplary_view == 'has_exemplaried' %}
-          You have marked this page as exemplary.  You can <input type="submit"
-          name="undo" class="gcb-button" value="undo"> the exemplary, for
-          instance if you want to change your stated reason.<br>
+          You have marked this page as exemplary.  <input type="submit"
+          name="undo" class="undo-link" value="undo" title="Undo exemplary mark"><br>
           {% endif %}
         </form>
         {% for e in exemplaries %}
