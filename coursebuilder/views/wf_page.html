@@ -10,15 +10,15 @@
 <center><div id="alerts-bar">{{ alert }}</div></center>
 {% endif %}
 <script src="assets/lib/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#exemplary-reasons').accordion({
+      collapsible: true,
+      active: false,
+    });
+  });
+</script>
 <link rel="stylesheet" href="assets/lib/jquery-ui-1.10.3.custom/css/booc-theme/jquery-ui-1.10.3.custom.min.css">
-<style>
-  div#exemplary-text {
-    display: none;
-  }
-  a.collapser {
-    
-  }
-</style>
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 wiki-area">
@@ -90,16 +90,19 @@
         {% if loop.first %}<span style="float:left; font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
         {% if loop.last and not loop.first %} and {% endif %}
         {{ student_link(e.who) }}{% if not loop.last%},{%endif%}
-        {% if loop.last %}
-        <br><a onclick="$('div#exemplary-text').toggle()">Show reasons</a><br>
-        {% endif %}
         {% else %}<!-- no exemplaries -->
         {% endfor %}
-        <div id="exemplary-text">
-          {% for e in exemplaries %}
-          {{ student_link(e.who) }} says: {{ e.reason | safe }}
-          {% endfor %}
+        {% if exemplaries %}
+        {# TODO jquery accordion #}
+        <div id="exemplary-reasons">
+          <div>Show reasons</div>
+          <div id="exemplary-text">
+            {% for e in exemplaries %}
+            {{ student_link(e.who) }} says: {{ e.reason | safe }}<br>
+            {% endfor %}
+          </div>
         </div>
+        {% endif %}
       </div>
     </div>
 
