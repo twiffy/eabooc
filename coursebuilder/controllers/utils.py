@@ -142,6 +142,7 @@ class ReflectiveRequestHandler(object):
         # Each POST request must have valid XSRF token.
         xsrf_token = self.request.get('xsrf_token')
         if not XsrfTokenManager.is_xsrf_token_valid(xsrf_token, action):
+            logging.warning("Denying post because of invalid xsrf token")
             self.error(403)
             return
 
