@@ -95,7 +95,7 @@
         {% if exemplaries %}
         {# TODO jquery accordion #}
         <div id="exemplary-reasons">
-          <div>Show reasons</div>
+          <div id="exemplary-header">Show reasons...</div>
           <div id="exemplary-text">
             {% for e in exemplaries %}
             {{ student_link(e.who) }} says: {{ e.reason | safe }}<br>

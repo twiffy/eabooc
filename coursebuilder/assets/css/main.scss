@@ -898,3 +898,14 @@ div#alerts-bar {
   color: #cc6666;
   text-decoration: underline;
 }
+
+div#exemplary-reasons {
+  margin: 0;
+  padding: 0;
+  background: lighten($page-bg-color, 16%);
+  border: thin solid lighten($page-bg-color, 5%);
+}
+div#exemplary-header {
+  text-decoration: underline;
+  cursor: pointer;
+}
