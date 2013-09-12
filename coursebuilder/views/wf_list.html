@@ -29,7 +29,7 @@
           <li>{{ group_name(group[0]) }}
           <ul>
             {% for student in group[1] %}
-            <li><a href="wikiprofile?student={{student.wiki_id}}">{{ student.name }}</a></li>
+            <li>{{ student_link(student) }}</li>
             {% endfor %}
           </ul>
           </li>
