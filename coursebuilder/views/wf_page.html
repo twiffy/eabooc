@@ -75,16 +75,18 @@
         {% endif %}
       </div>
       <div id="exemplaries" class="gcb-col-5">
-        {% if exemplary_view == 'can_exemplary' %}
-        You can mark this page as exemplary!<br>
         <form action="{{ action_url('exemplary') }}" method="POST">
           <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('exemplary') }}">
+          {% if exemplary_view == 'can_exemplary' %}
+          You can mark this page as exemplary!<br>
           <textarea name="comment" style="width: 100%" rows="2" placeholder="This is great because..."></textarea><br>
           <input type="submit" class="gcb-button" value="&#9733; Exemplary">
+          {% elif exemplary_view == 'has_exemplaried' %}
+          You have marked this page as exemplary.  You can <input type="submit"
+          name="undo" class="gcb-button" value="undo"> the exemplary, for
+          instance if you want to change your stated reason.<br>
+          {% endif %}
         </form>
-        {% elif exemplary_view == 'has_exemplaried' %}
-        You have marked this page as exemplary.
-        {% endif %}
         {% for e in exemplaries %}
         {% if loop.first %}<span style="float:left; font-size: 2em; color: #fc0;">&#9733;</span> This page has been marked as exemplary by{% endif %}
         {% if loop.last and not loop.first %} and {% endif %}

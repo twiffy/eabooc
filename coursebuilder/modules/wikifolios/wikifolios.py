@@ -511,7 +511,14 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.abort(403, "You are not allowed to mark your own page exemplary.")
 
         page = self._find_page(query)
-        if Annotation.exemplaries(page, user).count(limit=1) > 0:
+
+        previous_exemplary = Annotation.exemplaries(page, user).get()
+
+        if previous_exemplary:
+            if 'undo' in self.request.POST:
+                previous_exemplary.delete()
+                self.redirect(self._create_action_url(query, 'view'))
+                return
             logging.warning("Attempt to mark complete multiple times.")
             self.abort(403, "You've already marked this page exemplary.")
 
