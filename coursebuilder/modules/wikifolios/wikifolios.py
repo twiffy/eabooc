@@ -522,8 +522,19 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             logging.warning("Attempt to mark complete multiple times.")
             self.abort(403, "You've already marked this page exemplary.")
 
-        Annotation.exemplary(page, user,
-                reason=bleach_comment(self.request.get('comment')))
+        reason = bleach_comment(self.request.get('comment'))
+        if len(reason) < 10 or len(reason) > 450:
+            self.template_value['content'] = '''
+            <div class="gcb-aside">
+              You have to give a reason for marking something exemplary.  The
+              reason must be between 10 and 450 letters in length (yours was
+              %d).  Please use your Back button and try again!
+            </div>
+            ''' % len(reason)
+            self.render('bare.html')
+            return
+
+        Annotation.exemplary(page, user, reason)
 
         self.redirect(self._create_action_url(query, 'view'))
 
