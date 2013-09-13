@@ -5,11 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>
-      {{course_info.course.title}} -
       {% block subtitle %}
         {# I18N: Title of the webpage. #}
         {{ gettext('Course') }}
-      {% endblock subtitle %}
+      {% endblock subtitle %} -
+      {{course_info.course.title}}
     </title>
 
     <link rel="icon" href="/favicon.ico" />
