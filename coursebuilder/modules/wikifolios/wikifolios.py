@@ -599,7 +599,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.show_comments(page)
         self.show_all_endorsements(page)
 
-        form_init = page_templates.forms[1]
+        form_init = page_templates.forms[query['unit']]
         self.template_value['fields'] = form_init(None, page)
 
         self.template_value['author'] = page.author
