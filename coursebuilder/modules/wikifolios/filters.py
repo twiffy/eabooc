@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import jinja2
+from google.appengine.api.app_identity import get_application_id
+import urllib
 
 def student_link_for_admins(author, text=None):
     '''
@@ -33,4 +35,14 @@ def student_link(author, text=None):
             'id': author.wiki_id,
             'text': text,
             }
+
+
+def dark_magic_db_edit_href(key):
+    root = 'https://appengine.google.com/datastore/edit'
+    params = {
+            'app_id': get_application_id(),
+            'key': key,
+            }
+    return root + '?' + urllib.urlencode(params)
+
 

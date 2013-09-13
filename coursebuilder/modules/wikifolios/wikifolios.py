@@ -100,6 +100,8 @@ class WikiBaseHandler(BaseHandler):
             self.template_value['student_link'] = filters.student_link_for_admins
         else:
             self.template_value['student_link'] = filters.student_link
+        if users.is_current_user_admin():
+            self.template_value['dark_magic_db_edit_href'] = filters.dark_magic_db_edit_href
         self.template_value['comment_permalink'] = comment_permalink
         self.template_value['humanize'] = humanize
         if hasattr(self, 'create_xsrf_token'):
