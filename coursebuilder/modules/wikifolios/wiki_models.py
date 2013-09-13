@@ -74,6 +74,35 @@ class WikiPage(db.Expando):
     def is_exemplaried(self):
         return self.annotations.filter('why', 'exemplary').count(limit=1) > 0
 
+    def delete(self):
+        models.MemcacheManager.delete(self._recents_memcached_key())
+        return super(WikiPage, self).delete()
+
+    def put(self):
+        models.MemcacheManager.delete(self._recents_memcached_key())
+        return super(WikiPage, self).put()
+
+    @classmethod
+    def _recents_memcached_key(cls):
+        return 'recent-entities:%s' % (cls.__name__)
+
+    @classmethod
+    def most_recent(cls, count):
+        key = cls._recents_memcached_key()
+        asked_for_key = key + ":asked-for-how-many"
+        recent = models.MemcacheManager.get(key)
+        asked_for = models.MemcacheManager.get(asked_for_key)
+        if not recent or asked_for != count:
+            logging.info("RECALCULATING recent wikifolio updates")
+            recent = list(WikiPage.all().order('-edited_timestamp').fetch(limit=count))
+            if recent:
+                for r in recent:
+                    # cache authors
+                    x = r.author
+                models.MemcacheManager.set(key, recent)
+                models.MemcacheManager.set(asked_for_key, count)
+        return recent
+
 
 class WikiComment(models.BaseEntity):
     author = db.ReferenceProperty(models.Student, collection_name="wiki_comments")
