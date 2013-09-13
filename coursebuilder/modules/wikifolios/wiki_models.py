@@ -11,7 +11,10 @@ class WikiPage(db.Expando):
 
     @cached_property
     def author(self):
-        return self.parent()
+        author = models.Student.get_enrolled_student_by_email(self.author_email)
+        if not author:
+            author = self.parent()
+        return author
 
     @cached_property
     def author_key(self):
@@ -24,9 +27,6 @@ class WikiPage(db.Expando):
 
     @cached_property
     def link(self):
-        # TODO is there a way to see if .author has already been fetched?
-        # If not, it would be great to use Student.get_enrolled...email
-        # Since that is memcached.
         student = self.author.wiki_id
         params = {
             'student': student,
