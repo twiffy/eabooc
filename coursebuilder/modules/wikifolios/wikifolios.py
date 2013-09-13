@@ -734,7 +734,6 @@ class WikiProfileListHandler(WikiBaseHandler):
                 'other': 'Other',
 
                 # these are names, rather than values, of columns
-                'group_id': 'My Group',
                 'is_teaching_assistant': 'Teaching Assistants',
                 None: 'All Students',
                 }
@@ -767,11 +766,9 @@ class WikiProfileListHandler(WikiBaseHandler):
         student_list.filter('is_enrolled =', True)
         student_list.filter('is_participant =', True)
         # TODO refactor to switch & stuff???
-        if group_by == 'role':
+        if group_by in ('role', 'group_id'):
             student_list.order(group_by)
             projection.append(group_by)
-        if group_by == 'group_id':
-            student_list.filter('group_id =', user.group_id)
         elif group_by == 'is_teaching_assistant':
             student_list.filter('is_teaching_assistant =', True)
         student_list.order('name')
@@ -783,7 +780,7 @@ class WikiProfileListHandler(WikiBaseHandler):
                 limit=FETCH_LIMIT,
                 projection=projection,
                 )
-        if group_by == 'role':
+        if group_by in ('role', 'group_id'):
             lazy_groups = itertools.groupby(all_students,
                     lambda student: getattr(student, group_by))
             self.template_value['groups'] = lazy_groups
