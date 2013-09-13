@@ -701,6 +701,9 @@ li.comment p {
 #comment-area li.is-reply {
   margin-left: 30px; }
 
+#admin-comment-list #comment-area li.is-reply {
+  margin-left: 1px; }
+
 div#assignment-completion {
   background: #cbbbab; }
 

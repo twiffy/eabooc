@@ -825,6 +825,10 @@ li.comment p {
   margin-left: 30px;
 }
 
+#admin-comment-list #comment-area li.is-reply {
+  margin-left: 1px;
+}
+
 #comment-area .ui-accordion-content-active {
   // Space for the reply button
   // padding-bottom: 3em;
