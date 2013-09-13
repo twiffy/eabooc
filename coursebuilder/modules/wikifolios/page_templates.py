@@ -30,6 +30,20 @@ class UnitOnePageForm(wtf.Form):
 forms[1] = UnitOnePageForm
 templates[1] = 'wf_temp_u1.html'
 
+
+class UnitTwoPageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    ranking = BleachedTextAreaField()
+    create_items = BleachedTextAreaField()
+    commandments = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[2] = UnitTwoPageForm
+templates[2] = 'wf_temp_u2.html'
+
 def viewable_model(model):
     # TODO maybe default values?
     d = db.to_dict(model)
