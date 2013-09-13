@@ -77,6 +77,7 @@ THIRD_PARTY_LIBS = [
     _Library('requests-1.2.3.zip'),
     _Library('bleach-1.2.2.zip'),
     _Library('WTForms-1.0.4.zip', relative_path='WTForms-1.0.4'),
+    _Library('python-unicodecsv.zip', relative_path='python-unicodecsv'),
 ]
 
 

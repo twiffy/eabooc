@@ -5,7 +5,7 @@ from modules.regconf.regconf import FormSubmission
 from controllers.utils import BaseHandler
 from google.appengine.ext import db
 import logging
-import csv
+import unicodecsv as csv
 import wtforms as wtf
 from markupsafe import Markup
 
@@ -38,8 +38,8 @@ class StudentCsvHandler(BaseHandler):
                 if type(d[p]) is list:
                     d[p] = u", ".join(d[p])
                 # note that I just changed the type from list to unicode...
-                if type(d[p]) is unicode:
-                    d[p] = d[p].encode('utf-8')
+                #if type(d[p]) is unicode:
+                    #d[p] = d[p].encode('utf-8')
             out.writerow(d)
 
 class CurricularAimQuery(object):
@@ -126,8 +126,8 @@ class AnalyticsHandler(BaseHandler):
             for p in item.keys():
                 if type(item[p]) is list:
                     item[p] = u", ".join(item[p])
-                if type(item[p]) is unicode:
-                    item[p] = item[p].encode('utf-8')
+                #if type(item[p]) is unicode:
+                    #item[p] = item[p].encode('utf-8')
             out.writerow(item)
 
     def render_as_table(self, fields, items):
