@@ -10,7 +10,7 @@ from common import ckeditor, prefetch
 import bleach
 import webapp2
 import humanize
-from controllers.utils import BaseHandler, ReflectiveRequestHandler
+from controllers.utils import BaseHandler, ReflectiveRequestHandler, XsrfTokenManager
 from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
 from modules.regconf.regconf import FormSubmission
 from google.appengine.api import users, mail
@@ -965,10 +965,51 @@ class WikiUpdateListHandler(WikiBaseHandler):
 
 class HarrumphHandler(BaseHandler):
     def get(self):
-        s = Student.get_by_wiki_id(11292)
-        if s:
-            s.is_teaching_assistant = True
-            s.put()
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        if not Roles.is_super_admin():
+            self.abort(403, "no.")
+
+        self.response.write(Markup('''
+        <html><body>group_id csv: (email,group_id)<br><form action="/grump" method="POST"><textarea name="group_csv"></textarea>
+        <br><input type="hidden" name="xsrf_token" value="%(xsrf)s">
+        <br><label><input type="checkbox" name="really"> really do it?</label>
+        <br><input type="submit"></form>
+        </body>
+        </html>
+        ''') % { 'xsrf': XsrfTokenManager.create_xsrf_token('set_group_ids') })
+
+    def post(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        if not Roles.is_super_admin():
+            self.abort(403, "no.")
+
+        if not self.assert_xsrf_token_or_fail(self.request, 'set_group_ids'):
+            return
+
+        import unicodecsv as csv
+        import StringIO
+
+        reader = csv.reader(
+                StringIO.StringIO(self.request.get('group_csv')),
+                delimiter=",",
+                )
+        really = bool(self.request.get('really', False))
+        self.response.write(Markup("Really do it? %s<br>") % str(really))
+        for line in reader:
+            student = Student.get_enrolled_student_by_email(line[0])
+            if student:
+                self.response.write(Markup('<span style="color: #060;"> . </span>'))
+                if really:
+                    student.group_id = line[1]
+                    student.put()
+            else:
+                self.response.write(Markup("<br>Couldn't find student by email: %s<br>") % repr(line))
+
+
 
 module = None
 
@@ -982,7 +1023,7 @@ def register_module():
             ('/participants', WikiProfileListHandler),
             ('/updates', WikiUpdateListHandler),
             ('/comment_stream', WikiCommentStreamHandler),
-            #('/grump', HarrumphHandler),
+            ('/grump', HarrumphHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",
