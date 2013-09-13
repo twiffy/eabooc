@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block top_content %}
+{% endblock %}
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <h1>Recent Wikifolio Updates</h1>
+      <div id="wf-page-list">
+        <ul style="line-height: 1.8em;">
+          {% for update in updates %}
+          <li>{{ student_link(update.author) }} updated <a href="{{ update.link }}">
+            {% if update.unit %}
+            Unit {{ update.unit }}: {{ unit(update.unit).title }}
+            {% else %}
+            their profile page
+            {% endif %}</a> {{ humanize.naturaltime(update.edited_timestamp) }}
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

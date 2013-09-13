@@ -945,6 +945,24 @@ class WikiCommentStreamHandler(WikiBaseHandler):
 
         self.render('wf_admin_comment_list.html')
 
+
+class WikiUpdateListHandler(WikiBaseHandler):
+    def get(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+
+        latest_updates = list(WikiPage.all().order('-edited_timestamp').fetch(limit=20))
+
+        #for up in latest_updates:
+            #up['author'] = Student.get_enrolled_student_by_email(up.author_email)
+
+        self.template_value['updates'] = latest_updates
+        self.template_value['navbar'] = {'participants': True}
+        self.template_value['unit'] = self.find_unit_by_id
+        self.render('wf_update_list.html')
+
+
 class HarrumphHandler(BaseHandler):
     def get(self):
         s = Student.get_by_wiki_id(11292)
@@ -962,6 +980,7 @@ def register_module():
             ('/wikicomment', WikiCommentHandler),
             ('/wikiprofile', WikiProfileHandler),
             ('/participants', WikiProfileListHandler),
+            ('/updates', WikiUpdateListHandler),
             ('/comment_stream', WikiCommentStreamHandler),
             #('/grump', HarrumphHandler),
             ]

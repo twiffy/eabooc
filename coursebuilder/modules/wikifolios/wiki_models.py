@@ -1,5 +1,6 @@
 from models import models
 from google.appengine.ext import db
+from webapp2 import cached_property
 import urllib
 import logging
 
@@ -8,12 +9,24 @@ class WikiPage(db.Expando):
     edited_timestamp = db.DateTimeProperty(auto_now=True)
     # keep update time?  keep history????
 
-    @property
+    @cached_property
     def author(self):
         return self.parent()
 
-    @property
+    @cached_property
+    def author_key(self):
+        # get_value_for_datastore(etc) doesn't work on the above author property...
+        return self.key().parent()
+
+    @cached_property
+    def author_email(self):
+        return self.key().parent().name()
+
+    @cached_property
     def link(self):
+        # TODO is there a way to see if .author has already been fetched?
+        # If not, it would be great to use Student.get_enrolled...email
+        # Since that is memcached.
         student = self.author.wiki_id
         params = {
             'student': student,
