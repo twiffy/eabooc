@@ -742,7 +742,7 @@ class WikiProfileListHandler(WikiBaseHandler):
     default_group = None
 
     def group_name(self, db_val):
-        return self.group_names.get(db_val, None) or db_val.title()
+        return self.group_names.get(db_val, None) or db_val
 
     def get(self):
         user = self.personalize_page_and_get_wiki_user()
