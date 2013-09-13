@@ -952,7 +952,7 @@ class WikiUpdateListHandler(WikiBaseHandler):
         if not user:
             return
 
-        latest_updates = list(WikiPage.all().order('-edited_timestamp').fetch(limit=20))
+        latest_updates = list(WikiPage.all().order('-edited_timestamp').fetch(limit=50))
 
         #for up in latest_updates:
             #up['author'] = Student.get_enrolled_student_by_email(up.author_email)
