@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block subtitle %}
+{% if editing %}Editing {% endif %}{{ author_name }}'s Profile
+{% endblock %}
 {% block top_content %}
 <style>
   div#alerts-bar {

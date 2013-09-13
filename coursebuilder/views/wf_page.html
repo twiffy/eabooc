@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{% block subtitle %}
+{% if editing %}Editing {% endif %}Unit {{ unit.unit_id }}
+{% endblock %}
 {% block top_content %}
 {% include "notifications_area.html" %}
 {% endblock %}
