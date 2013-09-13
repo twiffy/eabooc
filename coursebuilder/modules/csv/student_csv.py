@@ -20,7 +20,7 @@ class StudentCsvHandler(BaseHandler):
     def get(self):
         self.response.content_type = 'text/plain'
 
-        if not Roles.is_super_admin():
+        if not Roles.is_course_admin(self.app_context):
             self.error(403)
             self.response.write("NO")
             return
@@ -77,7 +77,7 @@ class AnalyticsHandler(BaseHandler):
         return None
 
     def get(self):
-        if not Roles.is_super_admin():
+        if not Roles.is_course_admin(self.app_context):
             self.error(403)
             self.response.write("NO")
             return
