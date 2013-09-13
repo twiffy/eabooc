@@ -92,17 +92,18 @@
         {{ student_link(e.who) }}{% if not loop.last%},{%endif%}
         {% else %}<!-- no exemplaries -->
         {% endfor %}
-        {% if exemplaries %}
-        {# TODO jquery accordion #}
+        {% for e in exemplaries %}
+        {% if loop.first %}
         <div id="exemplary-reasons">
           <div id="exemplary-header">Show reasons...</div>
           <div id="exemplary-text">
-            {% for e in exemplaries %}
+            {% endif %}
             {{ student_link(e.who) }} says: {{ e.reason | safe }}<br>
-            {% endfor %}
+            {% if loop.last %}
           </div>
         </div>
         {% endif %}
+        {% endfor %}
       </div>
     </div>
 
