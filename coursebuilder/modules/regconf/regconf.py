@@ -63,7 +63,9 @@ def inc_student_count():
     generalcounter.increment(PARTICIPANT_COUNT)
 
 def course_is_full():
-    return get_student_count() >= MAXIMUM_PARTICIPANTS
+    can_register = self.app_context.get_environ(
+            )['reg_form']['can_register']
+    return (not can_register) or get_student_count() >= MAXIMUM_PARTICIPANTS
 
 def on_pre_assignment_submission(handler, user, form):
     submission = FormSubmission(form_name='pre', user=user)
