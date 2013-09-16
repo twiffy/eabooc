@@ -188,12 +188,6 @@
             {# I18N: Navbar tab. #}
             <a href="course">{{ gettext('Course') }}</a>
           </li>
-          {% if course_info.course.forum_embed_url %}
-          <li {% if navbar.forum %}class='active'{% endif %}>
-            {# I18N: Navbar tab. #}
-            <a href="forum">{{ gettext('Forum') }}</a>
-          </li>
-          {% endif %}
           <li {% if navbar.wiki %}class='active'{% endif %}>
             {# I18N: Navbar tab. #}
             <a href="wikiprofile">{{ gettext('My Wikifolio') }}</a>
@@ -202,7 +196,7 @@
             <a href="participants">Participants</a>
           </li>
           <li {% if navbar.forum %}class='active'{% endif %}>
-            <a href="forum/">Forum</a>
+            <a href="forum/">Q&amp;A Forum</a>
           </li>
           <li {% if navbar.faq %}class='active'{% endif %}>
             {# I18N: Navbar tab. #}
