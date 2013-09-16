@@ -43,6 +43,7 @@
       <form action="{{ action_url('save') }}" method="POST" id="wiki-form">
         <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
         {% endif %}
+        {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
         {% block wiki_content %}
         {% endblock %}
         {% if editing %}
