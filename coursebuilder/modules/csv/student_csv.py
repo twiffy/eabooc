@@ -77,7 +77,7 @@ class UnitOneEndorsementsQuery(object):
         for student in query:
             unit1_page = WikiPage.get_page(student, unit=unit)
             submitted_unit_1 = bool(unit1_page)
-            num_endorsements = None
+            num_endorsements = ''
             if unit1_page:
                 num_endorsements = Annotation.endorsements(what=unit1_page).count()
 
