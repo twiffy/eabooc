@@ -181,7 +181,8 @@ class WikiBaseHandler(BaseHandler):
 
     def show_comments(self, page):
         the_comments = WikiComment.comments_on_page(page)
-        the_comments = lazy_iter(sort_comments, the_comments)
+        #the_comments = lazy_iter(sort_comments, the_comments)
+        the_comments = sort_comments(the_comments)
         self.template_value['comments'] = the_comments
 
     def post_comment(self):
