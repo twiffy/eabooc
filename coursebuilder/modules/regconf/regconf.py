@@ -62,10 +62,6 @@ def get_student_count():
 def inc_student_count():
     generalcounter.increment(PARTICIPANT_COUNT)
 
-def course_is_full():
-    can_register = self.app_context.get_environ(
-            )['reg_form']['can_register']
-    return (not can_register) or get_student_count() >= MAXIMUM_PARTICIPANTS
 
 def on_pre_assignment_submission(handler, user, form):
     submission = FormSubmission(form_name='pre', user=user)
@@ -115,6 +111,11 @@ class ConfirmationHandler(BaseHandler):
             }
     default_page = 'pre'
 
+    def course_is_full(self):
+        can_register = self.app_context.get_environ(
+                )['reg_form']['can_register']
+        return (not can_register) or get_student_count() >= MAXIMUM_PARTICIPANTS
+
     def _page(self):
         page = self.default_page
         query_page = self.request.get('page', None)
@@ -130,7 +131,7 @@ class ConfirmationHandler(BaseHandler):
                 users.create_login_url(self.request.uri), normalize=False)
             return
         user = self.personalize_page_and_get_enrolled()
-        if course_is_full():
+        if self.course_is_full():
             self.render_full_course_sadness_page()
             return
         if not user:
@@ -169,7 +170,7 @@ class ConfirmationHandler(BaseHandler):
             return
         if not self.assert_xsrf_token_or_fail(self.request, 'register-conf-post-' + self._page()):
             return
-        if course_is_full():
+        if self.course_is_full():
             self.render_full_course_sadness_page()
             return
 
