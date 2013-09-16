@@ -48,7 +48,7 @@
 			<tr>
 				<th><label for="Subject">Subject:</label></th>
 				<td colspan="2">
-					<input class="{{ subject_class }}" size="60" maxlength="64" name="Subject" id="Subject" style="width: 39em;" value="{{ prevSubject|escape }}" type="edit">
+					<input class="{{ subject_class }}" tabindex="1" size="60" maxlength="64" name="Subject" id="Subject" style="width: 39em;" value="{{ prevSubject|escape }}" type="edit">
 					&nbsp;
 				</td>
 			</tr>
@@ -57,7 +57,7 @@
 			<tr>
 				<th><label for="Message">Message:</label></th>
 				<td colspan="2">
-					<textarea class="{{ message_class }}" name="Message" id="Message" style="width: 39em;" rows="16" cols="60" wrap="virtual">{{ prevMessage|escape }}</textarea>
+					<textarea class="{{ message_class }}" tabindex="2" name="Message" id="Message" style="width: 39em;" rows="16" cols="60" wrap="virtual">{{ prevMessage|escape }}</textarea>
 					<div style="width: 300px;">Don't use HTML. Surround URLs with spaces.</div>
 					&nbsp;
 				</td>
