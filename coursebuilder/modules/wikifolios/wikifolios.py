@@ -35,6 +35,20 @@ STUDENTS_CAN_DO_ASSIGNMENTS = ConfigProperty(
         wikifolios, other than their profiles.""",
         True)
 
+no_result = object()
+
+class lazy_iter(object):
+    def __init__(self, fn, *args, **kwargs):
+        self._fn = fn
+        self._args = args
+        self._kwargs = kwargs
+        self._result = no_result
+
+    def __iter__(self):
+        if self._result is no_result:
+            self._result = self._fn(*self._args, **self._kwargs)
+        return iter(self._result)
+
 def get_student_by_wiki_id(wiki_id):
     return Student.get_enrolled_student_by_wiki_id(wiki_id)
 
@@ -166,14 +180,8 @@ class WikiBaseHandler(BaseHandler):
                 urllib.urlencode(params)))
 
     def show_comments(self, page):
-        query = page.comments
-        #query.order("added_time")
-        the_comments = query.fetch(limit=1000)
-        the_comments = prefetch.prefetch_refprops(
-                the_comments,
-                WikiComment.author)
-        the_comments = sort_comments(the_comments)
-
+        the_comments = WikiComment.comments_on_page(page)
+        the_comments = lazy_iter(sort_comments, the_comments)
         self.template_value['comments'] = the_comments
 
     def post_comment(self):

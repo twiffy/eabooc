@@ -124,6 +124,27 @@ class WikiComment(models.BaseEntity):
         #if not self.thread_id and self.is_saved():
             #self.thread_id = self.key().id()
 
+    @cached_property
+    def author_email(self):
+        return WikiComment.author.get_value_for_datastore(self).name()
+
+    def _cache_author(self):
+        try:
+            author = models.Student.get_enrolled_student_by_email(self.author_email)
+        except:
+            pass
+        if not author:
+            author = self.author
+        type(self).author.__set__(self, author)
+
+    @classmethod
+    def comments_on_page(cls, page):
+        query = page.comments
+        results = query.run(limit=1000)
+        for comment in results:
+            comment._cache_author()
+            yield comment
+
     def _set_sort_key(self):
         if self.is_reply() and not self.parent_added_time:
             self.parent_added_time = self.parent_comment.added_time
