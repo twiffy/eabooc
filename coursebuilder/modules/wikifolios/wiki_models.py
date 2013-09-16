@@ -133,7 +133,7 @@ class WikiComment(models.BaseEntity):
         super(WikiComment, self).put()
 
     def is_reply(self):
-        return self.parent_comment != None
+        return WikiComment.parent_comment.get_value_for_datastore(self) != None
 
 class Annotation(models.BaseEntity):
     """Endorsements, flags-as-abuse, and exemplaries."""
