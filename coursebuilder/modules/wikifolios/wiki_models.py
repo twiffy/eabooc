@@ -138,20 +138,44 @@ class WikiComment(models.BaseEntity):
         type(self).author.__set__(self, author)
 
     @classmethod
+    def _key_for_page_cache(cls, page):
+        return 'comments-by-page:%s' % page.key()
+
+    @classmethod
     def comments_on_page(cls, page):
-        query = page.comments
-        results = query.run(limit=1000)
+        key = cls._key_for_page_cache(page)
+
+        results = models.MemcacheManager.get(key)
+        comments = []
+        set_cache = False
+        if not results:
+            query = page.comments
+            results = query.run(limit=1000)
+            set_cache = True
+
         for comment in results:
-            comment._cache_author()
+            if set_cache: comment._cache_author()
             yield comment
+            if set_cache: comments.append(comment)
+        if set_cache: models.MemcacheManager.set(key, comments)
+
 
     def _set_sort_key(self):
         if self.is_reply() and not self.parent_added_time:
             self.parent_added_time = self.parent_comment.added_time
 
+    def _invalidate_cache(self):
+        key = self._key_for_page_cache(self.topic)
+        models.MemcacheManager.delete(key)
+
     def put(self):
         self._set_sort_key()
+        self._invalidate_cache()
         super(WikiComment, self).put()
+
+    def delete(self):
+        self._invalidate_cache()
+        super(WikiComment, self).delete()
 
     def is_reply(self):
         return WikiComment.parent_comment.get_value_for_datastore(self) != None
