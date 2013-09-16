@@ -587,7 +587,7 @@ class XsrfTokenManager(object):
     """Provides XSRF protection by managing action/user tokens in memcache."""
 
     # Max age of the token (4 hours).
-    XSRF_TOKEN_AGE_SECS = 60 * 60 * 4
+    XSRF_TOKEN_AGE_SECS = 60 * 60 * 12
 
     # Token delimiters.
     DELIMITER_PRIVATE = ':'
@@ -671,17 +671,20 @@ class XsrfTokenManager(object):
         try:
             parts = token.split(cls.DELIMITER_PUBLIC)
             if len(parts) != 2:
+                logging.warning("Malformed XSRF token")
                 return False
 
             issued_on = long(parts[0])
             age = time.time() - issued_on
             if age > cls.XSRF_TOKEN_AGE_SECS:
+                logging.warning("XSRF token too old (%s)", str(age))
                 return False
 
             authentic_token = cls._create_token(action, issued_on)
             if authentic_token == token:
                 return True
 
+            logging.warning("XSRF token doesn't match")
             return False
         except Exception:  # pylint: disable-msg=broad-except
             return False
