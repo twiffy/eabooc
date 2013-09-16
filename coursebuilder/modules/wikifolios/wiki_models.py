@@ -185,7 +185,9 @@ class Annotation(models.BaseEntity):
     why = db.StringProperty()
     timestamp = db.DateTimeProperty(auto_now_add=True)
     who = db.ReferenceProperty(models.Student, collection_name="own_annotations")
-    what = db.ReferenceProperty(collection_name="annotations")
+    what = db.ReferenceProperty(WikiPage, collection_name="annotations")
+    unit = db.IntegerProperty()
+    whose = db.ReferenceProperty(models.Student, collection_name="annotations_of")
 
     # for endorsements:
     optional_parts_done = db.BooleanProperty()
@@ -209,6 +211,8 @@ class Annotation(models.BaseEntity):
         ann.why = 'endorse'
         ann.who = who
         ann.what = what
+        ann.unit = what.unit
+        ann.whose = what.author_key
         ann.optional_parts_done = optional_done
         ann.put()
 
@@ -228,6 +232,8 @@ class Annotation(models.BaseEntity):
         ann.why = 'exemplary'
         ann.who = who
         ann.what = what
+        ann.unit = what.unit
+        ann.whose = what.author_key
         ann.reason = reason
         ann.put()
 

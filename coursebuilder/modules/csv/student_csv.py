@@ -1,4 +1,5 @@
 from models import custom_modules
+from google.appengine.ext import deferred
 from models.models import Student
 from models.roles import Roles
 from modules.regconf.regconf import FormSubmission
@@ -63,7 +64,7 @@ class UnitOneEndorsementsQuery(object):
     def __init__(self, request):
         pass
 
-    fields = ('email', 'submitted_unit_1', 'num_endorsements')
+    fields = ('email', 'submitted_unit_1', 'endorsements_received')
 
     def run(self):
         query = Student.all().filter('is_participant =', True).run(limit=600)
@@ -77,7 +78,7 @@ class UnitOneEndorsementsQuery(object):
             yield {
                     'email': student.key().name(),
                     'submitted_unit_1': submitted_unit_1,
-                    'num_endorsements': num_endorsements,
+                    'endorsements_received': num_endorsements,
                     }
 
 analytics_queries = {
@@ -160,6 +161,14 @@ class AnalyticsHandler(BaseHandler):
         self.template_value['items'] = items
         self.render('analytics_table.html')
 
+class JobsHandler(BaseHandler):
+    def get(self):
+        if not Roles.is_course_admin(self.app_context):
+            self.abort(403)
+        from modules.csv import jobs
+        job = jobs.AnnotationUpdateJob()
+        deferred.defer(job.run)
+
 
 
 module = None
@@ -170,6 +179,7 @@ def register_module():
     handlers = [
             ('/student_csv', StudentCsvHandler),
             ('/analytics', AnalyticsHandler),
+            ('/adminjob', JobsHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Student CSV", "Student CSV",
