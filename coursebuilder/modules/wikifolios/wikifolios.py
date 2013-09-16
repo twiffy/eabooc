@@ -588,8 +588,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 previous_exemplary.delete()
                 self.redirect(self._create_action_url(query, 'view'))
                 return
-            logging.warning("Attempt to mark complete multiple times.")
-            self.abort(403, "You've already marked this page exemplary.")
+            logging.warning("Attempt to mark exemplary multiple times.")
+            self.redirect(self._create_action_url(query, 'view'))
+            return
 
         reason = bleach_comment(self.request.get('comment'))
         if len(reason) < 10 or len(reason) > 450:
