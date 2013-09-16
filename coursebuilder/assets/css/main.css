@@ -736,17 +736,14 @@ div#wiki-title-and-edit {
     margin-right: 20px;
     float: right; }
 
-.ui-helper-reset span {
+.wiki-area .ui-helper-reset span, .wiki-area .ui-helper-reset li, .wiki-area .ui-helper-reset p {
   line-height: 1.54; }
-.ui-helper-reset h2 {
-  font-size: 150%;
-  font-weight: bold; }
-.ui-helper-reset h3 {
-  font-size: 130%;
-  font-weight: bold; }
-.ui-helper-reset h4 {
-  font-size: 120%;
-  font-weight: bold; }
+.wiki-area .ui-helper-reset h2 {
+  font-size: 150%; }
+.wiki-area .ui-helper-reset h3 {
+  font-size: 130%; }
+.wiki-area .ui-helper-reset h4 {
+  font-size: 120%; }
 
 h1.ui-state-default, h2.ui-state-default, h3.ui-state-default, h4.ui-state-default {
   color: #444; }
