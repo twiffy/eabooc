@@ -216,14 +216,19 @@ class Annotation(models.BaseEntity):
         ann.optional_parts_done = optional_done
         ann.put()
 
+    # TODO: make this interface a little nicer?  Or elminate it...
     @classmethod
-    def endorsements(cls, what=None, who=None):
+    def endorsements(cls, what=None, who=None, unit=None, whose=None):
         q = Annotation.all()
         q.filter("why =", "endorse")
         if what:
             q.filter("what =", what)
         if who:
             q.filter("who =", who)
+        if unit:
+            q.filter("unit =", unit)
+        if whose:
+            q.filter("whose = ", whose)
         return q
 
     @classmethod

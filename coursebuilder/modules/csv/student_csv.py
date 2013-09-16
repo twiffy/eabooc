@@ -64,21 +64,30 @@ class UnitOneEndorsementsQuery(object):
     def __init__(self, request):
         pass
 
-    fields = ('email', 'submitted_unit_1', 'endorsements_received')
+    fields = (
+            'email',
+            'submitted_unit_1',
+            'endorsements_received',
+            'endorsements_given',
+            )
 
     def run(self):
         query = Student.all().filter('is_participant =', True).run(limit=600)
+        unit = 1
         for student in query:
-            unit1_page = WikiPage.get_page(student, unit=1)
+            unit1_page = WikiPage.get_page(student, unit=unit)
             submitted_unit_1 = bool(unit1_page)
             num_endorsements = None
             if unit1_page:
                 num_endorsements = Annotation.endorsements(what=unit1_page).count()
 
+            num_given = Annotation.endorsements(who=student, unit=unit).count()
+
             yield {
                     'email': student.key().name(),
                     'submitted_unit_1': submitted_unit_1,
                     'endorsements_received': num_endorsements,
+                    'endorsements_given': num_given,
                     }
 
 analytics_queries = {
