@@ -904,6 +904,12 @@ h1, h2, h3, h4 {
   text-align: center;
 }
 
+.wiki-area .ui-accordion-content {
+  h1, h2, h3, h4, h5, h6 {
+    margin-left: 0;
+  }
+}
+
 div#alerts-bar {
   background-color: #ffffB7;
   border: solid #cccca0 1px;
