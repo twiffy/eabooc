@@ -8,6 +8,7 @@ import logging
 import unicodecsv as csv
 import wtforms as wtf
 from markupsafe import Markup
+from modules.wikifolios.wiki_models import *
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -57,8 +58,31 @@ class CurricularAimQuery(object):
                     }
 
 
+
+class UnitOneEndorsementsQuery(object):
+    def __init__(self, request):
+        pass
+
+    fields = ('email', 'submitted_unit_1', 'num_endorsements')
+
+    def run(self):
+        query = Student.all().filter('is_participant =', True).run(limit=600)
+        for student in query:
+            unit1_page = WikiPage.get_page(student, unit=1)
+            submitted_unit_1 = bool(unit1_page)
+            num_endorsements = None
+            if unit1_page:
+                num_endorsements = Annotation.endorsements(what=unit1_page).count()
+
+            yield {
+                    'email': student.key().name(),
+                    'submitted_unit_1': submitted_unit_1,
+                    'num_endorsements': num_endorsements,
+                    }
+
 analytics_queries = {
         'initial_curricular_aim': CurricularAimQuery,
+        'unit_1_endorsements': UnitOneEndorsementsQuery,
         }
 
 
