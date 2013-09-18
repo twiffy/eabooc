@@ -485,7 +485,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self._create_action_url, data)
         return data
 
-    def _find_page(self, query, create=False):
+    def _find_page(self, query, create=False, student_model=None):
         logging.info(query)
         assert query
         # TODO don't have to do this query if it's your own page,
@@ -494,7 +494,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         # and look up by that, so we don't fetch the Student
         # model twice (once by wiki id, once as a reference in
         # the page)
-        student_model = get_student_by_wiki_id(query['student'])
+        if not student_model:
+            student_model = get_student_by_wiki_id(query['student'])
         if not student_model:
             return None
 
@@ -534,9 +535,13 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.abort(403)
         editor_role = self._editor_role(query, user)
         self.show_unit(query)
-        self.template_value['author'] = get_student_by_wiki_id(query['student'])
+        if user.wiki_id == query['student']:
+            author = user
+        else:
+            author = get_student_by_wiki_id(query['student'])
+        self.template_value['author'] = author
 
-        page = self._find_page(query)
+        page = self._find_page(query, student_model=author)
         if page:
             self.template_value['fields'] = page_templates.viewable_model(page)
 
