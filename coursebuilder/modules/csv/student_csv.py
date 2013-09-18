@@ -11,6 +11,7 @@ import wtforms as wtf
 from markupsafe import Markup
 from modules.wikifolios.wiki_models import *
 from modules.wikifolios.page_templates import forms, viewable_model
+import urllib
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -63,6 +64,7 @@ class CurricularAimQuery(object):
 
 class UnitOneQuery(object):
     def __init__(self, request):
+        self.request = request
         self.unit = 1
         self.fields = [
                 'email',
@@ -101,6 +103,14 @@ class UnitOneQuery(object):
                     'endorsements_given': num_given,
                     'exemplaries_received': num_exemplaries,
                     'exemplaries_given': exemps_given,
+                    'link': Markup('<a href="%s%s?%s">link</a>') % (
+                        self.request.host_url,
+                        '/wiki',
+                        urllib.urlencode({
+                            'unit': unit,
+                            'student': student.wiki_id,
+                            'action': 'view'
+                            })),
                     }
             info.update(fields)
             yield info
