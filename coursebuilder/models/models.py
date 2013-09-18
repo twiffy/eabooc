@@ -185,6 +185,9 @@ class Student(BaseEntity):
     research_area = db.StringListProperty(indexed=False)
     other_role = db.StringProperty(indexed=False)
 
+    # deprecated...
+    notifications = db.StringListProperty(indexed=False)
+
     is_teaching_assistant = db.BooleanProperty(default=False)
     group_id = db.StringProperty(indexed=True)
 
