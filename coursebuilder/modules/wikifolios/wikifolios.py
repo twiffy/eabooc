@@ -550,13 +550,14 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             # Start comments loading async
             comments = page.comments.run(limit=1000)
 
+            endorsements = Annotation.endorsements(page).run(limit=50)
+            exemplaries = Annotation.exemplaries(page).run(limit=50)
+
             if self._can_comment(query, user):
                 self.template_value['can_comment'] = True
                 self.template_value['ckeditor_comment_content'] = (
                         ckeditor.allowed_content(COMMENT_TAGS,
                             COMMENT_ATTRIBUTES, COMMENT_STYLES))
-
-            self.show_all_endorsements(page)
 
             if query['student'] == user.wiki_id:
                 self.template_value['is_author'] = True
@@ -572,7 +573,16 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     self.template_value['exemplary_view'] = 'has_exemplaried'
                 else:
                     self.template_value['exemplary_view'] = 'can_exemplary'
-            self.template_value['comments'] = prefetch.prefetch_refprops(comments, WikiComment.author)
+
+            prefetcher = prefetch.CachingPrefetcher()
+            prefetcher.add(author)
+            prefetcher.add(user)
+            self.template_value['comments'] = prefetcher.prefetch(comments, WikiComment.author)
+            self.template_value['endorsements'] = prefetcher.prefetch(endorsements,
+                    Annotation.who)
+            self.template_value['exemplaries'] = prefetcher.prefetch(exemplaries,
+                    Annotation.who)
+
             self.render(page_templates.templates[query['unit']])
         else:
             self.template_value['fields'] = {}
