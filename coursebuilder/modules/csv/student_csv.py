@@ -68,6 +68,7 @@ class UnitOneQuery(object):
         self.unit = 1
         self.fields = [
                 'email',
+                'name',
                 'posted_unit_1',
                 'exemplaries_received',
                 'exemplaries_given',
@@ -98,6 +99,7 @@ class UnitOneQuery(object):
 
             info = {
                     'email': student.key().name(),
+                    'name': student.name,
                     'posted_unit_1': posted_unit_1,
                     'endorsements_received': num_endorsements,
                     'endorsements_given': num_given,
