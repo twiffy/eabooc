@@ -812,7 +812,10 @@ class PostForm(FofouBase):
         mail.send_mail(sender=notify_addr,
                 to=notify_addr,
                 subject="[booc-iu] New forum post",
-                body=Markup("Topic: %s\n%s") % (topic.subject, message))
+                body=Markup("Topic: %s\n%s\n%s") % (
+                    topic.subject,
+                    self.request.host_url + siteroot + "topic?id=" + str(topic.key().id()),
+                    message))
     user_ip_str = get_remote_ip()
     if user.wiki_id:
         user_profile_link = '/wikiprofile?student=%d' % user.wiki_id
