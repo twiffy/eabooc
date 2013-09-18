@@ -12,6 +12,7 @@ from markupsafe import Markup
 from modules.wikifolios.wiki_models import *
 from modules.wikifolios.page_templates import forms, viewable_model
 import urllib
+import re
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -69,6 +70,7 @@ class UnitOneQuery(object):
         self.fields = [
                 'email',
                 'name',
+                'group_id',
                 'posted_unit_1',
                 'exemplaries_received',
                 'exemplaries_given',
@@ -95,11 +97,10 @@ class UnitOneQuery(object):
             num_given = Annotation.endorsements(who=student, unit=unit).count()
             exemps_given = Annotation.exemplaries(who=student, unit=unit).count()
 
-
-
             info = {
                     'email': student.key().name(),
                     'name': student.name,
+                    'group_id': student.group_id,
                     'posted_unit_1': posted_unit_1,
                     'endorsements_received': num_endorsements,
                     'endorsements_given': num_given,
@@ -114,7 +115,8 @@ class UnitOneQuery(object):
                             'action': 'view'
                             })),
                     }
-            info.update(fields)
+            info.update({k: re.sub(r'<[^>]*?>', '', v) for k, v in fields.items()})
+            #info.update(fields)
             yield info
 
 analytics_queries = {
