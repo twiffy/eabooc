@@ -7,6 +7,7 @@ from models.models import MemcacheManager as memcache
 from google.appengine.ext import webapp
 from google.appengine.ext import db
 from google.appengine.ext.webapp import template
+from google.appengine.api import mail
 import logging
 from offsets import *
 from markupsafe import Markup
@@ -806,6 +807,12 @@ class PostForm(FofouBase):
       topic.ncomments += 1
       topic.put()
 
+    notify_addr = 'booc.class@gmail.com'
+    if notify_addr:
+        mail.send_mail(sender=notify_addr,
+                to=notify_addr,
+                subject="[booc-iu] New forum post",
+                body=Markup("Topic: %s\n%s") % (topic.subject, message))
     user_ip_str = get_remote_ip()
     if user.wiki_id:
         user_profile_link = '/wikiprofile?student=%d' % user.wiki_id
