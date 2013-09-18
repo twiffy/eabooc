@@ -203,7 +203,7 @@ def register_module():
     handlers = [
             ('/student_csv', StudentCsvHandler),
             ('/analytics', AnalyticsHandler),
-            ('/adminjob', JobsHandler),
+            #('/adminjob', JobsHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Student CSV", "Student CSV",
