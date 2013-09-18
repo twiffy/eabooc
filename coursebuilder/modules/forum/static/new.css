@@ -45,7 +45,7 @@ td.contents {
 td.sidebar {
 	width: 200px;
 	vertical-align: top;
-	font-size: 10px;
+	/* font-size: 10px; */
 	font-family: "Lucida Grande", "Lucida Sans Unicode", sans-serif;	
 	color: rgb(102, 102, 102);
 }
@@ -71,7 +71,7 @@ div.form {
 table.form .buttons input {
 	font-family:		Tahoma,Arial,Helvetica,sans-serif;
 	font-weight:		bold;
-	font-size:			11px;
+	/* font-size:			11px; */
 	border-top:			1px solid #EEEEEE;
 	border-left:		1px solid #EEEEEE;
 	border-right:		1px solid #333333;
@@ -82,14 +82,14 @@ table.form .buttons input {
 }
 
 table.form td div {
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-family:		Tahoma,Arial,Helvetica,sans-serif;
 	color:				#666666;
 }
 
 table.form th {
 	font-family:		Tahoma,Arial,Helvetica,sans-serif;
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-weight:		bold;
 	padding-right:		1.5em;
 	text-align:			left;
@@ -101,27 +101,27 @@ table.form th {
 table.form td {
 	padding-bottom:		.5ex;
 	font-family:		Tahoma,Arial,Helvetica,sans-serif;
-	font-size:			11px;
+	/* font-size:			11px; */
 }
 
 table.form td.text {
 	padding-bottom:		.5ex;
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-family:		Monaco,'Courier New',Courier,monospace;
 }
 
 table.form input {
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-family:		Monaco,'Courier New',Courier,monospace;
 }
 
 table.form textarea {
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-family:		Monaco,'Courier New',Courier,monospace;
 }
 
 table.form input.error, textarea.error {
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-family:		Monaco,'Courier New',Courier,monospace;
 	border:				1px solid #FF0000;
 	padding-right:		1px;
@@ -135,7 +135,7 @@ span.formCheckBoxPair input { float: left; }
 span.formCheckBoxPair label { float: left; margin-top: 3px;	_margin-top: 4px; color: #000000; }
 
 .errorLabel {
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-family:		Tahoma,Arial,Helvetica,sans-serif;
 	font-weight:		bold;
 	color:				#FF0000;
@@ -209,7 +209,7 @@ div.posts div.signature img {
 div.posts div.info {
 	padding-top: 		1.8em;
 	font-family:		Tahoma,Arial,Helvetica,sans-serif;
-	font-size:			10px;
+	/* font-size:			10px; */
 	float: left;
 }
 
@@ -239,7 +239,7 @@ h3 {
 div.buttons { margin: 1em 0 2px 0; clear: all; }
 div.buttons a {
 	font-family:		Tahoma,Arial,Helvetica,sans-serif;
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-weight:		bold;
 	text-decoration:	none;
 	border-top:			1px solid #EEE;
@@ -265,7 +265,7 @@ div.buttons a img { vertical-align: text-top; }
 div.searchBox {
 	float:				right;
 	margin-left:		7px; 
-	font-size:			11px;
+	/* font-size:			11px; */
 	font-weight:		bold;
 	text-decoration:	none; 
 	background-color:	#189337; 
@@ -279,7 +279,7 @@ div.searchBox {
 div.searchBox input.button {
 	font-family:		Tahoma,Arial,Helvetica,sans-serif;
 	font-weight:		bold;
-	font-size:			11px;
+	/* font-size:			11px; */
 	border-top:			1px solid #EEEEEE;
 	border-left:		1px solid #EEEEEE;
 	border-right:		1px solid #333333;
