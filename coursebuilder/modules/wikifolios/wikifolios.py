@@ -11,7 +11,7 @@ import bleach
 import webapp2
 import humanize
 from controllers.utils import BaseHandler, ReflectiveRequestHandler, XsrfTokenManager
-from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation
+from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation, Notification
 from modules.regconf.regconf import FormSubmission
 from google.appengine.api import users, mail
 from google.appengine.ext import db
@@ -68,23 +68,30 @@ def notify_other_people_in_thread(parent, new, exclude=[]):
     new_author_name = new.author.name
     exclude_authors = set(a.key() for a in exclude)
 
+    to_put = []
+
     if author(parent) not in exclude_authors:
         exclude_authors.add(author(parent))
-        note = Markup('<a href="%(url)s"><b>%(commenter)s</b> replied to your comment.</a>')
-        Student.deferred_notify(author(parent), unicode(note % {
-            'url': comment_permalink(new),
-            'commenter': new_author_name,
-            }))
+        note = Notification(
+                recipient=author(parent),
+                url=comment_permalink(new),
+                text=unicode(Markup('<b>%(commenter)s</b> replied to your comment.') % ({
+                    'commenter': new_author_name,
+                    })))
+        to_put.append(note)
 
     for comment in parent.replies:
         if author(comment) not in exclude_authors:
             exclude_authors.add(author(comment))
-            note = Markup('<a href="%(url)s"><b>%(commenter)s</b> also replied to a comment.</a>')
-            Student.deferred_notify(author(comment), unicode(note % {
-                'url': comment_permalink(new),
-                'commenter': new_author_name,
-                }))
+            note = Notification(
+                    recipient=author(comment),
+                    url=comment_permalink(new),
+                    text=unicode(Markup('<b>%(commenter)s</b> also replied to a comment.') % ({
+                        'commenter': new_author_name,
+                        })))
+            to_put.append(note)
 
+    return db.put(to_put)
 
 def sort_comments(comments):
     """
@@ -127,7 +134,7 @@ class WikiBaseHandler(BaseHandler):
         return user
 
     def show_notifications(self, current_student):
-        self.template_value['notifications'] = current_student.read_notifications()
+        self.template_value['notifications'] = current_student.notification_set.filter('seen', False).run(limit=20)
 
     def _editor_role(self, query, current_student, template=True):
         if not (query and current_student):
@@ -232,14 +239,15 @@ class WikiBaseHandler(BaseHandler):
                     }))
 
         if query['student'] != user.wiki_id:
-            note = Markup('<a href="%(url)s"><b>%(commenter)s</b> commented on %(what)s</a>')
-            Student.deferred_notify(
-                    page.author_key,
-                    unicode(note % {
-                        'url': comment_permalink(comment),
+            descr = self.describe_query(query, page.author)
+            note = Notification(
+                    recipient=page.author,
+                    url=comment_permalink(comment),
+                    text=unicode(Markup('<b>%(commenter)s</b> commented on %(what)s.') % ({
                         'commenter': user.name,
-                        'what': self.describe_query(query, page.author),
-                        }))
+                        'what': descr,
+                        })))
+            db.put(note)
 
         if parent:
             notify_other_people_in_thread(parent, comment,
@@ -1089,6 +1097,37 @@ class HarrumphHandler(BaseHandler):
                 self.response.write(Markup("<br>Couldn't find student by email: %s<br>") % repr(line))
 
 
+class NotificationHandler(BaseHandler):
+    def get(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        note_id = None
+        try:
+            note_id = int(self.request.GET.get('id', None))
+        finally:
+            pass
+
+        if not note_id:
+            self.redirect('/')
+            return
+
+        note = Notification.get_by_id(note_id)
+        if not note:
+            logging.info("No such note.")
+            self.redirect('/')
+            return
+
+        note_recip_email = Notification.recipient.get_value_for_datastore(note).name()
+        if note_recip_email != user.key().name():
+            logging.warning("%s accessed %s's notification", user.key().name(), note_recip_email)
+            self.redirect('/')
+            return
+
+        self.redirect(note.url.encode('utf-8'))
+        note.seen = True
+        note.put()
+
 
 module = None
 
@@ -1099,6 +1138,7 @@ def register_module():
             ('/wiki', WikiPageHandler),
             ('/wikicomment', WikiCommentHandler),
             ('/wikiprofile', WikiProfileHandler),
+            ('/notification', NotificationHandler),
             ('/participants', WikiProfileListHandler),
             ('/updates', WikiUpdateListHandler),
             ('/comment_stream', WikiCommentStreamHandler),
