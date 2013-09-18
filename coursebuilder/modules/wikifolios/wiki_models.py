@@ -243,11 +243,15 @@ class Annotation(models.BaseEntity):
         ann.put()
 
     @classmethod
-    def exemplaries(cls, what=None, who=None):
+    def exemplaries(cls, what=None, who=None, unit=None, whose=None):
         q = Annotation.all()
         q.filter("why =", "exemplary")
         if what:
             q.filter("what =", what)
         if who:
             q.filter("who =", who)
+        if unit:
+            q.filter("unit =", unit)
+        if whose:
+            q.filter("whose = ", whose)
         return q

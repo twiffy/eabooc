@@ -67,6 +67,8 @@ class UnitOneQuery(object):
         self.fields = [
                 'email',
                 'posted_unit_1',
+                'exemplaries_received',
+                'exemplaries_given',
                 'endorsements_received',
                 'endorsements_given',
                 'link',
@@ -82,17 +84,23 @@ class UnitOneQuery(object):
             num_endorsements = ''
             if unit1_page:
                 num_endorsements = Annotation.endorsements(what=unit1_page).count()
+                num_exemplaries = Annotation.exemplaries(what=unit1_page).count()
                 fields = viewable_model(unit1_page)
             else:
                 fields = {}
 
             num_given = Annotation.endorsements(who=student, unit=unit).count()
+            exemps_given = Annotation.exemplaries(who=student, unit=unit).count()
+
+
 
             info = {
                     'email': student.key().name(),
                     'posted_unit_1': posted_unit_1,
                     'endorsements_received': num_endorsements,
                     'endorsements_given': num_given,
+                    'exemplaries_received': num_exemplaries,
+                    'exemplaries_given': exemps_given,
                     }
             info.update(fields)
             yield info
