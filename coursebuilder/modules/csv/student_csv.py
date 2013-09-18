@@ -10,6 +10,7 @@ import unicodecsv as csv
 import wtforms as wtf
 from markupsafe import Markup
 from modules.wikifolios.wiki_models import *
+from modules.wikifolios.page_templates import forms, viewable_model
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -60,39 +61,45 @@ class CurricularAimQuery(object):
 
 
 
-class UnitOneEndorsementsQuery(object):
+class UnitOneQuery(object):
     def __init__(self, request):
-        pass
-
-    fields = (
-            'email',
-            'submitted_unit_1',
-            'endorsements_received',
-            'endorsements_given',
-            )
+        self.unit = 1
+        self.fields = [
+                'email',
+                'posted_unit_1',
+                'endorsements_received',
+                'endorsements_given',
+                'link',
+                ]
+        self.fields.extend(field.name for field in forms[self.unit]())
 
     def run(self):
         query = Student.all().filter('is_participant =', True).run(limit=600)
         unit = 1
         for student in query:
             unit1_page = WikiPage.get_page(student, unit=unit)
-            submitted_unit_1 = bool(unit1_page)
+            posted_unit_1 = bool(unit1_page)
             num_endorsements = ''
             if unit1_page:
                 num_endorsements = Annotation.endorsements(what=unit1_page).count()
+                fields = viewable_model(unit1_page)
+            else:
+                fields = {}
 
             num_given = Annotation.endorsements(who=student, unit=unit).count()
 
-            yield {
+            info = {
                     'email': student.key().name(),
-                    'submitted_unit_1': submitted_unit_1,
+                    'posted_unit_1': posted_unit_1,
                     'endorsements_received': num_endorsements,
                     'endorsements_given': num_given,
                     }
+            info.update(fields)
+            yield info
 
 analytics_queries = {
         'initial_curricular_aim': CurricularAimQuery,
-        'unit_1_endorsements': UnitOneEndorsementsQuery,
+        'unit_1': UnitOneQuery,
         }
 
 
