@@ -30,7 +30,8 @@
       {%   set parent_id = comment.key().id() %}
       {% endif %}
       <li class="comment {% if comment.is_reply() %}is-reply{% endif %}"><b><a name="comment-{{ comment.key().id() }}"
-          href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b> said:
+		      href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b>
+      {% if comment.is_reply() %}replied{% else %}said{% endif %}:
       {% if comment.is_deleted %}
       <span class="deleted">(This comment was deleted by {{ student_link(comment.editor) }})</span>
       {% else %}

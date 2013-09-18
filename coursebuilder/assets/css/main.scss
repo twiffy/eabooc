@@ -809,7 +809,7 @@ div.comment-actions {
   padding: 1px;
 }
 
-#comment-area li {
+#comment-area > ol > li {
   background: lighten($content-bg-color, 5%);
   border: thin solid darken($content-bg-color, 10%);
   padding: 4px;

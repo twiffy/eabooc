@@ -688,7 +688,7 @@ div.comment-actions {
   margin: 0px;
   padding: 1px; }
 
-#comment-area li {
+#comment-area > ol > li {
   background: #f9f8f1;
   border: thin solid #e3dbbb;
   padding: 4px;
