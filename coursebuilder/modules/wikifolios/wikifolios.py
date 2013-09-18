@@ -546,7 +546,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['fields'] = page_templates.viewable_model(page)
 
             self.show_notifications(user)
-            self.show_comments(page)
+            #self.show_comments(page)
+            # Start comments loading async
+            comments = page.comments.run(limit=1000)
 
             if self._can_comment(query, user):
                 self.template_value['can_comment'] = True
@@ -570,6 +572,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     self.template_value['exemplary_view'] = 'has_exemplaried'
                 else:
                     self.template_value['exemplary_view'] = 'can_exemplary'
+            self.template_value['comments'] = prefetch.prefetch_refprops(comments, WikiComment.author)
             self.render(page_templates.templates[query['unit']])
         else:
             self.template_value['fields'] = {}
