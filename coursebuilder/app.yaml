@@ -8,7 +8,7 @@ env_variables:
   GCB_PRODUCT_VERSION: '1.4.1'
 
 inbound_services:
-- warmup
+#- warmup
 
 builtins:
 - remote_api: on
