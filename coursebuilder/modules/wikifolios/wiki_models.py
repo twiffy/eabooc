@@ -1,5 +1,6 @@
 from models import models
 from google.appengine.ext import db
+from google.appengine.ext import deferred
 from webapp2 import cached_property
 import urllib
 import logging
@@ -79,7 +80,9 @@ class WikiPage(db.Expando):
         return super(WikiPage, self).delete()
 
     def put(self):
-        models.MemcacheManager.delete(self._recents_memcached_key())
+        key = self._recents_memcached_key()
+        models.MemcacheManager.delete(key)
+        deferred.defer(WikiPage.most_recent)
         return super(WikiPage, self).put()
 
     @classmethod
@@ -87,7 +90,7 @@ class WikiPage(db.Expando):
         return 'recent-entities:%s' % (cls.__name__)
 
     @classmethod
-    def most_recent(cls, count):
+    def most_recent(cls, count=50):
         key = cls._recents_memcached_key()
         asked_for_key = key + ":asked-for-how-many"
         recent = models.MemcacheManager.get(key)
@@ -99,7 +102,7 @@ class WikiPage(db.Expando):
                 for r in recent:
                     # cache authors
                     x = r.author
-                models.MemcacheManager.set(key, recent)
+                models.MemcacheManager.set(key, recent, ttl=60*60*12)
                 models.MemcacheManager.set(asked_for_key, count)
         return recent
 

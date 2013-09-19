@@ -1079,7 +1079,7 @@ class WikiUpdateListHandler(WikiBaseHandler):
         if not user:
             return
 
-        latest_updates = WikiPage.most_recent(50)
+        latest_updates = WikiPage.most_recent()
 
         #for up in latest_updates:
             #up['author'] = Student.get_enrolled_student_by_email(up.author_email)
