@@ -226,8 +226,8 @@ class Student(BaseEntity):
         """Do the normal put() and also add the object to memcache."""
         self.ensure_wiki_id()
         result = super(Student, self).put()
-        MemcacheManager.set(self._memcache_key(self.key().name()), self)
-        MemcacheManager.set(self._memcache_key(self.wiki_id, by='wiki_id'), self)
+        MemcacheManager.set(self._memcache_key(self.key().name()), self, ttl=60*60*12)
+        MemcacheManager.set(self._memcache_key(self.wiki_id, by='wiki_id'), self, ttl=60*60*12)
         return result
 
     def delete(self):
@@ -249,7 +249,7 @@ class Student(BaseEntity):
         if not student:
             student = Student.get_by_email(email)
             if student:
-                MemcacheManager.set(cls._memcache_key(email), student)
+                MemcacheManager.set(cls._memcache_key(email), student, ttl=60*60*12)
             else:
                 MemcacheManager.set(cls._memcache_key(email), NO_OBJECT)
         if student and student.is_enrolled:
@@ -265,7 +265,7 @@ class Student(BaseEntity):
         if not student:
             student = Student.get_by_wiki_id(wiki_id)
             if student:
-                MemcacheManager.set(cls._memcache_key(wiki_id, by='wiki_id'), student)
+                MemcacheManager.set(cls._memcache_key(wiki_id, by='wiki_id'), student, ttl=60*60*12)
             else:
                 MemcacheManager.set(cls._memcache_key(wiki_id, by='wiki_id'), NO_OBJECT)
         if student and student.is_enrolled:
