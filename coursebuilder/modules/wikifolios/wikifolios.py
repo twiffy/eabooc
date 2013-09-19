@@ -1165,6 +1165,11 @@ class NotificationHandler(BaseHandler):
         note.seen = True
         note.put()
 
+class WarmupHandler(WikiBaseHandler):
+    def get(self):
+        self.response.write("I AM SO WARM!")
+        return
+
 
 module = None
 
@@ -1177,6 +1182,7 @@ def register_module():
             ('/wikiprofile', WikiProfileHandler),
             ('/notification', NotificationHandler),
             ('/participants', WikiProfileListHandler),
+            ('/_ah/warmup', WarmupHandler),
             ('/updates', WikiUpdateListHandler),
             ('/comment_stream', WikiCommentStreamHandler),
             ('/grump', HarrumphHandler),
