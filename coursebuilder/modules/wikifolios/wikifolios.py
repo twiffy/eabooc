@@ -863,7 +863,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         else:
             self.abort(404, 'Sorry, there is no such student.')
 
-    def _find_page(self, query, create=False):
+    def _find_page(self, query, create=False, student_model=None):
         logging.info(query)
         assert query
         # TODO don't have to do this query if it's your own page,
@@ -872,7 +872,8 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         # and look up by that, so we don't fetch the Student
         # model twice (once by wiki id, once as a reference in
         # the page)
-        student_model = get_student_by_wiki_id(query['student'])
+        if not student_model:
+            student_model = get_student_by_wiki_id(query['student'])
         if not student_model:
             return None
 
@@ -901,7 +902,13 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['alert'] = '''<b>Congratulations!</b> You are
                 officially registered. Welcome to the course.  Have a look around!'''
 
-        profile_page = self._find_page(query, create=True)
+        if user.wiki_id == query['student']:
+            author = user
+        else:
+            author = get_student_by_wiki_id(query['student'])
+        self.template_value['author'] = author
+
+        profile_page = self._find_page(query, student_model=author, create=True)
         if not profile_page:
             # e.g. there is no student by that ID.
             self.abort(404)
