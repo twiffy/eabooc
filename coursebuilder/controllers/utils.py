@@ -689,13 +689,3 @@ class XsrfTokenManager(object):
         except Exception:  # pylint: disable-msg=broad-except
             return False
 
-class ProfilePictureHandler(webapp2.RequestHandler):
-    def get(self):
-        # TODO: this exposes the students' internal database IDs,
-        # should generate random strings for the image filenames.
-        student = db.get(self.request.get('id'))
-        if student.profile_pic:
-            self.response.headers['Content-Type'] = 'image/jpeg'
-            self.response.out.write(student.profile_pic)
-        else:
-            self.error(404)

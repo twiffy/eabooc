@@ -1185,7 +1185,7 @@ def register_module():
             ('/_ah/warmup', WarmupHandler),
             ('/updates', WikiUpdateListHandler),
             ('/comment_stream', WikiCommentStreamHandler),
-            ('/grump', HarrumphHandler),
+            #('/grump', HarrumphHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",
