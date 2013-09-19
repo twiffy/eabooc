@@ -567,29 +567,37 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                         ckeditor.allowed_content(COMMENT_TAGS,
                             COMMENT_ATTRIBUTES, COMMENT_STYLES))
 
-            if query['student'] == user.wiki_id:
-                self.template_value['is_author'] = True
-                self.template_value['endorsement_view'] = 'author'
-                self.template_value['exemplary_view'] = 'author'
-            else:
-                if Annotation.endorsements(page, user).count(limit=1) > 0:
-                    self.template_value['endorsement_view'] = 'has_endorsed'
-                else:
-                    self.template_value['endorsement_view'] = 'can_endorse'
-
-                if Annotation.exemplaries(page, user).count(limit=1) > 0:
-                    self.template_value['exemplary_view'] = 'has_exemplaried'
-                else:
-                    self.template_value['exemplary_view'] = 'can_exemplary'
 
             prefetcher = prefetch.CachingPrefetcher()
             prefetcher.add(author)
             prefetcher.add(user)
             self.template_value['comments'] = prefetcher.prefetch(comments, WikiComment.author)
-            self.template_value['endorsements'] = prefetcher.prefetch(endorsements,
+
+            endorsements = prefetcher.prefetch(endorsements,
                     Annotation.who)
-            self.template_value['exemplaries'] = prefetcher.prefetch(exemplaries,
+            self.template_value['endorsements'] = endorsements
+
+            exemplaries = prefetcher.prefetch(exemplaries,
                     Annotation.who)
+            self.template_value['exemplaries'] = exemplaries
+
+            def who(ann):
+                return Annotation.who.get_value_for_datastore(ann)
+
+            if query['student'] == user.wiki_id:
+                self.template_value['is_author'] = True
+                self.template_value['endorsement_view'] = 'author'
+                self.template_value['exemplary_view'] = 'author'
+            else:
+                if user.key() in [who(e) for e in endorsements]:
+                    self.template_value['endorsement_view'] = 'has_endorsed'
+                else:
+                    self.template_value['endorsement_view'] = 'can_endorse'
+
+                if user.key() in [who(e) for e in exemplaries]:
+                    self.template_value['exemplary_view'] = 'has_exemplaried'
+                else:
+                    self.template_value['exemplary_view'] = 'can_exemplary'
 
             self.render(page_templates.templates[query['unit']])
         else:
