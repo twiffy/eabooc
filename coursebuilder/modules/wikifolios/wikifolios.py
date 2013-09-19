@@ -613,10 +613,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             return
         query = self._get_query(user)
         if not query:
+            logging.warning("Query was broken")
             self.abort(404)
         content = ''
 
         if not self._can_view(query, user):
+            logging.warning("Not allowed to view")
             self.abort(403)
         elif user.wiki_id == query['student']:
             logging.warning("Attempt to mark own page as exemplary")
@@ -628,6 +630,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         if previous_exemplary:
             if 'undo' in self.request.POST:
+                logging.info("Undoing an exemplary")
                 previous_exemplary.delete()
                 self.redirect(self._create_action_url(query, 'view'))
                 return

@@ -117,11 +117,13 @@ class ReflectiveRequestHandler(object):
             action = self.default_action
 
         if action not in self.get_actions:
+            logging.warning('Action %s is not in allowed GET actions', action)
             self.error(404)
             return
 
         handler = getattr(self, 'get_%s' % action)
         if not handler:
+            logging.warning('Handler for get_%s not present', action)
             self.error(404)
             return
 
@@ -131,11 +133,13 @@ class ReflectiveRequestHandler(object):
         """Handles POST."""
         action = self.request.get('action')
         if not action or action not in self.post_actions:
+            logging.warning('Action %s is not in allowed POST actions', action)
             self.error(404)
             return
 
         handler = getattr(self, 'post_%s' % action)
         if not handler:
+            logging.warning('Handler for post_%s not present', action)
             self.error(404)
             return
 
