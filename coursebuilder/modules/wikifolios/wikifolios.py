@@ -106,7 +106,7 @@ def sort_comments(comments):
     def final_sort_key(comment):
         if comment.parent_added_time:
             return comment.parent_added_time
-        if comment.parent_comment:
+        if comment.is_reply():
             logging.warning("comment has parent_comment but no parent_added_time, this shouldn't happen")
         return comment.added_time
     return sorted(first_sort, key=final_sort_key)
