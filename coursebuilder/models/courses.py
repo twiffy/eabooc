@@ -338,7 +338,7 @@ class AbstractCachedObject(object):
         MemcacheManager.set(
             cls._make_key(),
             cls.memento_from_instance(instance).serialize(),
-            namespace=app_context.get_namespace_name())
+            namespace=app_context.get_namespace_name(), ttl=60*60*12)
 
     @classmethod
     def delete(cls, app_context):
@@ -468,8 +468,8 @@ class CourseModel12(object):
             units, lessons = load_csv_course(app_context)
             if units and lessons:
                 course = CourseModel12(app_context, units, lessons)
-        if course:
-            CachedCourse12.save(app_context, course)
+            if course:
+                CachedCourse12.save(app_context, course)
         return course
 
     @classmethod
