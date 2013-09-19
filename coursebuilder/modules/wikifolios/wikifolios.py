@@ -571,7 +571,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             prefetcher = prefetch.CachingPrefetcher()
             prefetcher.add(author)
             prefetcher.add(user)
-            self.template_value['comments'] = prefetcher.prefetch(comments, WikiComment.author)
+            self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
 
             endorsements = prefetcher.prefetch(endorsements,
                     Annotation.who)
