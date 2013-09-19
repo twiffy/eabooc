@@ -153,7 +153,8 @@ class LocalReadOnlyFileSystem(object):
         for dir_name in dir_names:
             physical_dir_names.append(self._logical_to_physical(dir_name))
 
-        bytecode_cache = jinja2.MemcachedBytecodeCache(MemcacheManager,
+        bytecode_cache = jinja2.MemcachedBytecodeCache(
+                jinja_filters.MemcacheManagerWithTTL(60*60*12),
                 prefix="jinja2/bytecode/")
 
         jinja_environment = jinja2.Environment(
@@ -512,7 +513,8 @@ class DatastoreBackedFileSystem(object):
 
     def get_jinja_environ(self, dir_names):
 
-        bytecode_cache = jinja2.MemcachedBytecodeCache(MemcacheManager,
+        bytecode_cache = jinja2.MemcachedBytecodeCache(
+                jinja_filters.MemcacheManagerWithTTL(60*60*12),
                 prefix="jinja2/bytecode/")
 
         jinja_environment = jinja2.Environment(

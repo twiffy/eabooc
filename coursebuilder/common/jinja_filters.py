@@ -19,6 +19,7 @@ __author__ = 'John Orr (jorr@google.com)'
 import jinja2
 import safe_dom
 import tags
+from models.models import MemcacheManager
 
 
 def finalize(x):
@@ -52,3 +53,20 @@ def gcb_tags(data):
         return jinja2.utils.Markup(tags.html_to_safe_dom(data))
     else:
         return jinja2.utils.Markup(data)
+
+class MemcacheManagerWithTTL(object):
+    def __init__(self, ttl):
+        self.ttl = ttl
+
+    def incr(self, *args, **kwargs):
+        return MemcacheManager.incr(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return MemcacheManager.delete(*args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        return MemcacheManager.get(*args, **kwargs)
+
+    def set(self, *args, **kwargs):
+        kwargs.setdefault('ttl', self.ttl)
+        return MemcacheManager.set(*args, **kwargs)
