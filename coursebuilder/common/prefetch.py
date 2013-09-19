@@ -18,8 +18,9 @@ class CachingPrefetcher(object):
     def prefetch(self, entities_iterable, *props):
         entities = list(entities_iterable)
         fields = [(entity, prop) for entity in entities for prop in props]
-        ref_keys = set([prop.get_value_for_datastore(x) for x, prop in fields])
-        keys_to_fetch = ref_keys - self.cache.viewkeys()
+        ref_keys = [prop.get_value_for_datastore(x) for x, prop in fields]
+        ref_key_set = set(ref_keys)
+        keys_to_fetch = ref_key_set - self.cache.viewkeys()
 
         if keys_to_fetch:
             #logging.warning('fetching %d entities', len(keys_to_fetch))
