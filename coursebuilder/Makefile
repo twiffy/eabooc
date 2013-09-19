@@ -14,10 +14,14 @@ stage:
 
 deploy:
 	git status
+	git diff --quiet --exit-code
 	git diff deployed --stat
 	@echo
 	@echo "Going to deploy to PRODUCTION: https://booc-iu.appspot.com/"
 	@echo
 	sleep 7
 	appcfg update . --email booc.class
+	git stash apply stash^{/APPSTATS2}
+	appcfg update . --email booc.class -V stats
 	git push . -f HEAD:deployed
+	git status
