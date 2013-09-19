@@ -204,7 +204,7 @@ class JobsHandler(BaseHandler):
         if not Roles.is_course_admin(self.app_context):
             self.abort(403)
         from modules.csv import jobs
-        job = jobs.AnnotationUpdateJob()
+        job = jobs.NoteUpdateJob()
         deferred.defer(job.run)
 
 
@@ -217,7 +217,7 @@ def register_module():
     handlers = [
             ('/student_csv', StudentCsvHandler),
             ('/analytics', AnalyticsHandler),
-            #('/adminjob', JobsHandler),
+            ('/adminjob', JobsHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Student CSV", "Student CSV",

@@ -185,7 +185,7 @@ class Student(BaseEntity):
     research_area = db.StringListProperty(indexed=False)
     other_role = db.StringProperty(indexed=False)
 
-    # current notifications!
+    # deprecated...
     notifications = db.StringListProperty(indexed=False)
 
     is_teaching_assistant = db.BooleanProperty(default=False)
@@ -323,27 +323,6 @@ class Student(BaseEntity):
     def has_same_key_as(self, key):
         """Checks if the key of the student and the given key are equal."""
         return key == self.get_key()
-
-    @staticmethod
-    def deferred_notify(student_key, note):
-        deferred.defer(student_notify_helper, student_key, note)
-
-    @db.transactional
-    def notify(self, html):
-        self.notifications.append(html)
-        self.put()
-
-    @db.transactional
-    def read_notifications(self):
-        notes = list(self.notifications)
-        if notes:
-            self.notifications = []
-            self.put()
-        return notes
-
-def student_notify_helper(student_key, note):
-    student = Student.get(student_key)
-    student.notify(note)
 
 
 class EventEntity(BaseEntity):

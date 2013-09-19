@@ -1,13 +1,14 @@
-{#% set notifications = ['<a>Here is an example notification</a>', '<a>Here is another one</a>', '<a>Here is another one</a>', '<a>Here is another one</a>'] %#}
-{% if notifications %}
+{% for note in notifications %}
+{% if loop.first %}
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-3"></div>
     <div id="wiki-notifications" class="gcb-col-4">
-      {% for note in notifications %}
-      <span>{{ note | safe }}</span><br>
-      {% endfor %}
+      {% endif %}
+      <span><a href="{{ note.link }}">{{ note.text | safe }}</a></span><br>
+      {% if loop.last %}
     </div>
   </div>
 </div>
 {% endif %}
+{% endfor %}

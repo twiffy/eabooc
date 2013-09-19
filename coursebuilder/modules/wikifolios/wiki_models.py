@@ -255,3 +255,15 @@ class Annotation(models.BaseEntity):
         if whose:
             q.filter("whose = ", whose)
         return q
+
+class Notification(models.BaseEntity):
+    recipient = db.ReferenceProperty(models.Student, collection_name="notification_set")
+    url = db.StringProperty(indexed=False)
+    text = db.StringProperty(indexed=False)
+    seen = db.BooleanProperty(default=False)
+
+    @property
+    def link(self):
+        return '/notification?id=%d' % self.key().id()
+
+

@@ -75,6 +75,8 @@ class Mapper(object):
 import modules.wikifolios.wiki_models as wm
 from google.appengine.api import mail
 from google.appengine.ext import db
+from models import models
+import lxml.etree
 
 class AnnotationUpdateJob(Mapper):
     KIND = wm.Annotation
@@ -93,4 +95,34 @@ class AnnotationUpdateJob(Mapper):
                 to="thomathom@gmail.com",
                 subject="Done updating annotations",
                 body="Yeah buddy! Did %d of them!" % self.count)
+
+
+class NoteUpdateJob(Mapper):
+    KIND = models.Student
+
+
+    def map(self, student):
+        to_put = []
+        for n in student.notifications:
+            tree = lxml.etree.fromstring(n)
+            if tree.tag != 'a':
+                logging.warning("%s has a note that is weird: %s", student.key().name(), n)
+                return
+            url = tree.attrib['href']
+            tree.tag = 'span'
+            del tree.attrib['href']
+            to_put.append(wm.Notification(
+                recipient=student,
+                url=url,
+                text=lxml.etree.tostring(tree)))
+        student.notifications = []
+        to_put.append(student)
+        return (to_put, [])
+
+
+    def finish(self):
+        mail.send_mail(sender="booc.class@gmail.com",
+                to="thomathom@gmail.com",
+                subject="Done updating notes",
+                body="Yeah buddy!")
 
