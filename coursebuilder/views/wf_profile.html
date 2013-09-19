@@ -73,7 +73,9 @@
         <ul>
           {% for e in endorsements %}
           <li>{% if e.why == 'exemplary' %}<span style="color: #fc0;">&#9733;</span>{%endif%}
-          <a href="{{ e.what.link }}">{{ e.what.title }}</a> by {{ e.what.author.name }},  {{ humanize.naturaltime(e.timestamp) }}</li>
+          <a href="/wiki?student={{ e.whose.wiki_id }}&unit={{ e.unit }}&action=view">Unit {{ e.unit }}: {{
+            e._title }}</a>
+          by {{ e.whose.name }},  {{ humanize.naturaltime(e.timestamp) }}</li>
           {% endfor %}
         </ul>
       </div>

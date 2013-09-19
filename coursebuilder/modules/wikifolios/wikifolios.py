@@ -912,38 +912,47 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         if not profile_page:
             # e.g. there is no student by that ID.
             self.abort(404)
-        self._ensure_curricular_aim(profile_page.author, profile_page)
-        self.template_value['fields'] = page_templates.viewable_model(profile_page)
-        #self.template_value['fields'] = {
-                #'text': 'hi',
-                #'curricular_aim': 'bye'
-                #}
 
-        self.template_value['author'] = profile_page.author
-        self.template_value['author_name'] = profile_page.author.name
+        comments = profile_page.comments.run(limit=1000)
+        pages = WikiPage.query_by_student(author).run(limit=100)
+        endorsements = author.own_annotations.filter('why IN', ['endorse', 'exemplary']).run(limit=10)
+        self.show_notifications(user)
+
+        self._ensure_curricular_aim(author, profile_page)
+        self.template_value['fields'] = page_templates.viewable_model(profile_page)
+
+
+        self.template_value['author_name'] = author.name
         self.template_value['author_link'] = student_profile_link(
                 query['student'])
 
         editor_role = self._editor_role(query, user)
 
         units = self.get_units()
-        pages = WikiPage.query_by_student(profile_page.author).run(limit=100)
         units_with_pages = set([ unicode(p.unit) for p in pages ])
         for unit in units:
             if unit.unit_id in units_with_pages:
                 unit._wiki_exists = True
             unit._wiki_link = "wiki?" + urllib.urlencode({
-                'student': profile_page.author.wiki_id,
+                'student': author.wiki_id,
                 'action': 'view',
                 'unit': unit.unit_id,
                 })
 
         self.template_value['units'] = units
 
-        self.template_value['endorsements'] = profile_page.author.own_annotations.filter('why IN', ['endorse', 'exemplary']).run(limit=10)
-
-        self.show_notifications(user)
-        self.show_comments(profile_page)
+        prefetcher = prefetch.CachingPrefetcher()
+        prefetcher.add(author)
+        prefetcher.add(user)
+        self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
+        endorsements = prefetcher.prefetch(endorsements, Annotation.whose)
+        unit_dict = {int(u.unit_id): u for u in units if u.unit_id.isdigit()}
+        for e in endorsements:
+            try:
+                e._title = unit_dict[e.unit].title
+            except:
+                pass
+        self.template_value['endorsements'] = endorsements
 
         if self._can_comment(query, user):
             self.template_value['can_comment'] = True
