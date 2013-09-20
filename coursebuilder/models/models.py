@@ -195,7 +195,7 @@ class Student(BaseEntity):
 
     # The student's primary role in the education system
     # (instructor, administrator, researcher?)
-    role = db.StringProperty(indexed=False)
+    role = db.StringProperty(indexed=True)
 
     # Other registration questions
     # Not indexed because String List Properties multiply
