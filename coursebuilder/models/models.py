@@ -159,20 +159,17 @@ class Student(BaseEntity):
     # If the student is able to use the wiki, comment, etc.
     is_participant = db.BooleanProperty()
 
-    # The user's profile picture
-    profile_pic = db.BlobProperty()
-
     # The lat/longitude, and name, of the student's location
     location_city = db.StringProperty(indexed=False)
-    location_state = db.StringProperty()
-    location_country = db.StringProperty()
+    location_state = db.StringProperty(indexed=False)
+    location_country = db.StringProperty(indexed=False)
 
     # The user's education level.  Maximum or in-progress?
-    education_level = db.StringProperty(indexed=True)
+    education_level = db.StringProperty(indexed=False)
 
     # The student's primary role in the education system
     # (instructor, administrator, researcher?)
-    role = db.StringProperty(indexed=True)
+    role = db.StringProperty(indexed=False)
 
     # Other registration questions
     # Not indexed because String List Properties multiply
