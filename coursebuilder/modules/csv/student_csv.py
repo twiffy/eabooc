@@ -204,7 +204,7 @@ class JobsHandler(BaseHandler):
         if not Roles.is_course_admin(self.app_context):
             self.abort(403)
         from modules.csv import jobs
-        job = jobs.NoteUpdateJob()
+        job = jobs.WikisPostedUpdateJob()
         deferred.defer(job.run)
 
 

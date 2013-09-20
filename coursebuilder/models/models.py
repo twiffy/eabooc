@@ -22,6 +22,7 @@ from config import ConfigProperty
 import counters
 from counters import PerfCounter
 from entities import BaseEntity
+import transforms
 from google.appengine.api import memcache
 from google.appengine.api import users
 from google.appengine.api import images
@@ -142,6 +143,33 @@ def get_counter_global_value(name):
 counters.get_counter_global_value = get_counter_global_value
 counters.incr_counter_global_value = incr_counter_global_value
 
+class MoreDifferentIntListProperty(db.Property):
+    data_type = list
+    def validate(self, value):
+        if value is None:
+            return []
+        if type(value) is not list:
+            raise ValueError("Expected list, got %s", type(value).__name__)
+        return value
+
+    def get_value_for_datastore(self, model):
+        py_value = super(MoreDifferentIntListProperty, self).get_value_for_datastore(model)
+        if py_value is None:
+            py_value = []
+        return transforms.dumps(py_value)
+
+    def make_value_from_datastore(self, db_value):
+        logging.debug("Getting from db: have value %s", repr(db_value))
+        if type(db_value) is list:
+            return db_value
+        elif not db_value:
+            return []
+        return transforms.loads(db_value)
+
+    def make_value_from_datastore_index_value(self, i_value):
+        logging.debug("What is an index value? %s", repr(i_value))
+        return self.make_value_from_datastore(i_value)
+
 
 class Student(BaseEntity):
     """Student profile."""
@@ -187,6 +215,8 @@ class Student(BaseEntity):
 
     is_teaching_assistant = db.BooleanProperty(default=False)
     group_id = db.StringProperty(indexed=True)
+
+    wikis_posted = MoreDifferentIntListProperty()
 
     _memcache_ids = set(('email', 'wiki_id'))
 

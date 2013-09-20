@@ -14,7 +14,7 @@ from controllers.utils import BaseHandler, ReflectiveRequestHandler, XsrfTokenMa
 from modules.wikifolios.wiki_models import WikiPage, WikiComment, Annotation, Notification
 from modules.regconf.regconf import FormSubmission
 from google.appengine.api import users, mail
-from google.appengine.ext import db
+from google.appengine.ext import db, deferred
 from modules.wikifolios import page_templates
 from operator import attrgetter
 import itertools, collections
@@ -60,6 +60,13 @@ def comment_permalink(comment):
         'action': 'permalink',
         'comment_id': comment.key().id(),
         })
+
+def update_wikis_posted(student_key, unit):
+    unit = int(unit)
+    student = db.get(student_key)
+    student.wikis_posted.append(unit)
+    logging.info('Current wikis posted %s', repr(student.wikis_posted))
+    student.put()
 
 def notify_other_people_in_thread(parent, new, exclude=[]):
     def author(comment):
@@ -761,12 +768,14 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         page.put()
         EventEntity.record(
                 'edit-wiki-page', users.get_current_user(), transforms.dumps({
-                    'page-author': page.author.key().name(),
+                    'page-author': page.author_email,
                     'page-editor': user.key().name(),
                     'unit': page.unit,
                     'before': old_page,
                     'after': form.data,
                     }))
+
+        deferred.defer(update_wikis_posted, page.author_key, page.unit)
 
         self.redirect(self._create_action_url(query, 'view'))
 
@@ -806,7 +815,7 @@ class WikiProfileListHandler(WikiBaseHandler):
 
         self.template_value['group_by'] = group_by
 
-        projection = ['wiki_id', 'name']
+        projection = ['wiki_id', 'name', 'wikis_posted']
 
         # will need to cache this somehow.
         student_list = Student.all()

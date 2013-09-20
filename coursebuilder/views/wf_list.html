@@ -34,7 +34,11 @@ Participant List
           <li>{{ group_name(group[0]) }}
           <ul>
             {% for student in group[1] %}
-            <li>{{ student_link(student) }}</li>
+            <li>{{ student_link(student) }}
+            {% for unit in student.wikis_posted|sort %}
+            <span class="unit-badgelet">{{ unit }}</span>
+            {% endfor %}
+            </li>
             {% endfor %}
           </ul>
           </li>

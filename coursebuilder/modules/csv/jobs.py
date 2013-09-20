@@ -96,6 +96,29 @@ class AnnotationUpdateJob(Mapper):
                 subject="Done updating annotations",
                 body="Yeah buddy! Did %d of them!" % self.count)
 
+from modules.wikifolios.wiki_models import *
+class WikisPostedUpdateJob(Mapper):
+    KIND = models.Student
+    count = 0
+
+    def map(self, student):
+        student.wikis_posted = None
+        pages = WikiPage.query_by_student(student).run(limit=20)
+        for p in pages:
+            if p.unit:
+                student.wikis_posted.append(p.unit)
+                self.count += 1
+        if student.wikis_posted:
+            student.wikis_posted = list(set(student.wikis_posted))
+            return ([student], [])
+        else:
+            return ([], [])
+
+    def finish(self):
+        mail.send_mail(sender="booc.class@gmail.com",
+                to="thomathom@gmail.com",
+                subject="Done updating annotations",
+                body="Yeah buddy! Did %d of them!" % self.count)
 
 class NoteUpdateJob(Mapper):
     KIND = models.Student
