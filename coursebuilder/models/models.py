@@ -159,7 +159,6 @@ class MoreDifferentIntListProperty(db.Property):
         return transforms.dumps(py_value)
 
     def make_value_from_datastore(self, db_value):
-        logging.debug("Getting from db: have value %s", repr(db_value))
         if type(db_value) is list:
             return db_value
         elif not db_value:
@@ -167,7 +166,6 @@ class MoreDifferentIntListProperty(db.Property):
         return transforms.loads(db_value)
 
     def make_value_from_datastore_index_value(self, i_value):
-        logging.debug("What is an index value? %s", repr(i_value))
         return self.make_value_from_datastore(i_value)
 
 
