@@ -808,7 +808,6 @@ class WikiProfileListHandler(WikiBaseHandler):
         self.template_value['group_name'] = self.group_name
 
         group_by = self.request.get('group', None)
-        logging.debug(repr(group_by))
         if group_by not in self.allowed_groups:
             logging.debug('Not accepting requested grouping %s', group_by)
             group_by = self.default_group
