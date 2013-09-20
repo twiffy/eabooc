@@ -36,7 +36,10 @@ Participant List
             {% for student in group[1] %}
             <li>{{ student_link(student) }}
             {% for unit in student.wikis_posted|sort %}
-            <span class="unit-badgelet">{{ unit }}</span>
+            <span class="unit-badgelet">
+              <a href="/wiki?unit={{ unit }}&student={{ student.wiki_id }}&action=view">
+                {% if loop.first %}Unit{% endif %}
+                {{ unit }}</a></span>
             {% endfor %}
             </li>
             {% endfor %}

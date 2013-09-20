@@ -102,7 +102,7 @@ class WikisPostedUpdateJob(Mapper):
     count = 0
 
     def map(self, student):
-        student.wikis_posted = None
+        student.wikis_posted = []
         pages = WikiPage.query_by_student(student).run(limit=20)
         for p in pages:
             if p.unit:
@@ -110,9 +110,7 @@ class WikisPostedUpdateJob(Mapper):
                 self.count += 1
         if student.wikis_posted:
             student.wikis_posted = list(set(student.wikis_posted))
-            return ([student], [])
-        else:
-            return ([], [])
+        return ([student], [])
 
     def finish(self):
         mail.send_mail(sender="booc.class@gmail.com",

@@ -64,8 +64,8 @@ def comment_permalink(comment):
 def update_wikis_posted(student_key, unit):
     unit = int(unit)
     student = db.get(student_key)
-    student.wikis_posted.append(unit)
-    logging.info('Current wikis posted %s', repr(student.wikis_posted))
+    if unit not in student.wikis_posted:
+        student.wikis_posted.append(unit)
     student.put()
 
 def notify_other_people_in_thread(parent, new, exclude=[]):

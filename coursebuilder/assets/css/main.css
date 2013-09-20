@@ -782,4 +782,5 @@ span.unit-badgelet {
   background-color: #e3dbbb;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
-  border-radius: 2px; }
+  border-radius: 2px;
+  margin: 1px; }
