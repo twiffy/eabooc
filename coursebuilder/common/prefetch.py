@@ -25,7 +25,7 @@ class CachingPrefetcher(object):
                 #len(fields),
                 #type(entities[0]).__name__)
         ref_keys = [prop.get_value_for_datastore(x) for x, prop in fields]
-        ref_key_set = set(ref_keys)
+        ref_key_set = set(ref_keys) - set((None,))
         keys_to_fetch = ref_key_set - self.cache.viewkeys()
 
         if keys_to_fetch:
