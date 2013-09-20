@@ -2,7 +2,7 @@ id,type,unit_id,title,release_date,now_available
 1,O,,<b>Part One - Assessment Practices</b>,,False
 2,U,1,Curricular Aim and Standard Selection,opens September 9,True
 3,U,2,Selected-Response Formats,opens September 16,True
-4,U,3,Constructed-Response Formats,opens September 23,False
+4,U,3,Constructed-Response Formats,opens September 23,True
 5,U,4,Performance and Portfolio Assessment,opens September 30,False
 6,O,,<b>Part Two - Assessment Principles</b>,,False
 7,U,5,Reliability and Bias,opens October 7,False

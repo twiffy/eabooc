@@ -44,6 +44,26 @@ class UnitTwoPageForm(wtf.Form):
 forms[2] = UnitTwoPageForm
 templates[2] = 'wf_temp_u2.html'
 
+
+class UnitThreePageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    ranking = BleachedTextAreaField()
+    create_short_answer = BleachedTextAreaField()
+    short_answer_guidelines = BleachedTextAreaField()
+    create_essay = BleachedTextAreaField()
+    essay_guidelines = BleachedTextAreaField()
+    essay_key = BleachedTextAreaField()
+    essay_scoring_guidelines = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+    flawed_item = BleachedTextAreaField()
+    item_format_pros_cons = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[3] = UnitThreePageForm
+templates[3] = 'wf_temp_u3.html'
+
 def viewable_model(model):
     # TODO maybe default values?
     d = db.to_dict(model)

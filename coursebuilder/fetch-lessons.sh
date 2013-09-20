@@ -4,7 +4,7 @@ set -eux
 curl 'https://docs.google.com/document/d/1bK-x3UTGk2qVW1VqxSp2MmQEgQ4z_8cXuB0QlzAUfco/pub?embedded=true' > assets/content/u1l3.html
 curl 'https://docs.google.com/document/d/1IUdglUPuUEymoqmn8WVsfe_wSjWDWPWloWSe03VIHMU/pub?embedded=true' > assets/content/u2l1.html
 curl 'https://docs.google.com/document/d/1pyAChPS6ePKs09opecbPDYjdaodV0lWsJXkl7PkFAx4/pub?embedded=true' > assets/content/u2l2.html
-# 3
+curl 'https://docs.google.com/document/d/1bAR4SWYzW6gzBFldWPkQ9mb5bp_6OHwUc_B3G7YDhVk/pub?embedded=true' > assets/content/u3l1.html
 # 4
 curl 'https://docs.google.com/document/d/1teeNy73qm7kDjSIdB8csrTXgopgQW2S11RIB1rTHccU/pub?embedded=true' > assets/content/u5l1.html
 # 6
