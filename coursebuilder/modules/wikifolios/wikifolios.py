@@ -1179,8 +1179,16 @@ class NotificationHandler(BaseHandler):
 
 class WarmupHandler(WikiBaseHandler):
     def get(self):
-        self.response.write("I AM SO WARM!")
-        return
+        # warm up the caches for jinja templates
+        self.template_value['fields'] = {}
+        self.template_value['navbar'] = {}
+        self.template_value['unit'] = {}
+        self.template_value['student_link'] = str
+        self.template_value['action_url'] = list
+        self.template_value['create_xsrf_token'] = list
+        self.template_value['comments'] = []
+        self.render('wf_page.html')
+        self.render('wf_profile.html')
 
 
 module = None
