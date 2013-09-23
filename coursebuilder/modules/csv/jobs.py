@@ -147,3 +147,4 @@ class NoteUpdateJob(Mapper):
                 subject="Done updating notes",
                 body="Yeah buddy!")
 
+the_job = WikisPostedUpdateJob
