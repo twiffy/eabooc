@@ -1,13 +1,12 @@
 unit_id,unit_title,lesson_id,lesson_title,lesson_activity,lesson_activity_name,lesson_notes,lesson_video_id,lesson_objectives
-1,Curricular Aim and Standard Selection,1,Curricular Aim and Standard Selection,,Self-Assessment,,,u1l3.html
-2,Selected-Response Formats,1,Selected-Response Formats,,,,,u2l1.html
-2,Selected-Response Formats,2,Specific Item-Writing Guidelines,,,,,u2l2.html
-3,Constructed-Response Formats,1,Constructed-Response Formats,,,,,u3l1.html
-4,Performance and Portfolio Assessment,1,Performance and Portfolio Assessment,,,,,u4l1.html
-5,Reliability and Bias,1,Reliability and Bias,,,,,u5l1.html
-6,Validity,1,Validity,,,,,u6l1.html
-7,Formative Assessment,1,Formative Assessment,,,,,u7l1.html
-8,Standardized Testing,1,Standardized Testing,,,,,u8l1.html
-9,Test Preparation,1,Test Preparation,,,,,u9l1.html
-10,Evaluation of Instruction and Teaching,1,Evaluation of Instruction and Teaching,,,,,u10l1.html
-11,Assessment-Based Grading,1,Assessment-Based Grading,,,,,u11l1.html
+1,Curricular Aim and Standard Selection (chapter 2),1,Curricular Aim and Standard Selection (chapter 2),,Self-Assessment,,,u1l3.html
+2,Selected-Response Formats (ch. 6),1,Selected-Response Formats (ch. 6),,,,,u2l1.html
+3,Constructed-Response Formats (ch. 7),1,Constructed-Response Formats (ch. 7),,,,,u3l1.html
+4,"Performance and Portfolio Assessment (ch. 8, 9)",1,"Performance and Portfolio Assessment (ch. 8, 9)",,,,,u4l1.html
+5,"Reliability and Bias (ch. 3, 5)",1,"Reliability and Bias (ch. 3, 5)",,,,,u5l1.html
+6,Validity (ch. 4),1,Validity (ch. 4),,,,,u6l1.html
+7,Formative Assessment (ch. 12),1,Formative Assessment (ch. 12),,,,,u7l1.html
+8,Standardized Testing (ch. 3),1,Standardized Testing (ch. 3),,,,,u8l1.html
+9,Test Preparation (ch. 14),1,Test Preparation (ch. 14),,,,,u9l1.html
+10,Evaluation of Instruction and Teaching (ch. 15),1,Evaluation of Instruction and Teaching (ch. 15),,,,,u10l1.html
+11,Assessment-Based Grading (ch. 16),1,Assessment-Based Grading (ch. 16),,,,,u11l1.html
