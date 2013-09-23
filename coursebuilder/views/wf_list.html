@@ -33,7 +33,7 @@ Participant List
           {% for group in groups %}
           <li>{{ group_name(group[0]) }}
           <ul>
-            {% for student in group[1] %}
+            {% for student in group[1]|sort(attribute='has_posted_any_wikis', reverse=1) %}
             <li>{{ student_link(student) }}
             {% for unit in student.wikis_posted|sort %}
             <span class="unit-badgelet">

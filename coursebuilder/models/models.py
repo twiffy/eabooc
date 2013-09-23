@@ -28,6 +28,7 @@ from google.appengine.api import users
 from google.appengine.api import images
 from google.appengine.ext import db
 from google.appengine.ext import deferred
+import webapp2
 
 import hashlib
 import random
@@ -348,6 +349,10 @@ class Student(BaseEntity):
     def has_same_key_as(self, key):
         """Checks if the key of the student and the given key are equal."""
         return key == self.get_key()
+
+    @webapp2.cached_property
+    def has_posted_any_wikis(self):
+        return bool(self.wikis_posted)
 
 
 class EventEntity(BaseEntity):
