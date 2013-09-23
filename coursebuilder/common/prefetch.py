@@ -35,6 +35,7 @@ class CachingPrefetcher(object):
         #else:
             #logging.warning('Not fetching any entities for %s, they all cached bro', type(entities[0]).__name__)
         for (entity, prop), ref_key in zip(fields, ref_keys):
-            prop.__set__(entity, self.cache[ref_key])
+            if ref_key is not None:
+                prop.__set__(entity, self.cache[ref_key])
 
         return entities
