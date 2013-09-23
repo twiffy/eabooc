@@ -57,7 +57,11 @@
           {%   if unit.type == 'U' and unit.now_available %}
           {%     if unit._wiki_exists or editor_role %}
           <li><a href="{{unit._wiki_link}}">Unit {{ unit.unit_id }}: {{unit.title|safe}}</a>
-          {%       if not unit._wiki_exists %}(not created yet){% endif %}</li>
+          {%       if not unit._wiki_exists %}
+          (not created yet)
+          {%       elif unit._is_draft %}
+          (draft)
+          {%       endif %}</li>
           {%     endif %}
           {%   endif %}
           {% else %}

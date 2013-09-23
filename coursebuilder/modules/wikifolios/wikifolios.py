@@ -948,10 +948,11 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         editor_role = self._editor_role(query, user)
 
         units = self.get_units()
-        units_with_pages = set([ unicode(p.unit) for p in pages ])
+        pages_by_unit_u = { unicode(p.unit): p for p in pages }
         for unit in units:
-            if unit.unit_id in units_with_pages:
+            if unit.unit_id in pages_by_unit_u:
                 unit._wiki_exists = True
+                unit._is_draft = pages_by_unit_u[unit.unit_id].is_draft
             unit._wiki_link = "wiki?" + urllib.urlencode({
                 'student': author.wiki_id,
                 'action': 'view',
