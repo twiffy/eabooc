@@ -984,14 +984,14 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
     def _ensure_curricular_aim(self, student, page):
         if not hasattr(page, 'curricular_aim'):
-            pre_assignment = (FormSubmission.all()
-                .filter('form_name', 'pre')
-                .filter('user', student.key())
-                .order('-submitted').get())
-            if pre_assignment:
+            try:
+                pre_assignment = (FormSubmission.all()
+                    .filter('form_name', 'pre')
+                    .filter('user', student.key())
+                    .order('-submitted').get())
                 page.curricular_aim = bleach_entry(
                         pre_assignment.curricular_aim)
-            else:
+            except:
                 page.curricular_aim = "(no curricular aim found! database error?)"
                 logging.warning("Couldn't find a pre assignment form for %s", student.key().name())
 
