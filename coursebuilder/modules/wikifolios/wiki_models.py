@@ -8,6 +8,7 @@ import logging
 class WikiPage(db.Expando):
     unit = db.IntegerProperty()
     edited_timestamp = db.DateTimeProperty(auto_now=True)
+    is_draft = db.BooleanProperty(default=False)
     # keep update time?  keep history????
 
     @cached_property
@@ -97,7 +98,7 @@ class WikiPage(db.Expando):
         asked_for = models.MemcacheManager.get(asked_for_key)
         if not recent or asked_for != count:
             logging.info("RECALCULATING recent wikifolio updates")
-            recent = list(WikiPage.all().order('-edited_timestamp').fetch(limit=count))
+            recent = list(WikiPage.all().order('-edited_timestamp').filter('is_draft', False).fetch(limit=count))
             if recent:
                 for r in recent:
                     # cache authors

@@ -167,3 +167,9 @@ indexes:
   - name: topic
   - name: sort_key
   - name: added_time
+
+- kind: WikiPage
+  properties:
+  - name: is_draft
+  - name: edited_timestamp
+    direction: desc

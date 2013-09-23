@@ -784,3 +784,17 @@ span.unit-badgelet {
   -webkit-border-radius: 2px;
   border-radius: 2px;
   margin: 1px; }
+
+div.save-buttons {
+  padding: 10px 20px; }
+  div.save-buttons .post-button {
+    background-color: #393;
+    background-image: -moz-linear-gradient(top, #44aa44, #228822);
+    background-image: -webkit-linear-gradient(top, #44aa44, #228822);
+    background-image: linear-gradient(top, #44aa44, #228822); }
+
+abbr.wiki-draft-sign {
+  font-size: 130%;
+  border: thin solid #f4beb2;
+  color: #666;
+  letter-spacing: 0.1em; }

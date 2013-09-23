@@ -118,6 +118,20 @@ class WikisPostedUpdateJob(Mapper):
                 subject="Done updating annotations",
                 body="Yeah buddy! Did %d of them!" % self.count)
 
+class WikisDraftJob(Mapper):
+    KIND = WikiPage
+    count = 0
+
+    def map(self, page):
+        page.is_draft = False
+        return ([page], [])
+
+    def finish(self):
+        mail.send_mail(sender="booc.class@gmail.com",
+                to="thomathom@gmail.com",
+                subject="Done updating wiki pages",
+                body="Yeah buddy! Did %d of them!" % self.count)
+
 class NoteUpdateJob(Mapper):
     KIND = models.Student
 
@@ -147,4 +161,5 @@ class NoteUpdateJob(Mapper):
                 subject="Done updating notes",
                 body="Yeah buddy!")
 
-the_job = WikisPostedUpdateJob
+
+the_job = WikisDraftJob

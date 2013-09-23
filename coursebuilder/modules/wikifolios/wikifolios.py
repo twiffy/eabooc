@@ -61,11 +61,14 @@ def comment_permalink(comment):
         'comment_id': comment.key().id(),
         })
 
-def update_wikis_posted(student_key, unit):
+def update_wikis_posted(student_key, unit, is_draft):
     unit = int(unit)
     student = db.get(student_key)
     if unit not in student.wikis_posted:
         student.wikis_posted.append(unit)
+    else:
+        if is_draft:
+            student.wikis_posted.remove(unit)
     student.put()
 
 def notify_other_people_in_thread(parent, new, exclude=[]):
@@ -559,6 +562,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         page = self._find_page(query, student_model=author)
         if page:
             self.template_value['fields'] = page_templates.viewable_model(page)
+            self.template_value['is_draft'] = page.is_draft
 
             self.show_notifications(user)
             #self.show_comments(page)
@@ -726,6 +730,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['fields'] = form_init(None, page)
 
         self.template_value['author'] = page.author
+        self.template_value['is_draft'] = page.is_draft
         self.template_value['editing'] = True
         self.render(page_templates.templates[query['unit']])
 
@@ -765,6 +770,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         for k,v in form.data.items():
             setattr(page, k, db.Text(v))
         page.unit = query['unit']
+        is_draft = bool(self.request.POST.get('Draft', False))
+        page.is_draft = is_draft
         page.put()
         EventEntity.record(
                 'edit-wiki-page', users.get_current_user(), transforms.dumps({
@@ -773,9 +780,10 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     'unit': page.unit,
                     'before': old_page,
                     'after': form.data,
+                    'is_draft': is_draft,
                     }))
 
-        deferred.defer(update_wikis_posted, page.author_key, page.unit)
+        deferred.defer(update_wikis_posted, page.author_key, page.unit, is_draft)
 
         self.redirect(self._create_action_url(query, 'view'))
 

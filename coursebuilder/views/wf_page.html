@@ -38,7 +38,12 @@
           {% endif %}
         </div>
       </div>
-      <div>by {{ student_link(author) }}</div>
+      <div>
+        {% if is_draft %}
+        <abbr class="wiki-draft-sign"
+          title="This page is not 'done' according to the author.">DRAFT</abbr>
+        {% endif %}
+        by {{ student_link(author) }}</div>
       {% if editing %}
       <form action="{{ action_url('save') }}" method="POST" id="wiki-form">
         <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
@@ -48,7 +53,12 @@
         {% endblock %}
         {% if editing %}
         <br>
-        <input type="submit" name="Save" value="Save" class="gcb-button">
+        <div class="save-buttons">
+          <input type="submit" name="Draft" value="Save as DRAFT" class="gcb-button">
+          <input type="submit" name="Post" value="Save and POST" class="gcb-button post-button">
+          <br>
+          <small>When you Save and Post, this page is added to the list of recent updates, and displayed on the participant list.</small>
+        </div>
       </form>
       {% endif %}
     </div>
