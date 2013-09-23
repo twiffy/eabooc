@@ -63,34 +63,42 @@ class CurricularAimQuery(object):
 
 
 
-class UnitOneQuery(object):
+class UnitCompletionQuery(object):
     def __init__(self, request):
         self.request = request
-        self.unit = 1
+        unit_str = request.GET['unit']
+        if not unit_str:
+            raise ValueError('"unit" parameter is required for this query')
+        # value error may bubble up
+        self.unit = int(unit_str)
         self.fields = [
                 'email',
                 'name',
+                'unit',
                 'group_id',
-                'posted_unit_1',
+                'posted_unit',
                 'exemplaries_received',
                 'exemplaries_given',
                 'endorsements_received',
                 'endorsements_given',
+                'num_comments',
                 'link',
                 ]
         self.fields.extend(field.name for field in forms[self.unit]())
 
     def run(self):
         query = Student.all().filter('is_participant =', True).run(limit=600)
-        unit = 1
+        unit = self.unit
         for student in query:
-            unit1_page = WikiPage.get_page(student, unit=unit)
-            posted_unit_1 = bool(unit1_page)
-            num_endorsements = ''
-            if unit1_page:
-                num_endorsements = Annotation.endorsements(what=unit1_page).count()
-                num_exemplaries = Annotation.exemplaries(what=unit1_page).count()
-                fields = viewable_model(unit1_page)
+            # TODO use defaultdict('') instead of local vars?
+            unit_page = WikiPage.get_page(student, unit=unit)
+            posted_unit = bool(unit_page)
+            num_endorsements = num_exemplaries = num_comments = ''
+            if unit_page:
+                num_endorsements = Annotation.endorsements(what=unit_page).count()
+                num_exemplaries = Annotation.exemplaries(what=unit_page).count()
+                num_comments = WikiComment.all().filter('topic', unit_page).count()
+                fields = viewable_model(unit_page)
             else:
                 fields = {}
 
@@ -100,12 +108,14 @@ class UnitOneQuery(object):
             info = {
                     'email': student.key().name(),
                     'name': student.name,
+                    'unit': unit,
                     'group_id': student.group_id,
-                    'posted_unit_1': posted_unit_1,
+                    'posted_unit': posted_unit,
                     'endorsements_received': num_endorsements,
                     'endorsements_given': num_given,
                     'exemplaries_received': num_exemplaries,
                     'exemplaries_given': exemps_given,
+                    'num_comments': num_comments,
                     'link': Markup('<a href="%s%s?%s">link</a>') % (
                         self.request.host_url,
                         '/wiki',
@@ -121,7 +131,7 @@ class UnitOneQuery(object):
 
 analytics_queries = {
         'initial_curricular_aim': CurricularAimQuery,
-        'unit_1': UnitOneQuery,
+        'unit_completion': UnitCompletionQuery,
         }
 
 
@@ -132,6 +142,8 @@ class AnalyticsHandler(BaseHandler):
         view = wtf.RadioField('View',
                 choices=[('csv', 'csv'), ('table', 'table')],
                 default='table')
+        unit = wtf.IntegerField('Unit Number (for unit completion query)',
+                [wtf.validators.Optional()])
 
     def _get_nav(self):
         form = self.NavForm(self.request.GET)
@@ -155,7 +167,11 @@ class AnalyticsHandler(BaseHandler):
             logging.warn("Unrecognized query")
             self.abort(404, "I couldn't find the query that you requested.")
 
-        query = query_class(self.request)
+        try:
+            query = query_class(self.request)
+        except ValueError as e:
+            self.render_choices_page(error=e.message)
+            return
 
         if nav['view'] == 'csv':
             self.render_as_csv(query.fields, query.run())
@@ -166,18 +182,19 @@ class AnalyticsHandler(BaseHandler):
         self.personalize_page_and_get_enrolled()
         self.template_value['navbar'] = {'booctools': True}
 
-    def render_choices_page(self):
+    def render_choices_page(self, error=''):
         self.prettify()
         form_fields = Markup("<p>\n").join(
                 Markup(field.label) + Markup(field) for field in self.NavForm())
         self.template_value['content'] = Markup('''
                 <div class="gcb-aside">
+                <div style="background-color: #fcc;">%s</div>
                 <form action="/analytics" method="GET">
                 %s
-                <input type="submit" value="Run">
+                <br><input type="submit" value="Run">
                 </form>
                 </div>
-                ''') % form_fields
+                ''') % (error, form_fields)
         self.render('bare.html')
 
     def render_as_csv(self, fields, items):
