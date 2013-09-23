@@ -103,7 +103,7 @@ class WikiPage(db.Expando):
                     # cache authors
                     x = r.author
                 models.MemcacheManager.set(key, recent, ttl=60*60*12)
-                models.MemcacheManager.set(asked_for_key, count)
+                models.MemcacheManager.set(asked_for_key, count, ttl=60*60*12)
         return recent
 
 
