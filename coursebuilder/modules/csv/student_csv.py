@@ -10,9 +10,13 @@ import unicodecsv as csv
 import wtforms as wtf
 from markupsafe import Markup
 from modules.wikifolios.wiki_models import *
+import modules.wikifolios.wikifolios as wf
 from modules.wikifolios.page_templates import forms, viewable_model
+from collections import defaultdict
 import urllib
 import re
+import itertools
+from common import prefetch
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -61,6 +65,50 @@ class CurricularAimQuery(object):
                     'curricular_aim': Markup(submission.curricular_aim),
                     }
 
+class UnitCommentQuery(object):
+    fields = [
+            'orig_row_number',
+            'link',
+            'unit',
+            'page_author',
+            'comment_author',
+            'is_reply',
+            'added_time',
+            'is_edited',
+            'is_deleted',
+            'text',
+            ]
+
+    def __init__(self, request):
+        self.request = request
+        unit_str = request.GET['unit']
+        if not unit_str:
+            raise ValueError('"unit" parameter is required for this query')
+        # value error may bubble up
+        self.unit = int(unit_str)
+
+    def run(self):
+        counter = itertools.count(1)
+        pages = WikiPage.all().filter('unit', self.unit).run(limit=600)
+        prefetcher = prefetch.CachingPrefetcher()
+        for page in pages:
+            comments = page.comments.run(limit=100)
+            page_author = "%s (%s)" % (page.author.name, page.author_email)
+            prefetcher.add(page.author)
+
+            for comment in wf.sort_comments(
+                    prefetcher.prefetch(comments, WikiComment.author)):
+                row = defaultdict(str)
+                row['orig_row_number'] = next(counter)
+                row['page_author'] = page_author
+                row['link'] = self.request.host_url + '/' + wf.comment_permalink(comment)
+                row['comment_author'] = "%s (%s)" % (comment.author.name, comment.author_email)
+                row['unit'] = page.unit
+                row['is_reply'] = comment.is_reply()
+                for attr in ['added_time', 'text', 'is_edited', 'is_deleted']:
+                    row[attr] = getattr(comment, attr)
+                row['text'] = re.sub(r'<[^>]*?>', '', row['text'])
+                yield row
 
 
 class UnitCompletionQuery(object):
@@ -132,6 +180,7 @@ class UnitCompletionQuery(object):
 analytics_queries = {
         'initial_curricular_aim': CurricularAimQuery,
         'unit_completion': UnitCompletionQuery,
+        'unit_comments': UnitCommentQuery,
         }
 
 
@@ -142,7 +191,7 @@ class AnalyticsHandler(BaseHandler):
         view = wtf.RadioField('View',
                 choices=[('csv', 'csv'), ('table', 'table')],
                 default='table')
-        unit = wtf.IntegerField('Unit Number (for unit completion query)',
+        unit = wtf.IntegerField('Unit Number (for unit queries)',
                 [wtf.validators.Optional()])
 
     def _get_nav(self):
