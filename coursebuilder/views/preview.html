@@ -8,12 +8,16 @@
 
       <div class="gcb-col-5">
         <center>
-          <span style="font-size: 150%;">Registration is now closed.</span>
-          {# <a class="gcb-button gcb-button-large" href="register" role="button">
-            Register
-          </a><br>
-
-          <small><a href="http://www.indiana.edu/~booc/faqs/#pre-reg" target="_blank">What if I don't have a Google account?</a></small> #}
+          <div>Registration is now closed.</div>
+          {% if loginUrl %}
+          <div>
+            If you're already in the course,<br>
+            <a class="gcb-button gcb-button-large" href="{{ loginUrl }}" role="button">Sign In</a>
+          </div>
+          {% endif %}
+          <div>
+            If not, you might want to <a href="https://booc-demo.appspot.com/preview">look around our demo site</a>!
+          </div>
         </center>
       </div>
     </div>
