@@ -65,6 +65,20 @@ class CurricularAimQuery(object):
                     'curricular_aim': Markup(submission.curricular_aim),
                     }
 
+class CurrentGroupIDQuery(object):
+    def __init__(self, request):
+        pass
+
+    fields = ('email', 'group_id')
+
+    def run(self):
+        query = Student.all().filter('is_participant', True).run(limit=600)
+        for student in query:
+            yield {
+                    'email': student.key().name(),
+                    'group_id': student.group_id,
+                    }
+
 class UnitCommentQuery(object):
     fields = [
             'orig_row_number',
@@ -183,6 +197,7 @@ analytics_queries = {
         'initial_curricular_aim': CurricularAimQuery,
         'unit_completion': UnitCompletionQuery,
         'unit_comments': UnitCommentQuery,
+        'current_group_ids': CurrentGroupIDQuery,
         }
 
 
