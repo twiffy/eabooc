@@ -249,16 +249,16 @@ class AnalyticsHandler(BaseHandler):
         self.render('bare.html')
 
     def render_as_csv(self, fields, items):
-        self.response.content_type = 'text/plain'
+        self.response.content_type = 'text/csv; charset=UTF-8'
+        self.response.headers['Content-Disposition'] = 'attachment;filename=analytics.csv'
 
+        self.response.write(u'\ufeff')
         out = csv.DictWriter(self.response, fields, extrasaction='ignore')
         out.writeheader()
         for item in items:
             for p in item.keys():
                 if type(item[p]) is list:
                     item[p] = u", ".join(item[p])
-                #if type(item[p]) is unicode:
-                    #item[p] = item[p].encode('utf-8')
             out.writerow(item)
 
     def render_as_table(self, fields, items):
