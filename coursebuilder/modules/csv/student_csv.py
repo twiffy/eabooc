@@ -105,8 +105,10 @@ class UnitCommentQuery(object):
                 row['comment_author'] = "%s (%s)" % (comment.author.name, comment.author_email)
                 row['unit'] = page.unit
                 row['is_reply'] = comment.is_reply()
-                for attr in ['added_time', 'text', 'is_edited', 'is_deleted']:
+                for attr in ['added_time', 'text']:
                     row[attr] = getattr(comment, attr)
+                for attr in ['is_edited', 'is_deleted']:
+                    row[attr] = bool(getattr(comment, attr))
                 row['text'] = re.sub(r'<[^>]*?>', '', row['text'])
                 yield row
 
