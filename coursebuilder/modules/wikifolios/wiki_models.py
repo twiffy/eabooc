@@ -157,10 +157,10 @@ class WikiComment(models.BaseEntity):
             set_cache = True
 
         for comment in results:
-            if set_cache: comment._cache_author()
+            #if set_cache: comment._cache_author()
             yield comment
             if set_cache: comments.append(comment)
-        if set_cache: models.MemcacheManager.set(key, comments)
+        if set_cache: models.MemcacheManager.set(key, comments, ttl=60*60*24)
 
 
     def _set_sort_key(self):

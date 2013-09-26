@@ -563,10 +563,11 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.show_notifications(user)
             #self.show_comments(page)
             # Start comments loading async
-            comments = page.comments.run(limit=1000)
-
+            #comments = page.comments.run(limit=1000)
             endorsements = Annotation.endorsements(page).run(limit=50)
             exemplaries = Annotation.exemplaries(page).run(limit=50)
+
+            comments = WikiComment.comments_on_page(page)
 
             if self._can_comment(query, user):
                 self.template_value['can_comment'] = True
