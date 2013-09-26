@@ -66,9 +66,8 @@ def update_wikis_posted(student_key, unit, is_draft):
     student = db.get(student_key)
     if unit not in student.wikis_posted:
         student.wikis_posted.append(unit)
-    else:
-        if is_draft:
-            student.wikis_posted.remove(unit)
+    if is_draft:
+        student.wikis_posted.remove(unit)
     student.put()
 
 def notify_other_people_in_thread(parent, new, exclude=[]):
