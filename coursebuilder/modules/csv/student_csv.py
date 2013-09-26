@@ -10,9 +10,13 @@ import unicodecsv as csv
 import wtforms as wtf
 from markupsafe import Markup
 from modules.wikifolios.wiki_models import *
+import modules.wikifolios.wikifolios as wf
 from modules.wikifolios.page_templates import forms, viewable_model
+from collections import defaultdict
 import urllib
 import re
+import itertools
+from common import prefetch
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -61,6 +65,66 @@ class CurricularAimQuery(object):
                     'curricular_aim': Markup(submission.curricular_aim),
                     }
 
+class CurrentGroupIDQuery(object):
+    def __init__(self, request):
+        pass
+
+    fields = ('email', 'group_id')
+
+    def run(self):
+        query = Student.all().filter('is_participant', True).run(limit=600)
+        for student in query:
+            yield {
+                    'email': student.key().name(),
+                    'group_id': student.group_id,
+                    }
+
+class UnitCommentQuery(object):
+    fields = [
+            'orig_row_number',
+            'link',
+            'unit',
+            'page_author',
+            'comment_author',
+            'is_reply',
+            'added_time',
+            'is_edited',
+            'is_deleted',
+            'text',
+            ]
+
+    def __init__(self, request):
+        self.request = request
+        unit_str = request.GET['unit']
+        if not unit_str:
+            raise ValueError('"unit" parameter is required for this query')
+        # value error may bubble up
+        self.unit = int(unit_str)
+
+    def run(self):
+        counter = itertools.count(1)
+        pages = WikiPage.all().filter('unit', self.unit).run(limit=600)
+        prefetcher = prefetch.CachingPrefetcher()
+        for page in pages:
+            comments = page.comments.run(limit=100)
+            page_author = "%s (%s)" % (page.author.name, page.author_email)
+            prefetcher.add(page.author)
+
+            for comment in wf.sort_comments(
+                    prefetcher.prefetch(comments, WikiComment.author)):
+                row = defaultdict(str)
+                row['orig_row_number'] = next(counter)
+                row['page_author'] = page_author
+                row['link'] = self.request.host_url + '/' + wf.comment_permalink(comment)
+                row['comment_author'] = "%s (%s)" % (comment.author.name, comment.author_email)
+                row['unit'] = page.unit
+                row['is_reply'] = comment.is_reply()
+                for attr in ['added_time', 'text']:
+                    row[attr] = getattr(comment, attr)
+                for attr in ['is_edited', 'is_deleted']:
+                    row[attr] = bool(getattr(comment, attr))
+                row['text'] = re.sub(r'<[^>]*?>', '', row['text'])
+                yield row
 
 
 class UnitCompletionQuery(object):
@@ -132,6 +196,8 @@ class UnitCompletionQuery(object):
 analytics_queries = {
         'initial_curricular_aim': CurricularAimQuery,
         'unit_completion': UnitCompletionQuery,
+        'unit_comments': UnitCommentQuery,
+        'current_group_ids': CurrentGroupIDQuery,
         }
 
 
@@ -142,7 +208,7 @@ class AnalyticsHandler(BaseHandler):
         view = wtf.RadioField('View',
                 choices=[('csv', 'csv'), ('table', 'table')],
                 default='table')
-        unit = wtf.IntegerField('Unit Number (for unit completion query)',
+        unit = wtf.IntegerField('Unit Number (for unit queries)',
                 [wtf.validators.Optional()])
 
     def _get_nav(self):
@@ -198,16 +264,16 @@ class AnalyticsHandler(BaseHandler):
         self.render('bare.html')
 
     def render_as_csv(self, fields, items):
-        self.response.content_type = 'text/plain'
+        self.response.content_type = 'text/csv; charset=UTF-8'
+        self.response.headers['Content-Disposition'] = 'attachment;filename=analytics.csv'
 
+        self.response.write(u'\ufeff')
         out = csv.DictWriter(self.response, fields, extrasaction='ignore')
         out.writeheader()
         for item in items:
             for p in item.keys():
                 if type(item[p]) is list:
                     item[p] = u", ".join(item[p])
-                #if type(item[p]) is unicode:
-                    #item[p] = item[p].encode('utf-8')
             out.writerow(item)
 
     def render_as_table(self, fields, items):

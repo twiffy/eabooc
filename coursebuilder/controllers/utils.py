@@ -398,7 +398,7 @@ class RegisterHandler(BaseHandler):
         missing = []
 
         for f in required_fields:
-            if f not in post:
+            if not post.get(f, None):
                 missing += [f]
 
         # Don't want to deal with the rest of the validation yet.

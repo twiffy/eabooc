@@ -934,7 +934,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         comments = profile_page.comments.run(limit=1000)
         pages = WikiPage.query_by_student(author).run(limit=100)
-        endorsements = author.own_annotations.filter('why IN', ['endorse', 'exemplary']).run(limit=10)
+        endorsements = author.own_annotations.order('-timestamp').filter('why IN', ['endorse', 'exemplary']).run(limit=10)
         self.show_notifications(user)
 
         self._ensure_curricular_aim(author, profile_page)

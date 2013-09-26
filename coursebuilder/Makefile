@@ -1,7 +1,11 @@
 # Makefile for deploying to stage and production
 #
 
-stage:
+
+no-sandbox:
+	if [ -f controllers/sandbox.py ]; then exit 1; fi
+
+stage: no-sandbox
 	git status
 	git diff --quiet --exit-code
 	git diff --cached --quiet --exit-code
@@ -14,7 +18,7 @@ stage:
 	git checkout -- app.yaml appengine_config.py
 	git push . -f HEAD:staged
 
-deploy:
+deploy: no-sandbox
 	git status
 	git diff --quiet --exit-code
 	git diff --cached --quiet --exit-code
