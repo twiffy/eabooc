@@ -13,6 +13,13 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Annotation
+  properties:
+  - name: who
+  - name: why
+  - name: timestamp
+    direction: desc
+
 - kind: FormSubmission
   properties:
   - name: form_name
