@@ -291,9 +291,9 @@ def pluralize(n, suffix="s"):
     return suffix if n != 1 else ''
 
 def better_striptags(s):
-    return bleach.clean(s,
+    return Markup(bleach.clean(s,
             tags=[],
-            strip=True)
+            strip=True))
 
 class FofouBase(BaseHandler):
   def __init__(self, *args, **kwargs):
