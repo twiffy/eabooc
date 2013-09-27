@@ -15,6 +15,7 @@ class CachingPrefetcher(object):
         self.top_key = top_key
         self.cache = { x.key(): x for x in already_have }
         self.prefetch_query = None
+        self.new_keys_fetched = False
         if top_key:
             keys_to_prefetch = MemcacheManager.get(self._collection_key)
             if keys_to_prefetch:
@@ -51,6 +52,7 @@ class CachingPrefetcher(object):
             #logging.warning('fetching %d entities on type %s', len(keys_to_fetch), type(entities[0]).__name__)
             ref_entities = dict((x.key(), x) for x in db.get(keys_to_fetch))
             self.cache.update(ref_entities)
+            self.new_keys_fetched = True
         #else:
             #logging.warning('Not fetching any entities for %s, they all cached bro', type(entities[0]).__name__)
         for (entity, prop), ref_key in zip(fields, ref_keys):
@@ -59,8 +61,9 @@ class CachingPrefetcher(object):
         return entities
 
     def done(self):
-        MemcacheManager.set(
-                self._collection_key,
-                list(str(x) for x in self.cache.keys()),
-                ttl=60*60*48)
+        if self.new_keys_fetched:
+            MemcacheManager.set(
+                    self._collection_key,
+                    list(str(x) for x in self.cache.keys()),
+                    ttl=60*60*48)
 
