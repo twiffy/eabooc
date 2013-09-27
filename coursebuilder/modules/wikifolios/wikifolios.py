@@ -925,10 +925,10 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             # e.g. there is no student by that ID.
             self.abort(404)
 
-        comments = profile_page.comments.run(limit=1000)
         pages = WikiPage.query_by_student(author).run(limit=100)
         endorsements = author.own_annotations.order('-timestamp').filter('why IN', ['endorse', 'exemplary']).run(limit=10)
         self.show_notifications(user)
+        comments = WikiComment.comments_on_page(profile_page)
 
         self._ensure_curricular_aim(author, profile_page)
         self.template_value['fields'] = page_templates.viewable_model(profile_page)
