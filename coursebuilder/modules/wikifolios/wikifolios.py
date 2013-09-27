@@ -579,7 +579,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             prefetcher = prefetch.CachingPrefetcher()
             prefetcher.add(author)
             prefetcher.add(user)
-            self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
 
             endorsements = prefetcher.prefetch(endorsements,
                     Annotation.who)
@@ -588,6 +587,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             exemplaries = prefetcher.prefetch(exemplaries,
                     Annotation.who)
             self.template_value['exemplaries'] = exemplaries
+
+            self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
 
             def who(ann):
                 return Annotation.who.get_value_for_datastore(ann)
@@ -956,7 +957,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         prefetcher = prefetch.CachingPrefetcher()
         prefetcher.add(author)
         prefetcher.add(user)
-        self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
         endorsements = prefetcher.prefetch(endorsements, Annotation.whose)
         unit_dict = {int(u.unit_id): u for u in units if u.unit_id.isdigit()}
         for e in endorsements:
@@ -972,6 +972,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     ckeditor.allowed_content(COMMENT_TAGS,
                         COMMENT_ATTRIBUTES, COMMENT_STYLES))
 
+        self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
         self.render(page_templates.templates['profile'])
 
     def _ensure_curricular_aim(self, student, page):
