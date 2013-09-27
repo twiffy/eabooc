@@ -1,3 +1,5 @@
+from webapp2 import cached_property
+from models.models import MemcacheManager
 from google.appengine.ext import db
 import logging
 def prefetch_refprops(entities, *props):
@@ -9,13 +11,29 @@ def prefetch_refprops(entities, *props):
     return entities
 
 class CachingPrefetcher(object):
-    def __init__(self):
-        self.cache = {}
+    def __init__(self, top_key=None, already_have=[]):
+        self.top_key = top_key
+        self.cache = { x.key(): x for x in already_have }
+        self.prefetch_query = None
+        if top_key:
+            keys_to_prefetch = MemcacheManager.get(self._collection_key)
+            if keys_to_prefetch:
+                keys_to_prefetch = set(keys_to_prefetch).difference(map(str, self.cache.keys()))
+                self.prefetch_query = db.get_async(keys_to_prefetch)
 
-    def add(self, obj):
-        self.cache[obj.key()] = obj
+    @cached_property
+    def _collection_key(self):
+        return 'cached-things-by-page:%s' % self.top_key
+
+    #def add(self, obj):
+        #self.cache[obj.key()] = obj
 
     def prefetch(self, entities_iterable, *props):
+        if self.prefetch_query:
+            self.cache.update(
+                    { x.key(): x for x in self.prefetch_query.get_result() })
+            self.prefetch_query = None
+
         entities = list(entities_iterable)
         if len(entities) == 0:
             return entities
@@ -25,7 +43,8 @@ class CachingPrefetcher(object):
                 #len(fields),
                 #type(entities[0]).__name__)
         ref_keys = [prop.get_value_for_datastore(x) for x, prop in fields]
-        ref_key_set = set(ref_keys) - set((None,))
+        ref_key_set = set(ref_keys)
+        ref_key_set.discard(None)
         keys_to_fetch = ref_key_set - self.cache.viewkeys()
 
         if keys_to_fetch:
@@ -38,3 +57,10 @@ class CachingPrefetcher(object):
             prop.__set__(entity, self.cache[ref_key])
 
         return entities
+
+    def done(self):
+        MemcacheManager.set(
+                self._collection_key,
+                list(str(x) for x in self.cache.keys()),
+                ttl=60*60*48)
+
