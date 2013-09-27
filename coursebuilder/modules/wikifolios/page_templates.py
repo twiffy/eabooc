@@ -64,6 +64,22 @@ class UnitThreePageForm(wtf.Form):
 forms[3] = UnitThreePageForm
 templates[3] = 'wf_temp_u3.html'
 
+class UnitFourPageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    advantages_disadvantages = BleachedTextAreaField()
+    describe = BleachedTextAreaField()
+    create_rubric = BleachedTextAreaField()
+    evaluate = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+    sources_of_error = BleachedTextAreaField()
+    impact_on_teaching_learning = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[4] = UnitFourPageForm
+templates[4] = 'wf_temp_u4.html'
+
 def viewable_model(model):
     # TODO maybe default values?
     d = db.to_dict(model)
