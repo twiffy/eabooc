@@ -560,28 +560,26 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         page = self._find_page(query, student_model=author)
         if page:
+            prefetcher = prefetch.CachingPrefetcher(page.key(),
+                    [author, user])
+
             self.template_value['fields'] = page_templates.viewable_model(page)
             self.template_value['is_draft'] = page.is_draft
 
             self.show_notifications(user)
             #self.show_comments(page)
             # Start comments loading async
-            comments = page.comments.run(limit=1000)
-
+            #comments = page.comments.run(limit=1000)
             endorsements = Annotation.endorsements(page).run(limit=50)
             exemplaries = Annotation.exemplaries(page).run(limit=50)
+
+            comments = WikiComment.comments_on_page(page)
 
             if self._can_comment(query, user):
                 self.template_value['can_comment'] = True
                 self.template_value['ckeditor_comment_content'] = (
                         ckeditor.allowed_content(COMMENT_TAGS,
                             COMMENT_ATTRIBUTES, COMMENT_STYLES))
-
-
-            prefetcher = prefetch.CachingPrefetcher()
-            prefetcher.add(author)
-            prefetcher.add(user)
-            self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
 
             endorsements = prefetcher.prefetch(endorsements,
                     Annotation.who)
@@ -590,6 +588,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             exemplaries = prefetcher.prefetch(exemplaries,
                     Annotation.who)
             self.template_value['exemplaries'] = exemplaries
+
+            self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
+            prefetcher.done()
 
             def who(ann):
                 return Annotation.who.get_value_for_datastore(ann)
@@ -931,10 +932,13 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             # e.g. there is no student by that ID.
             self.abort(404)
 
-        comments = profile_page.comments.run(limit=1000)
+        prefetcher = prefetch.CachingPrefetcher(profile_page.key(),
+                [author, user])
+
         pages = WikiPage.query_by_student(author).run(limit=100)
         endorsements = author.own_annotations.order('-timestamp').filter('why IN', ['endorse', 'exemplary']).run(limit=10)
         self.show_notifications(user)
+        comments = WikiComment.comments_on_page(profile_page)
 
         self._ensure_curricular_aim(author, profile_page)
         self.template_value['fields'] = page_templates.viewable_model(profile_page)
@@ -960,10 +964,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         self.template_value['units'] = units
 
-        prefetcher = prefetch.CachingPrefetcher()
-        prefetcher.add(author)
-        prefetcher.add(user)
-        self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
         endorsements = prefetcher.prefetch(endorsements, Annotation.whose)
         unit_dict = {int(u.unit_id): u for u in units if u.unit_id.isdigit()}
         for e in endorsements:
@@ -979,6 +979,8 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     ckeditor.allowed_content(COMMENT_TAGS,
                         COMMENT_ATTRIBUTES, COMMENT_STYLES))
 
+        self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
+        prefetcher.done()
         self.render(page_templates.templates['profile'])
 
     def _ensure_curricular_aim(self, student, page):

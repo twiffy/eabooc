@@ -143,26 +143,29 @@ class WikiComment(models.BaseEntity):
 
     @classmethod
     def _key_for_page_cache(cls, page):
-        return 'comments-by-page:%s' % page.key()
+        if type(page) is str:
+            page = db.Key(page)
+        elif type(page) is not db.Key:
+            page = page.key()
+        return 'comments-by-page:%s' % page
 
     @classmethod
     def comments_on_page(cls, page):
         key = cls._key_for_page_cache(page)
 
         results = models.MemcacheManager.get(key)
-        comments = []
-        set_cache = False
         if not results:
             query = page.comments
             results = query.run(limit=1000)
-            set_cache = True
+            deferred.defer(cls.cache_comments_on_page, page.key())
 
-        for comment in results:
-            if set_cache: comment._cache_author()
-            yield comment
-            if set_cache: comments.append(comment)
-        if set_cache: models.MemcacheManager.set(key, comments)
+        return results
 
+    @classmethod
+    def cache_comments_on_page(cls, page_key):
+        results = WikiComment.all().filter('topic', page_key).run(limit=1000)
+        key = cls._key_for_page_cache(page_key)
+        models.MemcacheManager.set(key, list(results), ttl=60*60*24)
 
     def _set_sort_key(self):
         if self.is_reply() and not self.parent_added_time:
@@ -171,6 +174,7 @@ class WikiComment(models.BaseEntity):
     def _invalidate_cache(self):
         key = self._key_for_page_cache(self.topic)
         models.MemcacheManager.delete(key)
+        deferred.defer(self.cache_comments_on_page, self.topic.key())
 
     def put(self):
         self._set_sort_key()

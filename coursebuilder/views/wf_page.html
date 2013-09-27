@@ -27,8 +27,7 @@
     <div class="gcb-col-11 wiki-area wiki-grey-theme">
       <div id="wiki-title-and-edit">
         {% if unit %}
-        <h1>Unit {{ unit.unit_id }} - {{ unit.title | safe }} <small class="wiki-unit-link">
-            <a href="unit?unit={{ unit.unit_id }}">(prompt)</a></small></h1>
+        <h1>Unit {{ unit.unit_id }} - {{ unit.title | safe }}</h1>
         {% endif %}
         <div>
           {% if editor_role and can_do_assignments and not editing %}
@@ -47,6 +46,7 @@
       {% if editing %}
       <form action="{{ action_url('save') }}" method="POST" id="wiki-form">
         <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
+        <small>You can get help with accessibility and keyboard shortcuts by clicking in an editor box and pressing Alt-0 (zero).</small>
         {% endif %}
         {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
         {% block wiki_content %}
