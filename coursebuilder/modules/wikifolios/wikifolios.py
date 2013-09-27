@@ -558,6 +558,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         page = self._find_page(query, student_model=author)
         if page:
+            prefetcher = prefetch.CachingPrefetcher(page.key(),
+                    [author, user])
+
             self.template_value['fields'] = page_templates.viewable_model(page)
 
             self.show_notifications(user)
@@ -574,10 +577,6 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.template_value['ckeditor_comment_content'] = (
                         ckeditor.allowed_content(COMMENT_TAGS,
                             COMMENT_ATTRIBUTES, COMMENT_STYLES))
-
-
-            prefetcher = prefetch.CachingPrefetcher(page.key(),
-                    [author, user])
 
             endorsements = prefetcher.prefetch(endorsements,
                     Annotation.who)
@@ -926,6 +925,9 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
             # e.g. there is no student by that ID.
             self.abort(404)
 
+        prefetcher = prefetch.CachingPrefetcher(profile_page.key(),
+                [author, user])
+
         pages = WikiPage.query_by_student(author).run(limit=100)
         endorsements = author.own_annotations.order('-timestamp').filter('why IN', ['endorse', 'exemplary']).run(limit=10)
         self.show_notifications(user)
@@ -954,8 +956,6 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         self.template_value['units'] = units
 
-        prefetcher = prefetch.CachingPrefetcher(profile_page.key(),
-                [author, user])
         endorsements = prefetcher.prefetch(endorsements, Annotation.whose)
         unit_dict = {int(u.unit_id): u for u in units if u.unit_id.isdigit()}
         for e in endorsements:
