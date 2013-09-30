@@ -26,8 +26,8 @@ class CachingPrefetcher(object):
     def _collection_key(self):
         return 'cached-things-by-page:%s' % self.top_key
 
-    #def add(self, obj):
-        #self.cache[obj.key()] = obj
+    def add(self, obj):
+        self.cache[obj.key()] = obj
 
     def prefetch(self, entities_iterable, *props):
         if self.prefetch_query:
