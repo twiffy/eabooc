@@ -958,3 +958,12 @@ abbr.wiki-draft-sign {
   color: #666;
   letter-spacing: 0.1em;
 }
+
+div.assessment {
+  font-size: 120%;
+  max-width: 50em;
+  line-height: 1.54;
+  br {
+    line-height: 1.8;
+  }
+}

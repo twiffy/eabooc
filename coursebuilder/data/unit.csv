@@ -6,7 +6,7 @@ id,type,unit_id,title,release_date,now_available
 5,U,4,"Performance and Portfolio Assessment (ch. 8, 9)",opens September 30,True
 6,O,,<b>Part Two - Assessment Principles</b>,,False
 7,U,5,"Reliability and Bias (ch. 3, 5)",opens October 7,True
-8,O,Practices,<i>Assessment Practices Exam (open October 9 through 16)</i>,,False
+8,A,Practices,<i>Assessment Practices Exam (open October 9 through 16)</i>,,True
 9,U,6,Validity (ch. 4),opens October 14,False
 10,U,7,Formative Assessment (ch. 12),opens October 21,False
 11,O,,<b>Part Three - Assessment Policies</b>,,False
