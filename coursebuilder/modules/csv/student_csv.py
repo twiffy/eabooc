@@ -104,11 +104,10 @@ class UnitCommentQuery(object):
     def run(self):
         counter = itertools.count(1)
         pages = WikiPage.all().filter('unit', self.unit).run(limit=600)
-        prefetcher = prefetch.CachingPrefetcher()
         for page in pages:
             comments = page.comments.run(limit=100)
             page_author = "%s (%s)" % (page.author.name, page.author_email)
-            prefetcher.add(page.author)
+            prefetcher = prefetch.CachingPrefetcher(page.key(), [page.author])
 
             for comment in wf.sort_comments(
                     prefetcher.prefetch(comments, WikiComment.author)):
