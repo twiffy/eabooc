@@ -58,6 +58,9 @@ modules.csv.student_csv.register_module().enable()
 modules.regconf.regconf.register_module().enable()
 modules.booctools.booctools.register_module().enable()
 
+import modules.badges.badges
+modules.badges.badges.register_module().enable()
+
 # register modules that are not enabled by default.
 modules.oauth2.oauth2.register_module()
 
