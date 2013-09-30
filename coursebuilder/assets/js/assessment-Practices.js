@@ -22,7 +22,7 @@
 
 var assessment = {
   // HTML to display at the start of the page
-  preamble: '<b>You are only allowed to take this quiz one time.  It has thirty items and each item is worth one half-point.  The 15 points count towards the 100 points possible in this class.<br><br>Directions:  Please read each of the statements presented below, then signify whether the statement is Accurate or Inaccurate.  A statement’s accuracy depends on whether it represents a verbatim or appropriately paraphrased rendition of statements drawn from Chapter 7’s (1) item-writing guidelines for short-answer items, (2) item-writing guidelines for essay items, (3) guidelines for scoring responses to essay items or, from Chapter 6, (4) the five general item-writing commandments.<Br>',
+  preamble: '',
 
   // An ordered list of questions, with each question's type implicitly determined by the fields it possesses:
   //   choices              - multiple choice question (with exactly one correct answer)
