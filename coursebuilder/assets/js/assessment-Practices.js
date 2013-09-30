@@ -123,7 +123,7 @@ var assessment = {
      },	 
    
 	 
-    {questionHTML: '<b>11-13</b>.  For each of the questions below, determine whether or not the statement is (A) Accurate or (B) Inaccurate. A statement’s accuracy depends on whether it represents a verbatim or appropriately paraphrased rendition of statements drawn from Chapter 7.<br><br>To best assess students’ ability to respond to essay items, allow students to choose among optional items.',
+    {questionHTML: '<em>For the next three questions, determine whether or not the statement is Accurate or Inaccurate. A statement’s accuracy depends on whether it represents a verbatim or appropriately paraphrased rendition of statements drawn from Chapter 7.</em><br>To best assess students’ ability to respond to essay items, allow students to choose among optional items.',
       choices: ['Accurate', correct('Inaccurate')],
      },	 
 	 
