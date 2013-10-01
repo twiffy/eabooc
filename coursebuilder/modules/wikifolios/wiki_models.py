@@ -165,7 +165,7 @@ class WikiComment(models.BaseEntity):
     def cache_comments_on_page(cls, page_key):
         results = WikiComment.all().filter('topic', page_key).run(limit=1000)
         key = cls._key_for_page_cache(page_key)
-        models.MemcacheManager.set(key, list(results), ttl=60*60*24)
+        models.MemcacheManager.set(key, list(results), ttl=60*60*48)
 
     def _set_sort_key(self):
         if self.is_reply() and not self.parent_added_time:
