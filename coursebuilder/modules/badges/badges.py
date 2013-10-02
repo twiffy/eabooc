@@ -117,6 +117,15 @@ class BadgeHandler(BadgeItemHandler):
     KIND = Badge
     FORM = model_form(Badge)
 
+    get_actions = BadgeItemHandler.get_actions + ['issue']
+
+    def get_issue(self):
+        # Somehow redirect to the 'create' form of the BadgeAssertion,
+        # But pre-selecting this badge?
+        if not users.is_current_user_admin():
+            self.abort(403)
+        self.response.write('not there yet..')
+
     def to_dict(self, obj):
         d = db.to_dict(obj)
         d['issuer'] = self.request.host_url + url_for_badge_item(db.get(d['issuer']))
