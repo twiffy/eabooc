@@ -55,21 +55,21 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
                 obj = self.KIND(key_name=key_name)
         return obj
 
-    def to_dict(self, obj):
+    def to_dict(self, obj, out=None):
         return db.to_dict(obj)
 
     def get_json(self):
         obj = self._get_object_or_abort()
 
         self.response.content_type = 'application/json'
-        self.response.write(json.dumps(self.to_dict(obj)))
+        self.response.write(json.dumps(self.to_dict(obj, out='json')))
 
     def get_view(self):
         obj = self._get_object_or_abort()
 
         self.template_value['action_url'] = self._action_url
         self.template_value['title'] = '%s: %s' % (self.KIND.__name__, obj.key().name())
-        self.template_value['fields'] = self.to_dict(obj)
+        self.template_value['fields'] = self.to_dict(obj, out='html')
         self.render('badge_item_view.html')
 
     def get_edit(self):
@@ -109,6 +109,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['action_url'] = self._action_url
         self.template_value['title'] = 'List of %s' % self.KIND.__name__
         self.template_value['items'] = items
+        self.template_value['actions'] = self.get_actions
         self.render('badge_item_list.html')
 
 
@@ -121,6 +122,9 @@ class BadgeHandler(BadgeItemHandler):
         d['issuer'] = self.request.host_url + url_for_badge_item(db.get(d['issuer']))
         return d
 
+class AssertionHandler(BadgeItemHandler):
+    KIND = BadgeAssertion
+    FORM = model_form(BadgeAssertion)
 
 class IssuerHandler(BadgeItemHandler):
     KIND = Issuer
@@ -129,11 +133,14 @@ class IssuerHandler(BadgeItemHandler):
 
 ISSUER_URL = '/badges/issuer'
 BADGE_URL = '/badges/badge'
+ASSERTION_URL = '/badges/assertion'
 
 def url_for_badge_item(item, action='json'):
     url = None
     if isinstance(item, Issuer):
         url = ISSUER_URL
+    elif isinstance(item, BadgeAssertion):
+        url = ASSERTION_URL
     elif isinstance(item, Badge):
         url = BADGE_URL
 
@@ -154,6 +161,7 @@ def register_module():
     handlers = [
             (ISSUER_URL, IssuerHandler),
             (BADGE_URL, BadgeHandler),
+            (ASSERTION_URL, AssertionHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Badges", "Badges",
