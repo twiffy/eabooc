@@ -1,6 +1,7 @@
 from google.appengine.ext import db
 from models.models import BaseEntity, Student
 from webapp2 import cached_property
+from jinja2 import Markup
 
 class Issuer(BaseEntity):
     # Fields from the OBI specification
@@ -8,9 +9,11 @@ class Issuer(BaseEntity):
     url = db.LinkProperty(indexed=False)
     email = db.EmailProperty(indexed=False)
 
-    # MAYBE make this part of the key instead?
-    # Fields in the URL scheme
-    slug = db.StringProperty()
+    def __str__(self):
+        return '%s: %s' % (
+                type(self).__name__,
+                self.key().name(),
+                )
 
 
 class Badge(BaseEntity):
@@ -24,11 +27,11 @@ class Badge(BaseEntity):
     # Don't know how to do this well yet...
     # alignment = ...
 
-    # MAYBE make this part of the key?
-    # Fields used in the URL scheme
-    slug = db.StringProperty()
-    #course_slug = db.StringProperty()
-
+    def __str__(self):
+        return '%s: %s' % (
+                type(self).__name__,
+                self.key().name(),
+                )
 
 class BadgeAssertion(BaseEntity):
     # Fields from the OBI specification
@@ -51,4 +54,9 @@ class BadgeAssertion(BaseEntity):
     #             'not done': True,
     #             }
 
+    def __str__(self):
+        return '%s: %s' % (
+                type(self).__name__,
+                self.key().id_or_name(),
+                )
     

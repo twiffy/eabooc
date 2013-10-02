@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+    <table border="1">
+      {% for item in items %}
+      <tr>
+        <td>{{ item }}</td>
+        {% for action in actions %}
+        <td>
+          <a href="{{ action_url(action, name=item.key().id_or_name()) }}">{{ action }}</a>
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+    <div>
+      <form action="{{ action_url('edit', name='') }}" method="GET">
+        <input type="hidden" name="action" value="edit">
+        Create: <input name="name">
+        <br>
+        <input type="submit" value="Create">
+      </form>
+    </div>
+  </body>
+</html>
