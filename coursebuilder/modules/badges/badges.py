@@ -57,29 +57,32 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
                 obj = self.KIND(key_name=key_name)
         return obj
 
-    def to_dict(self, obj, out=None):
-        d = db.to_dict(obj)
-        if out == 'html':
-            for k,v in d.iteritems():
-                if isinstance(v, db.Key):
-                    # that is, if the value of the dict is a database key...
-                    url = util.url_for_key(v, action='view')
-                    if url:
-                        d[k] = Markup('<a href="%(url)s">%(kind)s: %(id)s</a>') % {
-                                'url': url,
-                                'kind': v.kind(),
-                                'id': v.id_or_name(),
-                                }
+    def to_dict(self, obj):
+        return db.to_dict(obj)
+
+    def htmlize_fields(self, fields):
+        # The JSON version of this is util.BadgeJSONEncoder.
+        d = fields
+        for k,v in d.iteritems():
+            if isinstance(v, db.Key):
+                # that is, if the value of the dict is a database key...
+                url = util.url_for_key(v, action='view')
+                if url:
+                    d[k] = Markup('<a href="%(url)s">%(kind)s: %(id)s</a>') % {
+                            'url': url,
+                            'kind': v.kind(),
+                            'id': v.id_or_name(),
+                            }
+                if v.kind() == 'Student':
+                    d[k] = v.name()
         return d
-
-
 
     def get_json(self):
         obj = self._get_object_or_abort()
 
         self.response.content_type = 'application/json'
         json_encoder = util.BadgeJSONEncoder(self.request.host_url)
-        self.response.write(json_encoder.encode(self.to_dict(obj, out='json')))
+        self.response.write(json_encoder.encode(self.to_dict(obj)))
 
     def get_view(self):
         if not users.is_current_user_admin():
@@ -88,7 +91,8 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
 
         self.template_value['action_url'] = self._action_url
         self.template_value['title'] = '%s: %s' % (self.KIND.__name__, obj.key().name())
-        self.template_value['fields'] = self.to_dict(obj, out='html')
+        fields = self.to_dict(obj)
+        self.template_value['fields'] = self.htmlize_fields(fields)
         self.render('badge_item_view.html')
 
     def get_edit(self):
@@ -151,8 +155,8 @@ class AssertionHandler(BadgeItemHandler):
     KIND = BadgeAssertion
     FORM = model_form(BadgeAssertion)
 
-    def to_dict(self, obj, out=None):
-        d = super(AssertionHandler, self).to_dict(obj, out)
+    def to_dict(self, obj):
+        d = super(AssertionHandler, self).to_dict(obj)
         d['uid'] = obj.uid
         return d
 
@@ -165,24 +169,6 @@ class IssuerHandler(BadgeItemHandler):
 ISSUER_URL = '/badges/issuer'
 BADGE_URL = '/badges/badge'
 ASSERTION_URL = '/badges/assertion'
-
-def url_for_badge_item(item, action='json'):
-    url = None
-    if isinstance(item, Issuer):
-        url = ISSUER_URL
-    elif isinstance(item, BadgeAssertion):
-        url = ASSERTION_URL
-    elif isinstance(item, Badge):
-        url = BADGE_URL
-
-    if not url:
-        raise ValueError("Can't make urls for type %s", type(item).__name__)
-
-    return '?'.join((
-            url,
-            urllib.urlencode({
-                'action': action,
-                'name': item.key().id_or_name()})))
 
 module = None
 
