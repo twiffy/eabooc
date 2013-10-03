@@ -81,7 +81,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         obj = self._get_object_or_abort()
 
         self.response.content_type = 'application/json'
-        json_encoder = util.BadgeJSONEncoder(self.request.host_url)
+        json_encoder = util.BadgeJSONEncoder(self.request.host_url, indent=4)
         self.response.write(json_encoder.encode(self.to_dict(obj)))
 
     def get_view(self):

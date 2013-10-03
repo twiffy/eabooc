@@ -56,8 +56,8 @@ def url_for_key(obj, action='json'):
                 'name': obj.id_or_name()})))
 
 class BadgeJSONEncoder(json.JSONEncoder):
-    def __init__(self, baseurl):
-        super(BadgeJSONEncoder, self).__init__()
+    def __init__(self, baseurl, **kwargs):
+        super(BadgeJSONEncoder, self).__init__(**kwargs)
         self.baseurl = baseurl
 
     def default(self, obj):
