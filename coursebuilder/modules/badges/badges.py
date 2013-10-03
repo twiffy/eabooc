@@ -20,6 +20,7 @@ import re
 import itertools
 from common import prefetch
 
+import util
 from badge_models import *
 
 import json
@@ -62,7 +63,8 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         obj = self._get_object_or_abort()
 
         self.response.content_type = 'application/json'
-        self.response.write(json.dumps(self.to_dict(obj, out='json')))
+        json_encoder = util.BadgeJSONEncoder(self.request.host_url)
+        self.response.write(json_encoder.encode(self.to_dict(obj, out='json')))
 
     def get_view(self):
         obj = self._get_object_or_abort()
@@ -126,10 +128,6 @@ class BadgeHandler(BadgeItemHandler):
             self.abort(403)
         self.response.write('not there yet..')
 
-    def to_dict(self, obj):
-        d = db.to_dict(obj)
-        d['issuer'] = self.request.host_url + url_for_badge_item(db.get(d['issuer']))
-        return d
 
 class AssertionHandler(BadgeItemHandler):
     KIND = BadgeAssertion
