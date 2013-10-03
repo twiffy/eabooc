@@ -367,6 +367,8 @@ class Student(BaseEntity):
     def has_posted_any_wikis(self):
         return bool(self.wikis_posted)
 
+    def __unicode__(self):
+        return u'Student(%s)' % self.name
 
 class EventEntity(BaseEntity):
     """Generic events.
