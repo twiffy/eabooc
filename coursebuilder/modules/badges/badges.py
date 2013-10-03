@@ -132,7 +132,9 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['action_url'] = self._action_url
         self.template_value['title'] = 'List of %s' % self.KIND.__name__
         self.template_value['items'] = items
-        self.template_value['actions'] = self.get_actions
+        actions = list(self.get_actions)
+        actions.remove('list')
+        self.template_value['actions'] = actions
         self.render('badge_item_list.html')
 
 
@@ -140,15 +142,15 @@ class BadgeHandler(BadgeItemHandler):
     KIND = Badge
     FORM = model_form(Badge)
 
-    get_actions = BadgeItemHandler.get_actions + ['issue']
+    # get_actions = BadgeItemHandler.get_actions + ['issue']
 
-    def get_issue(self):
-        # Somehow redirect to the 'create' form of the BadgeAssertion,
-        # But pre-selecting this badge?
-        # TODO: is this dumb?
-        if not users.is_current_user_admin():
-            self.abort(403)
-        self.response.write('not there yet..')
+    # def get_issue(self):
+    #     # Somehow redirect to the 'create' form of the BadgeAssertion,
+    #     # But pre-selecting this badge?
+    #     # TODO: is this dumb?
+    #     if not users.is_current_user_admin():
+    #         self.abort(403)
+    #     self.response.write('not there yet..')
 
     def htmlize_fields(self, fields):
         fields['image'] = Markup('<img src="%s" alt="%s">') % (

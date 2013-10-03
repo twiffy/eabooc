@@ -8,3 +8,15 @@ table {
 
 td, th {
   padding: 1em; }
+
+div#navbar {
+  background: #ffa;
+  text-align: center;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 5px; }
+  div#navbar a, div#navbar a.visited {
+    color: black;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 125%; }
