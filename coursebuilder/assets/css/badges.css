@@ -1,0 +1,10 @@
+body {
+  background-image: -moz-linear-gradient(top, #ffaaaa, #aaffaa, #aaaaff, #ccaacc);
+  background-image: -webkit-linear-gradient(top, #ffaaaa, #aaffaa, #aaaaff, #ccaacc);
+  background-image: linear-gradient(top, #ffaaaa, #aaffaa, #aaaaff, #ccaacc); }
+
+table {
+  border-collapse: collapse; }
+
+td, th {
+  padding: 1em; }

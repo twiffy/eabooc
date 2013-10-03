@@ -1,0 +1,13 @@
+body {
+  background-image: -moz-linear-gradient(top,#faa, #afa, #aaf, #cac);
+  background-image: -webkit-linear-gradient(top,#faa, #afa, #aaf, #cac);
+  background-image: linear-gradient(top,#faa, #afa, #aaf, #cac);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 1em;
+}
