@@ -1,23 +1,19 @@
-<html>
-  <head>
-    <title>{{ title }}</title>
-  </head>
-  <body>
-    <h1>{{ title }}</h1>
-    <table border="1">
-      <tr>
-        <th>Key</th><th>Value</th>
-      </tr>
-      {% for k,v in fields|dictsort %}
-      <tr>
-        <td>{{ k }}</td>
-        <td>{{ v }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-    <div>
-      <a href="{{ action_url('edit') }}">edit</a> -
-      <a href="{{ action_url('json') }}">json</a> - 
-      <a href="{{ action_url('list') }}">list</a>
-  </body>
-</html>
+{% extends 'badge_base.html' %}
+{% block content %}
+<table border="1">
+  <tr>
+    <th>Key</th><th>Value</th>
+  </tr>
+  {% for k,v in fields|dictsort %}
+  <tr>
+    <td>{{ k }}</td>
+    <td>{{ v }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<div>
+  <a href="{{ action_url('edit') }}">edit</a> -
+  <a href="{{ action_url('json') }}">json</a> - 
+  <a href="{{ action_url('list') }}">list</a>
+</div>
+{% endblock %}

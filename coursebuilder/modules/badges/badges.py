@@ -84,7 +84,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
 
     def render_edit(self, form, obj):
         self.template_value['action_url'] = self._action_url
-        self.template_value['title'] = '%s: %s' % (self.KIND.__name__, obj.key().name())
+        self.template_value['title'] = 'Edit %s: %s' % (self.KIND.__name__, obj.key().name())
         self.template_value['form'] = form
         self.template_value['xsrf_token'] = self.create_xsrf_token('save')
         self.render('badge_item_edit.html')
