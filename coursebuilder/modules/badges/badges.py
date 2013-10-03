@@ -133,6 +133,12 @@ class AssertionHandler(BadgeItemHandler):
     KIND = BadgeAssertion
     FORM = model_form(BadgeAssertion)
 
+    def to_dict(self, obj, out=None):
+        d = db.to_dict(obj)
+        d['uid'] = obj.uid
+        return d
+
+
 class IssuerHandler(BadgeItemHandler):
     KIND = Issuer
     FORM = model_form(Issuer)

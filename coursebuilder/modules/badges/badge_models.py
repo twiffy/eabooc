@@ -46,6 +46,10 @@ class BadgeAssertion(BaseEntity):
     def recipient_email(self):
         return BaseEntity.recipient.get_value_for_datastore(self).name()
 
+    @cached_property
+    def uid(self):
+        return 'booc.assertion.' + self.key().id_or_name()
+
     # @cached_property
     # def recipient_dict(self):
     #     return {
