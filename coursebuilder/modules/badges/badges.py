@@ -58,7 +58,21 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         return obj
 
     def to_dict(self, obj, out=None):
-        return db.to_dict(obj)
+        d = db.to_dict(obj)
+        if out == 'html':
+            for k,v in d.iteritems():
+                if isinstance(v, db.Key):
+                    # that is, if the value of the dict is a database key...
+                    url = util.url_for_key(v, action='view')
+                    if url:
+                        d[k] = Markup('<a href="%(url)s">%(kind)s: %(id)s</a>') % {
+                                'url': url,
+                                'kind': v.kind(),
+                                'id': v.id_or_name(),
+                                }
+        return d
+
+
 
     def get_json(self):
         obj = self._get_object_or_abort()
@@ -138,7 +152,7 @@ class AssertionHandler(BadgeItemHandler):
     FORM = model_form(BadgeAssertion)
 
     def to_dict(self, obj, out=None):
-        d = db.to_dict(obj)
+        d = super(AssertionHandler, self).to_dict(obj, out)
         d['uid'] = obj.uid
         return d
 

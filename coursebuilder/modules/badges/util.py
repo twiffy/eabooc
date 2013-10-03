@@ -37,32 +37,37 @@ def recipient_section(email):
                 'salt': salt,
                 }
 
+def url_for_key(obj, action='json'):
+    kind = obj.kind()
+    # TODO use dict
+    url = None
+    if kind == 'Issuer':
+        url = ISSUER_URL
+    elif kind == 'BadgeAssertion':
+        url = ASSERTION_URL
+    elif kind == 'Badge':
+        url = BADGE_URL
+    if url:
+        return '?'.join((
+            url,
+            urllib.urlencode({
+                'action': action,
+                'name': obj.id_or_name()})))
+
 class BadgeJSONEncoder(json.JSONEncoder):
     def __init__(self, baseurl):
         super(BadgeJSONEncoder, self).__init__()
         self.baseurl = baseurl
 
     def default(self, obj):
-        url = None
         ret = None
         if isinstance(obj, db.Key):
-            kind = obj.kind()
-            # TODO use dict
-            if kind == 'Issuer':
-                url = ISSUER_URL
-            elif kind == 'BadgeAssertion':
-                url = ASSERTION_URL
-            elif kind == 'Badge':
-                url = BADGE_URL
-            elif kind == 'Student':
+            url = url_for_key(obj)
+            if url:
+                ret = self.baseurl + url
+            if obj.kind() == 'Student':
                 ret = recipient_section(obj.name())
 
-            if url:
-                ret = '?'.join((
-                    self.baseurl + url,
-                    urllib.urlencode({
-                        'action': 'json',
-                        'name': obj.id_or_name()})))
         elif hasattr(obj, 'strftime'):
             ret = obj.strftime('%Y-%m-%d')
 
