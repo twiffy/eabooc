@@ -165,6 +165,10 @@ class AssertionHandler(BadgeItemHandler):
     def to_dict(self, obj):
         d = super(AssertionHandler, self).to_dict(obj)
         d['uid'] = obj.uid
+        d['verify'] = {
+                'type': 'hosted',
+                'url': self.request.url,
+                }
         return d
 
 
