@@ -127,6 +127,7 @@ class BadgeHandler(BadgeItemHandler):
     def get_issue(self):
         # Somehow redirect to the 'create' form of the BadgeAssertion,
         # But pre-selecting this badge?
+        # TODO: is this dumb?
         if not users.is_current_user_admin():
             self.abort(403)
         self.response.write('not there yet..')
