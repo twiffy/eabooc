@@ -28,6 +28,7 @@ import json
 not_specified = object()
 
 class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
+    # JSON is the only public view from this handler.
     default_action = 'list'
     get_actions = ['view', 'json', 'edit', 'list']
     post_actions = ['save']
@@ -67,6 +68,8 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         self.response.write(json_encoder.encode(self.to_dict(obj, out='json')))
 
     def get_view(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
         obj = self._get_object_or_abort()
 
         self.template_value['action_url'] = self._action_url
