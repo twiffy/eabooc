@@ -142,20 +142,30 @@ class BadgeHandler(BadgeItemHandler):
     KIND = Badge
     FORM = model_form(Badge)
 
-    # get_actions = BadgeItemHandler.get_actions + ['issue']
-
-    # def get_issue(self):
-    #     # Somehow redirect to the 'create' form of the BadgeAssertion,
-    #     # But pre-selecting this badge?
-    #     # TODO: is this dumb?
-    #     if not users.is_current_user_admin():
-    #         self.abort(403)
-    #     self.response.write('not there yet..')
+    get_actions = BadgeItemHandler.get_actions + ['criteria']
 
     def htmlize_fields(self, fields):
         fields['image'] = Markup('<img src="%s" alt="%s">') % (
                 fields['image'], fields['image'])
+        fields['criteria'] = Markup('<a href="%(url)s">criteria page</a>') % {
+                'url': fields['criteria'],
+                }
         return super(BadgeHandler, self).htmlize_fields(fields)
+
+    def to_dict(self, obj):
+        d = super(BadgeHandler, self).to_dict(obj)
+        d['criteria'] = self.request.host_url + self._action_url(action='criteria')
+        return d
+
+    def get_criteria(self):
+        obj = self._get_object_or_abort()
+        self.personalize_page_and_get_user()
+        # it's ok if there's no user, so we don't save the return val
+        self.template_value['navbar'] = {}
+        self.template_value['content'] = Markup(
+                '<div class="gcb-article gcb-aside">%s</div>'
+                ) % Markup(obj.criteria)
+        self.render('bare.html')
 
 
 class AssertionHandler(BadgeItemHandler):
@@ -167,7 +177,7 @@ class AssertionHandler(BadgeItemHandler):
         d['uid'] = obj.uid
         d['verify'] = {
                 'type': 'hosted',
-                'url': self.request.url,
+                'url': self._action_url('json'),
                 }
         return d
 

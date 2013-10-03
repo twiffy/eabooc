@@ -3,7 +3,7 @@
   <div class="badge-title">{{ assertion.badge.name }}</div>
   <img src="{{ assertion.badge.image }}">
   <div class="issue-link">
-    <a href="javascript:OpenBadges.issue(['{{ assertion_link(assertion) }}'], function(err, ok) {});">Click here to claim your badge!</a>
+    <a href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">Click here to claim your badge!</a>
   </div>
 </div>
 {%- endmacro %}
