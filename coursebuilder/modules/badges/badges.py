@@ -150,6 +150,11 @@ class BadgeHandler(BadgeItemHandler):
             self.abort(403)
         self.response.write('not there yet..')
 
+    def htmlize_fields(self, fields):
+        fields['image'] = Markup('<img src="%s" alt="%s">') % (
+                fields['image'], fields['image'])
+        return super(BadgeHandler, self).htmlize_fields(fields)
+
 
 class AssertionHandler(BadgeItemHandler):
     KIND = BadgeAssertion
