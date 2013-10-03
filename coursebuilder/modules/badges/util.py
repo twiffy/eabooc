@@ -10,6 +10,7 @@ from modules.badges.badge_models import *
 from models.models import Student
 import datetime
 import urllib
+from jinja2 import Markup
 
 salt = '041b543b693eb1463d8d7d1213fb16a2'
 algorithm = 'sha256'
@@ -74,4 +75,3 @@ class BadgeJSONEncoder(json.JSONEncoder):
         if ret:
             return ret
         return super(BadgeJSONEncoder, self).default(obj)
-

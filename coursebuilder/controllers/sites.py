@@ -765,6 +765,7 @@ class ApplicationContext(object):
         i18n.get_i18n().set_locale(locale)
         jinja_environment.install_gettext_translations(i18n)
         jinja_environment.filters['gcb_tags'] = jinja_filters.gcb_tags
+        jinja_environment.filters['escapejs'] = jinja_filters.escapejs
 
         return jinja_environment
 

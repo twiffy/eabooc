@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% import 'badge_views.html' as badge_views %}
 
 {% block subtitle %}
   {# I18N: Title of the webpage. #}
@@ -21,6 +22,10 @@
       {% if student %}
 
         {% include 'student_data_table.html' %}
+
+        {% for assertion in badge_assertions %}
+        {{ badge_views.profile(assertion, assertion_link) }}
+        {% endfor %}
 
         <form action='student/editstudent' method='post'>
           <input type="hidden" name="xsrf_token" value="{{ student_edit_xsrf_token|escape }}">
@@ -59,5 +64,6 @@
   </div>
 </div>
 
+<script src="http://beta.openbadges.org/issuer.js"></script>
 {% endblock %}
 

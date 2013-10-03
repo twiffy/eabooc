@@ -38,7 +38,7 @@ class BadgeAssertion(BaseEntity):
     issuedOn = db.DateProperty()
     expires = db.DateProperty(indexed=False)
     badge = db.ReferenceProperty(Badge, collection_name='assertions')
-    recipient = db.ReferenceProperty(Student, collection_name='badges')
+    recipient = db.ReferenceProperty(Student, collection_name='badge_assertions')
 
     # evidence: how to store this?
 

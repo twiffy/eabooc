@@ -54,6 +54,27 @@ def gcb_tags(data):
     else:
         return jinja2.utils.Markup(data)
 
+_js_escapes = {
+        ord(u'\\'): u'\\u005C',
+        ord(u'\''): u'\\u0027',
+        ord(u'"'): u'\\u0022',
+        ord(u'>'): u'\\u003E',
+        ord(u'<'): u'\\u003C',
+        ord(u'&'): u'\\u0026',
+        ord(u'='): u'\\u003D',
+        ord(u'-'): u'\\u002D',
+        ord(u';'): u'\\u003B',
+        ord(u'\u2028'): u'\\u2028',
+        ord(u'\u2029'): u'\\u2029'
+        }
+
+# Escape every ASCII character with a value less than 32.
+_js_escapes.update((ord(u'%c' % z), u'\\u%04X' % z) for z in range(32))
+
+def escapejs(value):
+    """Hex encodes characters for use in JavaScript strings."""
+    return jinja2.utils.Markup(unicode(value).translate(_js_escapes))
+
 class MemcacheManagerWithTTL(object):
     def __init__(self, ttl):
         self.ttl = ttl

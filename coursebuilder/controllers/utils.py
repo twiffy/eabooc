@@ -35,6 +35,7 @@ from google.appengine.api import namespace_manager
 from google.appengine.api import users
 from google.appengine.ext.db import BadValueError
 from common import mailchimp
+import modules.badges.util
 
 # The name of the template dict key that stores a course's base location.
 COURSE_BASE_KEY = 'gcb_course_base'
@@ -531,6 +532,8 @@ class StudentProfileHandler(BaseHandler):
 
         self.template_value['navbar'] = {'myprofile': True}
         self.template_value['student'] = student
+        self.template_value['badge_assertions'] = student.badge_assertions.fetch(limit=50)
+        self.template_value['assertion_link'] = lambda a: self.request.host_url + modules.badges.util.url_for_key(a.key())
         self.template_value['date_enrolled'] = student.enrolled_on.strftime(
             HUMAN_READABLE_DATE_FORMAT)
         self.template_value['score_list'] = course.get_all_scores(student)

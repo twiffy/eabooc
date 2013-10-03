@@ -1,0 +1,9 @@
+{% macro profile(assertion, assertion_link) -%}
+<div class="profile-badge-info">
+  <div class="badge-title">{{ assertion.badge.name }}</div>
+  <img src="{{ assertion.badge.image }}">
+  <div class="issue-link">
+    <a href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">Click here to claim your badge!</a>
+  </div>
+</div>
+{%- endmacro %}
