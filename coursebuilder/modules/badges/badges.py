@@ -177,7 +177,7 @@ class AssertionHandler(BadgeItemHandler):
         d['uid'] = obj.uid
         d['verify'] = {
                 'type': 'hosted',
-                'url': self._action_url('json'),
+                'url': self.request.host_url + self._action_url('json'),
                 }
         return d
 
