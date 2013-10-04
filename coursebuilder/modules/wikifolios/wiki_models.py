@@ -177,13 +177,13 @@ class WikiComment(models.BaseEntity):
         deferred.defer(self.cache_comments_on_page, self.topic.key())
 
     def put(self):
+        super(WikiComment, self).put()
         self._set_sort_key()
         self._invalidate_cache()
-        super(WikiComment, self).put()
 
     def delete(self):
-        self._invalidate_cache()
         super(WikiComment, self).delete()
+        self._invalidate_cache()
 
     def is_reply(self):
         return WikiComment.parent_comment.get_value_for_datastore(self) != None
