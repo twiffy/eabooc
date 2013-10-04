@@ -1186,6 +1186,18 @@ class NotificationHandler(BaseHandler):
         note.seen = True
         note.put()
 
+
+class NotificationListHandler(WikiBaseHandler):
+    def get(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+
+        self.template_value['notifications'] = user.notification_set.run()
+        self.render('wf_all_notifications.html')
+
+
+
 class WarmupHandler(WikiBaseHandler):
     def get(self):
         # warm up the caches for jinja templates
@@ -1210,6 +1222,7 @@ def register_module():
             ('/wikicomment', WikiCommentHandler),
             ('/wikiprofile', WikiProfileHandler),
             ('/notification', NotificationHandler),
+            ('/all_notifications', NotificationListHandler),
             ('/participants', WikiProfileListHandler),
             ('/_ah/warmup', WarmupHandler),
             ('/updates', WikiUpdateListHandler),
