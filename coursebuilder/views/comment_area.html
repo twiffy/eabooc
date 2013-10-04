@@ -19,90 +19,82 @@
 {% endif %}
 {% endmacro %}
 
-<div class="gcb-cols">
-  <div class="gcb-col-11 wiki-area wiki-grey-theme" id="comment-area">
-    {% block comment_instructions %}
-    {% endblock %}
-
-    <ol>
-      {% for comment in comments %}
-      {% if not comment.is_reply() %}
-      {%   if not loop.first %}
-      {{     reply_placeholder(parent_id) }}
-      {%   endif %}
-      {%   set parent_id = comment.key().id() %}
+<ol>
+  {% for comment in comments %}
+  {% if not comment.is_reply() %}
+  {%   if not loop.first %}
+  {{     reply_placeholder(parent_id) }}
+  {%   endif %}
+  {%   set parent_id = comment.key().id() %}
+  {% endif %}
+  <li class="comment {% if comment.is_reply() %}is-reply{% endif %}"><b><a name="comment-{{ comment.key().id() }}"
+      href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b>
+  {% if comment.is_reply() %}replied{% else %}said{% endif %}:
+  {% if comment.is_deleted %}
+  <span class="deleted">(This comment was deleted by {{ student_link(comment.editor) }})</span>
+  {% else %}
+  {{ comment.text | safe }}
+  <div class="comment-actions">
+    <div style="float: left;">{{ humanize.naturaltime(comment.added_time) }}
+      {% if comment.is_edited %}
+      - <b>edited</b> {{ humanize.naturaltime(comment.edited_time) }} by {{ student_link(comment.editor) }}
       {% endif %}
-      <li class="comment {% if comment.is_reply() %}is-reply{% endif %}"><b><a name="comment-{{ comment.key().id() }}"
-		      href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b>
-      {% if comment.is_reply() %}replied{% else %}said{% endif %}:
-      {% if comment.is_deleted %}
-      <span class="deleted">(This comment was deleted by {{ student_link(comment.editor) }})</span>
-      {% else %}
-      {{ comment.text | safe }}
-      <div class="comment-actions">
-        <div style="float: left;">{{ humanize.naturaltime(comment.added_time) }}
-        {% if comment.is_edited %}
-          - <b>edited</b> {{ humanize.naturaltime(comment.edited_time) }} by {{ student_link(comment.editor) }}
-        {% endif %}
-        </div>
-        {% if user_can_edit_comment(comment) %}
-        <a href="wikicomment?comment_id={{ comment.key().id() }}">edit</a>
-        <a href="wikicomment?comment_id={{ comment.key().id() }}&action=delete" class="delete-link">delete</a>
-        {% endif %}
-        {% if action_url %}
-        <a href="{{ action_url('view') }}#comment-{{ comment.key().id() }}">permalink</a>
-        {% else %}
-        <a href="{{ comment_permalink(comment) }}">permalink</a>
-        {% endif %}
-      </div>
-      {% endif %}
-      </li>
-      {% if loop.last %}
-      {{   reply_placeholder(parent_id) }}
-      {% endif %}
-      {% else %}
-      <li><em>No comments yet.</em></li>
-      {% endfor %}
-    </ol>
-
-    {% if can_comment %}
-    <form action="{{ action_url('comment') }}" method="POST">
-      <fieldset>
-        <legend>Comment</legend>
-        <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
-        <textarea name="text" id="comment_editor" rows="10" cols="50"></textarea>
-        <p>
-        <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
-        <input type="submit" class="gcb-button" value="Comment">
-      </fieldset>
-    </form>
-    <script src="assets/lib/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
-    <script src="/assets/ckeditor/ckeditor.js"></script>
-    <script src="/assets/ckeditor/adapters/jquery.js"></script>
-    <script>
-      CKEDITOR.replace('comment_editor', {
-        allowedContent: '{{ ckeditor_comment_content }}',
-        removePlugins: 'pastefromword,undo,image,magicline,format',
-      });
-      $(document).ready(function() {
-        var icons = {
-          header: "ui-icon-circle-triangle-e",
-          activeHeader: "ui-icon-circle-triangle-s"
-        };
-        $('.accordion-reply').accordion({
-          collapsible: true,
-          active: false,
-          heightStyle: 'content',
-          icons: icons,
-        });
-        //$(this).parents('li.comment').addClass('expanded');
-        $('textarea.comment-textarea').ckeditor({
-          allowedContent: '{{ ckeditor_comment_content }}',
-          removePlugins: 'pastefromword,undo,image,magicline,format',
-        });
-      });
-    </script>
+    </div>
+    {% if user_can_edit_comment(comment) %}
+    <a href="wikicomment?comment_id={{ comment.key().id() }}">edit</a>
+    <a href="wikicomment?comment_id={{ comment.key().id() }}&action=delete" class="delete-link">delete</a>
     {% endif %}
-
+    {% if action_url %}
+    <a href="{{ action_url('view') }}#comment-{{ comment.key().id() }}">permalink</a>
+    {% else %}
+    <a href="{{ comment_permalink(comment) }}">permalink</a>
+    {% endif %}
   </div>
-</div>
+  {% endif %}
+  </li>
+  {% if loop.last %}
+  {{   reply_placeholder(parent_id) }}
+  {% endif %}
+  {% else %}
+  <li><em>No comments yet.</em></li>
+  {% endfor %}
+</ol>
+
+{% if can_comment %}
+<form action="{{ action_url('comment') }}" method="POST">
+  <fieldset>
+    <legend>Comment</legend>
+    <small>Press ALT+0 for help with keyboard shortcuts and accessibility.</small><br>
+    <textarea name="text" id="comment_editor" rows="10" cols="50"></textarea>
+    <p>
+    <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
+    <input type="submit" class="gcb-button" value="Comment">
+  </fieldset>
+</form>
+<script src="assets/lib/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script src="/assets/ckeditor/ckeditor.js"></script>
+<script src="/assets/ckeditor/adapters/jquery.js"></script>
+<script>
+  CKEDITOR.replace('comment_editor', {
+    allowedContent: '{{ ckeditor_comment_content }}',
+    removePlugins: 'pastefromword,undo,image,magicline,format',
+  });
+  $(document).ready(function() {
+    var icons = {
+      header: "ui-icon-circle-triangle-e",
+      activeHeader: "ui-icon-circle-triangle-s"
+    };
+    $('.accordion-reply').accordion({
+      collapsible: true,
+      active: false,
+      heightStyle: 'content',
+      icons: icons,
+    });
+    //$(this).parents('li.comment').addClass('expanded');
+    $('textarea.comment-textarea').ckeditor({
+      allowedContent: '{{ ckeditor_comment_content }}',
+      removePlugins: 'pastefromword,undo,image,magicline,format',
+    });
+  });
+</script>
+{% endif %}

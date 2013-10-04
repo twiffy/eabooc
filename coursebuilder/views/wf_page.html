@@ -128,7 +128,14 @@
       </div>
     </div>
   </div>
-  {% include "comment_area.html" with context %}
+  <div class="gcb-cols">
+    <div class="gcb-col-11 wiki-area wiki-grey-theme" id="comment-area">
+      {% block comment_instructions %}
+      {% endblock %}
+
+      {% include "comment_area.html" %}
+    </div>
+  </div>
   <center><a onclick="$(this).next().toggle()" style="color: #c33;">Flag inappropriate content</a>
     <div id="flag-form" style="display: none;">
       <form action="{{ action_url('flag') }}" method="POST">
