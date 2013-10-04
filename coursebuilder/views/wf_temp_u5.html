@@ -318,8 +318,33 @@
 </div>
 <div class="wiki-user-content">{{ fields.reflection }}</div>
 
-<!-- fix this from here out -->
-<h2>Interaction</h2>
+
+
+<script>
+  $(document).ready(function() {
+    var icons = {
+      header: "ui-icon-circle-triangle-e",
+      activeHeader: "ui-icon-circle-triangle-s"
+    };
+    // TODO: maybe collapse by default if we're not editing???
+    $('.wiki-info-collapsible').accordion({
+      collapsible: true,
+      //active: 0,
+      active: false,
+      heightStyle: 'content',
+      icons: icons,
+    });
+    $('.wiki-question').accordion({
+      collapsible: true,
+      active: false,
+      heightStyle: 'content',
+      icons: icons,
+    });
+  });
+</script>
+
+{% endblock %}
+{% block assignment_completion_instructions %}
 <div class="wiki-question">
   <h3>
     Endorse (by OCTOBER
@@ -381,7 +406,8 @@
   </div>
 </div>
 
-
+{% endblock %}
+{% block comment_instructions %}
 
 <div class="wiki-question">
   <h3>
@@ -421,29 +447,4 @@
 
   </div>
 </div>
-
-
-
-<script>
-  $(document).ready(function() {
-    var icons = {
-      header: "ui-icon-circle-triangle-e",
-      activeHeader: "ui-icon-circle-triangle-s"
-    };
-    // TODO: maybe collapse by default if we're not editing???
-    $('.wiki-info-collapsible').accordion({
-      collapsible: true,
-      //active: 0,
-      active: false,
-      heightStyle: 'content',
-      icons: icons,
-    });
-    $('.wiki-question').accordion({
-      collapsible: true,
-      active: false,
-      heightStyle: 'content',
-      icons: icons,
-    });
-  });
-</script>
 {% endblock %}

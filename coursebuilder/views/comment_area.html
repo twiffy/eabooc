@@ -20,7 +20,10 @@
 {% endmacro %}
 
 <div class="gcb-cols">
-  <div class="gcb-col-11 gcb-aside" id="comment-area">
+  <div class="gcb-col-11 wiki-area wiki-grey-theme" id="comment-area">
+    {% block comment_instructions %}
+    {% endblock %}
+
     <ol>
       {% for comment in comments %}
       {% if not comment.is_reply() %}
