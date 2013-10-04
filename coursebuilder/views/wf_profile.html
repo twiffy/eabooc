@@ -73,7 +73,7 @@
         {% endif %}
       </div>
       <div class="gcb-col-5">
-        {% if editor_role %}<b><a href="/all_notifications">Your notification history</a></b><br>{% endif %}
+        {% if editor_role == 'author' %}<b><a href="/all_notifications">Your notification history</a></b><br>{% endif %}
         Recent endorsements by {{ author_name }}:
         <ul>
           {% for e in endorsements %}
