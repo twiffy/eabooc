@@ -17,6 +17,7 @@
 __author__ = 'Saifu Angto (saifu@google.com)'
 
 import datetime
+import logging
 import urllib
 import urlparse
 
@@ -36,6 +37,7 @@ from utils import BaseRESTHandler
 from utils import CAN_PERSIST_PAGE_EVENTS
 from utils import HUMAN_READABLE_DATETIME_FORMAT
 from utils import XsrfTokenManager
+from utils import ReflectiveRequestHandler
 
 from google.appengine.ext import db
 
@@ -325,10 +327,46 @@ class ActivityHandler(BaseHandler):
         self.render('activity.html')
 
 
-class AssessmentHandler(BaseHandler):
+class AssessmentHandler(BaseHandler, ReflectiveRequestHandler):
     """Handler for generating assessment page."""
 
-    def get(self):
+    get_actions = ['prep', 'start']
+    default_action = 'prep'
+    post_actions = ['prep']
+
+    def get_prep(self):
+        student = self.personalize_page_and_get_enrolled()
+        if not student:
+            return
+        if not self.assert_participant_or_fail(student):
+            return
+
+        # Extract incoming args
+        unit_id = self.request.get('name')
+        course = self.get_course()
+        unit = course.find_unit_by_id(unit_id)
+        if not unit:
+            self.error(404)
+            return
+
+        params = dict(self.request.params)
+        params['action'] = 'prep'
+        self.template_value['form_action'] = self.request.path_url + "?" + urllib.urlencode(params)
+        self.template_value['assessment_title'] = unit.title
+        self.template_value['xsrf_token'] = self.create_xsrf_token('prep')
+        self.template_value['navbar'] = {'course': True}
+        self.render('assessment_prep.html')
+
+    def post_prep(self):
+        """
+        This is a POST because it changes state.
+        """
+        logging.info('STUDENT STARTED DA TEST HEAR.')
+        params = dict(self.request.params)
+        params['action'] = 'start'
+        self.redirect(self.request.path_url + "?" + urllib.urlencode(params))
+
+    def get_start(self):
         """Handles GET requests."""
         student = self.personalize_page_and_get_enrolled()
         if not student:

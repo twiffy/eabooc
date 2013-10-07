@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block subtitle %} Exam {% endblock %}
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-aside">
+    <center>
+      <div style="font-size: 125%;">
+        You are about to take the {{ assessment_title|safe }}.  Are you sure you want to start?
+      </div>
+      <div>
+        <form action="{{ form_action }}" method="POST">
+          <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+          <input type="submit" value="Start!" class="gcb-button">
+        </form>
+      </div>
+    </center>
+  </div>
+</div>
+
+{% endblock %}
