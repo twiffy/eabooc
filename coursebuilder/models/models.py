@@ -61,7 +61,7 @@ EXAM_DEADLINE_HOURS = ConfigProperty(
     'exam_deadline_hours', int, (
         'How long a student may take to submit an exam, '
         'before they are cut off.  In integer hours.'),
-    4)
+    3)
 
 # performance counters
 CACHE_PUT = PerfCounter(
