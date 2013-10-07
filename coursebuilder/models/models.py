@@ -455,7 +455,7 @@ class StudentPropertyEntity(BaseEntity):
 
 class AssessmentTracker(object):
     info_tmpl = 'exam-info:%s'
-    timestamp_format = '%Y-%m-%d %H:%M:%S.%f'
+    timestamp_format = '%Y-%m-%d %H:%M'
     @classmethod
     def get_info(cls, student, unit_id):
         info_ent = StudentPropertyEntity.get(student,
@@ -492,8 +492,8 @@ class AssessmentTracker(object):
         if info['start_time']:
             deadline = info['start_time'] + datetime.timedelta(hours=EXAM_DEADLINE_HOURS.value)
             if datetime.datetime.now() > deadline:
-                raise ValueError('You have taken too long since you started the exam, you only have %d hours.'
-                        % EXAM_DEADLINE_HOURS.value)
+                raise ValueError('You have taken more than %d hours since you started the exam at %s.'
+                        % (EXAM_DEADLINE_HOURS.value, info['start_time'].strftime(cls.timestamp_format)))
 
     @classmethod
     def try_start_test(cls, student, unit_id):
