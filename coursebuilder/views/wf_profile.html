@@ -86,7 +86,11 @@
       </div>
     </div>
   </div>
-  {% include "comment_area.html" %}
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside" id="comment-area">
+      {% include "comment_area.html" %}
+    </div>
+  </div>
   <center><a onclick="$(this).next().toggle()" style="color: #c33;">Flag inappropriate content</a>
     <div id="flag-form" style="display: none;">
       <form action="{{ action_url('flag') }}" method="POST">

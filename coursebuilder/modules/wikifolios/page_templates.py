@@ -80,6 +80,20 @@ class UnitFourPageForm(wtf.Form):
 forms[4] = UnitFourPageForm
 templates[4] = 'wf_temp_u4.html'
 
+class UnitFivePageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    types_of_reliability = BleachedTextAreaField()
+    standard_error = BleachedTextAreaField()
+    absence_of_bias = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+    external_resource = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[5] = UnitFivePageForm
+templates[5] = 'wf_temp_u5.html'
+
 def viewable_model(model):
     # TODO maybe default values?
     d = db.to_dict(model)

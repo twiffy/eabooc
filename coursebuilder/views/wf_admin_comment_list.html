@@ -7,7 +7,11 @@ Comment Stream
 {% endblock %}
 {% block main_content %}
 <div id="admin-comment-list" class="gcb-aux">
-  {% include "comment_area.html" %}
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside" id="comment-area">
+      {% include "comment_area.html" %}
+    </div>
+  </div>
 </div>
 <script src="/assets/lib/Placeholders.min.js"></script>
 {% endblock %}
