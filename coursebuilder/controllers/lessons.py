@@ -26,6 +26,7 @@ from models import student_work
 from models import transforms
 from models.config import ConfigProperty
 from models.counters import PerfCounter
+from models.models import AssessmentTracker
 from models.review import ReviewUtils
 from models.roles import Roles
 from models.student_work import StudentWorkUtils
@@ -359,12 +360,15 @@ class AssessmentHandler(BaseHandler, ReflectiveRequestHandler):
 
     def post_prep(self):
         """
-        This is a POST because it changes state.
+        This is a POST because accessing the exam changes state.
+
+        Although it's not really that great because it's still the GET that actually changes
+        the state, this just blocks it from getting auto-prefetched.
         """
-        logging.info('STUDENT STARTED DA TEST HEAR.')
-        params = dict(self.request.params)
-        params['action'] = 'start'
-        self.redirect(self.request.path_url + "?" + urllib.urlencode(params))
+        self.redirect(self.request.path_url + "?" + urllib.urlencode({
+            'action': 'start',
+            'name': self.request.params['name'],
+            }))
 
     def get_start(self):
         """Handles GET requests."""
@@ -383,6 +387,14 @@ class AssessmentHandler(BaseHandler, ReflectiveRequestHandler):
             return
 
         self.template_value['navbar'] = {'course': True}
+
+        try:
+            AssessmentTracker.try_start_test(student, unit_id)
+        except ValueError as e:
+            self.template_value['error'] = e.message
+            self.render('assessment_denied.html')
+            return
+
         self.template_value['unit_id'] = unit_id
         self.template_value['record_events'] = CAN_PERSIST_ACTIVITY_EVENTS.value
         self.template_value['assessment_xsrf_token'] = (

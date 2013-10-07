@@ -27,6 +27,7 @@ from models import transforms
 from models import utils
 from models.models import Student
 from models.models import StudentAnswersEntity
+from models.models import AssessmentTracker
 from tools import verify
 from utils import BaseHandler
 from utils import HUMAN_READABLE_DATETIME_FORMAT
@@ -129,6 +130,14 @@ class AnswerHandler(BaseHandler):
             return
 
         self.template_value['navbar'] = {'course': True}
+
+        try:
+            AssessmentTracker.try_submit_test(student, assessment_type)
+        except ValueError as e:
+            self.template_value['error'] = e.message
+            self.render('assessment_denied.html')
+            return
+
         self.template_value['assessment'] = assessment_type
         self.template_value['assessment_name'] = unit.title
         self.template_value['is_last_assessment'] = (

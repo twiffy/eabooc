@@ -30,6 +30,7 @@ from google.appengine.ext import db
 from google.appengine.ext import deferred
 import webapp2
 
+import datetime
 import hashlib
 import random
 
@@ -49,6 +50,18 @@ CAN_USE_MEMCACHE = ConfigProperty(
         'development this value should be off so you can see your changes to '
         'course content instantaneously.'),
     appengine_config.PRODUCTION_MODE)
+
+TRIES_ALLOWED_ON_EXAMS = ConfigProperty(
+    'tries_allowed_on_exams', int, (
+        'The number of times a student is allowed to submit an exam '
+        'before they are cut off.'),
+    2)
+
+EXAM_DEADLINE_HOURS = ConfigProperty(
+    'exam_deadline_hours', int, (
+        'How long a student may take to submit an exam, '
+        'before they are cut off.  In integer hours.'),
+    4)
 
 # performance counters
 CACHE_PUT = PerfCounter(
@@ -439,3 +452,64 @@ class StudentPropertyEntity(BaseEntity):
             else:
                 MemcacheManager.set(cls._memcache_key(key), NO_OBJECT)
         return value
+
+class AssessmentTracker(object):
+    info_tmpl = 'exam-info:%s'
+    timestamp_format = '%Y-%m-%d %H:%M:%S.%f'
+    @classmethod
+    def get_info(cls, student, unit_id):
+        info_ent = StudentPropertyEntity.get(student,
+                cls.info_tmpl % unit_id)
+        if not info_ent:
+            return {
+                   'tries_left': TRIES_ALLOWED_ON_EXAMS.value,
+                   'start_time': None,
+                   }
+
+        info = transforms.loads(info_ent.value)
+        if info['start_time']:
+            info['start_time'] = datetime.datetime.strptime(
+                    info['start_time'],
+                    cls.timestamp_format)
+        return info
+
+    @classmethod
+    def set_info(cls, student, unit_id, info):
+        st = info.get('start_time', None)
+        if st:
+            st = st.strftime(cls.timestamp_format)
+        info['start_time'] = st
+        info_ent = StudentPropertyEntity.create(student,
+                cls.info_tmpl % unit_id)
+        info_ent.value = transforms.dumps(info)
+        info_ent.put()
+
+    @classmethod
+    def _check(cls, info):
+        if info['tries_left'] < 1:
+            raise ValueError('You have submitted your answers for this exam %d times already.'
+                    % TRIES_ALLOWED_ON_EXAMS.value)
+        if info['start_time']:
+            deadline = info['start_time'] + datetime.timedelta(hours=EXAM_DEADLINE_HOURS.value)
+            if datetime.datetime.now() > deadline:
+                raise ValueError('You have taken too long since you started the exam, you only have %d hours.'
+                        % EXAM_DEADLINE_HOURS.value)
+
+    @classmethod
+    def try_start_test(cls, student, unit_id):
+        info = cls.get_info(student, unit_id)
+        cls._check(info)
+        if not info['start_time']:
+            info['start_time'] = datetime.datetime.now()
+
+        cls.set_info(student, unit_id, info)
+
+    @classmethod
+    def try_submit_test(cls, student, unit_id):
+        info = cls.get_info(student, unit_id)
+        cls._check(info)
+        if not info['start_time']:
+            raise ValueError('No Start Time recorded - that is too sketchy')
+
+        info['tries_left'] -= 1
+        cls.set_info(student, unit_id, info)
