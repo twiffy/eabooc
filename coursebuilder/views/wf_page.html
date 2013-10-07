@@ -64,9 +64,11 @@
     </div>
   </div>
   <div class="gcb-cols">
-    <div id="assignment-completion" class="gcb-col-11 wiki-area wiki-grey-theme">
-      {% block assignment_completion_instructions %}
-      {% endblock %}
+    <div id="assignment-completion" class="gcb-col-11 wiki-area">
+      <span class="wiki-grey-theme">
+        {% block assignment_completion_instructions %}
+        {% endblock %}
+      </span>
       <div id="endorsements" class="gcb-col-5">
         {% for e in endorsements %}
         {% if loop.first %}This page has been endorsed as complete by{% endif %}
