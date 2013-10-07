@@ -162,4 +162,20 @@ class NoteUpdateJob(Mapper):
                 body="Yeah buddy!")
 
 
-the_job = WikisDraftJob
+class CommentSortKeyJob(Mapper):
+    KIND = WikiComment
+
+    def map(self, comment):
+        comment._set_sort_key()
+        return ([comment], [])
+
+    def finish(self):
+        mail.send_mail(sender="booc.class@gmail.com",
+                to="thomathom@gmail.com",
+                subject="Done updating comments",
+                body="Yeah buddy!")
+
+
+
+
+the_job = CommentSortKeyJob

@@ -179,8 +179,8 @@ class WikiComment(models.BaseEntity):
         deferred.defer(self.cache_comments_on_page, self.topic.key())
 
     def put(self):
-        super(WikiComment, self).put()
         self._set_sort_key()
+        super(WikiComment, self).put()
         self._invalidate_cache()
 
     def delete(self):
