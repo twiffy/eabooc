@@ -151,15 +151,17 @@ class WikiComment(models.BaseEntity):
 
     @classmethod
     def comments_on_page(cls, page):
-        key = cls._key_for_page_cache(page)
+        return page.comments.run(limit=1000)
 
-        results = models.MemcacheManager.get(key)
-        if not results:
-            query = page.comments
-            results = query.run(limit=1000)
-            deferred.defer(cls.cache_comments_on_page, page.key())
+        # key = cls._key_for_page_cache(page)
 
-        return results
+        # results = models.MemcacheManager.get(key)
+        # if not results:
+        #     query = page.comments
+        #     results = query.run(limit=1000)
+        #     deferred.defer(cls.cache_comments_on_page, page.key())
+
+        # return results
 
     @classmethod
     def cache_comments_on_page(cls, page_key):
