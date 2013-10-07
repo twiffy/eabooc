@@ -18,6 +18,7 @@ __author__ = 'pgbovine@google.com (Philip Guo)'
 
 import datetime
 import logging
+import urllib
 
 from models import courses
 from models import models
@@ -140,6 +141,11 @@ class AnswerHandler(BaseHandler):
 
         self.template_value['assessment'] = assessment_type
         self.template_value['assessment_name'] = unit.title
+        self.template_value['can_take_again'] = AssessmentTracker.can_take_again(student, assessment_type)
+        self.template_value['retake_link'] = '/assessment?' + urllib.urlencode({
+            'name': assessment_type,
+            'action': 'start',
+            })
         self.template_value['is_last_assessment'] = (
             course.is_last_assessment(unit))
 

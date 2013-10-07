@@ -13,7 +13,14 @@
     <p class="gcb-top-content">
       {# I18N: Shown after the student has submitted an assessment. #}
       {{ gettext('Thank you for taking the %(assessment_name)s. Your score for this assessment
-      is %(score)s%%. If you wish, you may return to the assessment and take it again.' % {'assessment_name': assessment_name|lower, 'score': score})|safe }}
+      is %(score)s%%.' % {'assessment_name': assessment_name|lower, 'score': score})|safe }}
+
+      {% if can_take_again %}
+      <br><br>
+      You can go back to the test and change your answers if you think you can improve your score.  Please
+      <a href="{{ retake_link }}">USE THIS LINK</a> instead of hitting the back button; the web site will
+      remember your previous answers.
+      {% endif %}
     </p>
 
     <br>

@@ -491,16 +491,25 @@ class AssessmentTracker(object):
                     % TRIES_ALLOWED_ON_EXAMS.value)
         if info['start_time']:
             deadline = info['start_time'] + datetime.timedelta(hours=EXAM_DEADLINE_HOURS.value)
-            if datetime.datetime.now() > deadline:
-                raise ValueError('You have taken more than %d hours since you started the exam at %s.'
+            if datetime.datetime.utcnow() > deadline:
+                raise ValueError('You have taken more than %d hours since you started the exam at %s UTC/GMT.'
                         % (EXAM_DEADLINE_HOURS.value, info['start_time'].strftime(cls.timestamp_format)))
+
+    @classmethod
+    def can_take_again(cls, student, unit_id):
+        info = cls.get_info(student, unit_id)
+        try:
+            cls._check(info)
+        except ValueError:
+            return False
+        return True
 
     @classmethod
     def try_start_test(cls, student, unit_id):
         info = cls.get_info(student, unit_id)
         cls._check(info)
         if not info['start_time']:
-            info['start_time'] = datetime.datetime.now()
+            info['start_time'] = datetime.datetime.utcnow()
 
         cls.set_info(student, unit_id, info)
 
