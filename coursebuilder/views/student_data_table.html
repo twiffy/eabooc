@@ -31,7 +31,7 @@
 
   {% for assessment in score_list %}
     <tr>
-      <th align="left">&nbsp;&nbsp;&nbsp;{{ assessment['title'] }}</th>
+      <th align="left">&nbsp;&nbsp;&nbsp;{{ assessment['title']|safe }}</th>
       <td>
         {% if assessment['human_graded'] %}
           <a href="assessment?name={{ assessment.id }}">
