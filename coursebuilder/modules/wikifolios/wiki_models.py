@@ -271,6 +271,8 @@ class Notification(models.BaseEntity):
     url = db.StringProperty(indexed=False)
     text = db.StringProperty(indexed=False)
     seen = db.BooleanProperty(default=False)
+    created = db.DateTimeProperty(auto_now_add=True)
+    touched = db.DateTimeProperty(auto_now=True)
 
     @property
     def link(self):
