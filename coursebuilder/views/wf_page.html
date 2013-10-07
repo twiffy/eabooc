@@ -129,9 +129,11 @@
     </div>
   </div>
   <div class="gcb-cols">
-    <div class="gcb-col-11 wiki-area wiki-grey-theme" id="comment-area">
-      {% block comment_instructions %}
-      {% endblock %}
+    <div class="gcb-col-11 wiki-area" id="comment-area">
+      <span class="wiki-grey-theme">
+        {% block comment_instructions %}
+        {% endblock %}
+      </span>
 
       {% include "comment_area.html" %}
     </div>
