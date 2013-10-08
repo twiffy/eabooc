@@ -1,17 +1,46 @@
 {% extends "base.html" %}
 {% block subtitle %} Exam {% endblock %}
 {% block main_content %}
-<div class="gcb-aux">
-  <div class="gcb-aside">
+<div class="gcb-aux gcb-cols">
+  <div class="gcb-col-1"></div>
+  <div class="gcb-aside gcb-col-9">
     <center>
-      <div style="font-size: 125%;">
-        You are about to take the {{ assessment_title|safe }}.  TODO: More instructions will go here.
-        Are you sure you want to start?
-      </div>
+      <h1>Stop!</h1>
+      <h2>Before you take the exam!</h2>
+    </center>
+    <div style="font-size: 125%; margin: 2em;">
+      <p>You are about to take the {{ assessment_title|safe }}.  Please keep these things in mind:</p>
+
+      <ul>
+        <li>You will have THREE hours in which to take this exam.</li>
+
+        <li>You may NOT enter the exam, save your work, and return later. (That
+        is, if you click to begin, you should be prepared to take the exam
+        now).</li>
+
+        <li>You may take the exam TWICE within the three hours.</li>
+
+        <li>You will see your score immediately after you take the exam.</li>
+
+        <li>You must score an 80% or higher (plus complete Units 1, 2, 3, and
+        4) to be awarded the Assessment Practices Badge (keep in mind, you must
+        be awarded all three badges to earn the certificate).</li>
+
+        <li>Yes, this is an open book exam.</li>
+      </ul>
+
+      <p>Please be sure you are ready to take the exam prior to opening the
+      exam. <u>Once you open the exam, you will have three hours in which to take
+      it.</u> Within those three hours, you may submit the exam two times. You may
+      not save your work now and return to the exam later.</p>
+    </div>
+
+    <center>
+      <h2>Good Luck!</h2>
       <div>
         <form action="{{ form_action }}" method="POST">
           <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
-          <input type="submit" value="Start!" class="gcb-button">
+          <input type="submit" value="Start the exam!" class="gcb-button">
         </form>
       </div>
     </center>
