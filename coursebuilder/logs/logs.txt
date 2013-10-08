@@ -1,0 +1,6 @@
+Get 10 days of logs....
+
+appcfg request_logs -n 10 --include_all . ../../appengine_logs2.txt
+
+
+
