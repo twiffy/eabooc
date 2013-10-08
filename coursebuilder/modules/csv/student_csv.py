@@ -17,6 +17,7 @@ import urllib
 import re
 import itertools
 from common import prefetch
+import plag
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -64,6 +65,32 @@ class CurricularAimQuery(object):
                     'email': FormSubmission.user.get_value_for_datastore(submission).name(),
                     'curricular_aim': Markup(submission.curricular_aim),
                     }
+
+class UnitTextSimilarityQuery(object):
+    def __init__(self, request):
+        unit_str = request.GET['unit']
+        if not unit_str:
+            raise ValueError('"unit" parameter is required for this query')
+        # value error may bubble up
+        self.unit = int(unit_str)
+
+    fields = ('10_word_phrases_in_common', 'source_1', 'source_2')
+
+    def wikipage_to_dict(self, entity):
+        info = dict()
+        info['email'] = entity.author_email
+        d = db.to_dict(entity)
+        info.update({k: re.sub(r'<[^>]*?>', '', v) for k, v in d.items()})
+        return info
+
+    def run(self):
+        query = WikiPage.all().filter('unit', self.unit).run(limit=600)
+        confidences = plag.find_matches(
+                [self.wikipage_to_dict(p) for p in query],
+                id_col='email',
+                k=10)
+        return [(v, k[0], k[1]) for k,v in confidences.iteritems()]
+
 
 class CurrentGroupIDQuery(object):
     def __init__(self, request):
@@ -198,13 +225,14 @@ analytics_queries = {
         'unit_completion': UnitCompletionQuery,
         'unit_comments': UnitCommentQuery,
         'current_group_ids': CurrentGroupIDQuery,
+        'unit_text_similarity': UnitTextSimilarityQuery
         }
 
 
 class AnalyticsHandler(BaseHandler):
     class NavForm(wtf.Form):
         query = wtf.RadioField('Analytics query',
-                choices=[(k, k) for k in analytics_queries.keys()])
+                choices=[(k, k) for k in sorted(analytics_queries.keys())])
         view = wtf.RadioField('View',
                 choices=[('csv', 'csv'), ('table', 'table')],
                 default='table')
