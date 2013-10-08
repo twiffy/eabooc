@@ -26,18 +26,11 @@ def find_can_use_location(student):
 
 
 
-class StudentCsvHandler(BaseHandler):
-    def get(self):
-        self.response.content_type = 'text/plain'
+class StudentCsvQuery(object):
+    def __init__(self, request):
+        self.fields = sorted(Student.properties().keys() + ['email', 'can_use_location'])
 
-        if not Roles.is_course_admin(self.app_context):
-            self.error(403)
-            self.response.write("NO")
-            return
-
-        props = sorted(Student.properties().keys() + ['email', 'can_use_location'])
-        out = csv.DictWriter(self.response, props, extrasaction='ignore')
-        out.writeheader()
+    def run(self):
         for s in Student.all().run(limit=9999):
             d = db.to_dict(s)
             d['email'] = s.key().name()
@@ -47,10 +40,7 @@ class StudentCsvHandler(BaseHandler):
             for p in d.keys():
                 if type(d[p]) is list:
                     d[p] = u", ".join(d[p])
-                # note that I just changed the type from list to unicode...
-                #if type(d[p]) is unicode:
-                    #d[p] = d[p].encode('utf-8')
-            out.writerow(d)
+            yield d
 
 class CurricularAimQuery(object):
     def __init__(self, request):
@@ -225,7 +215,8 @@ analytics_queries = {
         'unit_completion': UnitCompletionQuery,
         'unit_comments': UnitCommentQuery,
         'current_group_ids': CurrentGroupIDQuery,
-        'unit_text_similarity': UnitTextSimilarityQuery
+        'unit_text_similarity': UnitTextSimilarityQuery,
+        'student_csv': StudentCsvQuery,
         }
 
 
@@ -326,7 +317,6 @@ def register_module():
     global module
 
     handlers = [
-            ('/student_csv', StudentCsvHandler),
             ('/analytics', AnalyticsHandler),
             ('/adminjob', JobsHandler),
             ]
