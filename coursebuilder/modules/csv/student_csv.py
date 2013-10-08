@@ -79,7 +79,7 @@ class UnitTextSimilarityQuery(object):
     def wikipage_to_dict(self, entity):
         info = dict()
         info['email'] = entity.author_email
-        d = db.to_dict(entity)
+        d = viewable_model(entity)
         info.update({k: re.sub(r'<[^>]*?>', '', v) for k, v in d.items()})
         return info
 
@@ -89,7 +89,7 @@ class UnitTextSimilarityQuery(object):
                 [self.wikipage_to_dict(p) for p in query],
                 id_col='email',
                 k=10)
-        return [(v, k[0], k[1]) for k,v in confidences.iteritems()]
+        return [dict(zip(self.fields, (v, k[0], k[1]))) for k,v in confidences.iteritems()]
 
 
 class CurrentGroupIDQuery(object):
