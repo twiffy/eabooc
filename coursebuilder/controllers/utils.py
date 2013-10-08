@@ -582,6 +582,10 @@ class StudentUnenrollHandler(BaseHandler):
             return
 
         Student.set_enrollment_status_for_current(False)
+        mailchimp.unsubscribe('pre-reg', student.key().name())
+        mailchimp.unsubscribe('confirmed', student.key().name())
+        mailchimp.unsubscribe('for-credit', student.key().name())
+        mailchimp.subscribe('unenrolled', student.key().name(), student.name)
 
         self.template_value['navbar'] = {'registration': True}
         self.render('unenroll_confirmation.html')
