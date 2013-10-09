@@ -487,11 +487,13 @@ class AssessmentTracker(object):
     @classmethod
     def _check(cls, info):
         if info['tries_left'] < 1:
+            logging.info('Denying assessment retake because too many tries.')
             raise ValueError('You have submitted your answers for this exam %d times already.'
                     % TRIES_ALLOWED_ON_EXAMS.value)
         if info['start_time']:
             deadline = info['start_time'] + datetime.timedelta(hours=EXAM_DEADLINE_HOURS.value)
             if datetime.datetime.utcnow() > deadline:
+                logging.info('Denying assessment retake because past deadline.')
                 raise ValueError('You have taken more than %d hours since you started the exam at %s UTC/GMT.'
                         % (EXAM_DEADLINE_HOURS.value, info['start_time'].strftime(cls.timestamp_format)))
 
