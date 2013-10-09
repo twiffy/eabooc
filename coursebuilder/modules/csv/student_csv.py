@@ -13,6 +13,7 @@ from modules.wikifolios.wiki_models import *
 import modules.wikifolios.wikifolios as wf
 from modules.wikifolios.page_templates import forms, viewable_model
 from collections import defaultdict
+from operator import itemgetter
 import urllib
 import re
 import itertools
@@ -79,7 +80,8 @@ class UnitTextSimilarityQuery(object):
                 [self.wikipage_to_dict(p) for p in query],
                 id_col='email',
                 k=10)
-        return [dict(zip(self.fields, (v, k[0], k[1]))) for k,v in confidences.iteritems()]
+        results = [dict(zip(self.fields, (v, k[0], k[1]))) for k,v in confidences.iteritems()]
+        return sorted(results, key=itemgetter('10_word_phrases_in_common'), reverse=True)
 
 
 class CurrentGroupIDQuery(object):
