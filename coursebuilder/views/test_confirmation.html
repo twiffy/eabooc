@@ -14,6 +14,8 @@
       {# I18N: Shown after the student has submitted an assessment. #}
       {{ gettext('Thank you for taking the %(assessment_name)s. Your score for this assessment
       is %(score)s%%.' % {'assessment_name': assessment_name|lower, 'score': score})|safe }}
+      You need to earn an 80% or higher in order to be awarded the badge for
+      this section of the course.
 
       {% if can_take_again %}
       <br><br>
