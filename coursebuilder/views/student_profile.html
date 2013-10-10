@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% import 'badge_views.html' as badge_views %}
+{% import 'unit_report.html' as unit_report %}
 
 {% block subtitle %}
   {# I18N: Title of the webpage. #}
@@ -22,6 +23,10 @@
       {% if student %}
 
         {% include 'student_data_table.html' %}
+
+        {% for report in unit_reports %}
+        {{ unit_report.unit_report(report) }}
+        {% endfor %}
 
         {% for assertion in badge_assertions %}
         {{ badge_views.profile(assertion, assertion_link) }}
