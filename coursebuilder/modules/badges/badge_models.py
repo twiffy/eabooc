@@ -2,6 +2,7 @@ from google.appengine.ext import db
 from models.models import BaseEntity, Student
 from webapp2 import cached_property
 from jinja2 import Markup
+import datetime
 
 class Issuer(BaseEntity):
     # Fields from the OBI specification
@@ -33,12 +34,31 @@ class Badge(BaseEntity):
                 self.key().name(),
                 )
 
+    def issue(self, recipient, expires=None, put=True):
+        # maybe also create an EventEntity.
+        assertion = BadgeAssertion(
+                issuedOn=datetime.date.today(),
+                expires=expires,
+                badge=self,
+                recipient=recipient)
+        if put:
+            assertion.put()
+        return assertion
+
+    def is_issued_to(self, recipient):
+        "If the recipient has got this badge, returns the assertion, otherwise None."
+        q = self.assertions
+        q.filter('recipient', recipient)
+        return q.get()
+
+
 class BadgeAssertion(BaseEntity):
     # Fields from the OBI specification
     issuedOn = db.DateProperty()
     expires = db.DateProperty(indexed=False)
     badge = db.ReferenceProperty(Badge, collection_name='assertions')
     recipient = db.ReferenceProperty(Student, collection_name='badge_assertions')
+    # maybe add .revoked.
 
     # evidence: how to store this?
 
@@ -63,4 +83,3 @@ class BadgeAssertion(BaseEntity):
                 type(self).__name__,
                 self.key().id_or_name(),
                 )
-    
