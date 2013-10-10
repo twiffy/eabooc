@@ -85,3 +85,21 @@ class CachingPrefetcher(object):
                     list(str(x) for x in self.cache.keys()),
                     ttl=60*60*48)
 
+def ensure_key(it):
+    key = None
+    if isinstance(it, db.Key):
+        key = it
+    elif isinstance(it, basestring):
+        key = db.Key(it)
+    elif hasattr(it, 'key'):
+        key = it.key()
+    else:
+        raise ValueError(
+                'Expects argument to be a Model or Key; received %s (a %s).' %
+                (arg, typename(arg)))
+
+    assert isinstance(key, db.Key)
+    if not key.has_id_or_name():
+        raise ValueError('Key %r is not complete.' % key)
+
+    return key
