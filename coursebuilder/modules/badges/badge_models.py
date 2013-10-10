@@ -34,20 +34,23 @@ class Badge(BaseEntity):
                 self.key().name(),
                 )
 
-    def issue(self, recipient, expires=None, put=True):
+    @classmethod
+    def issue(cls, badge_or_key, recipient, expires=None, put=True):
         # maybe also create an EventEntity.
         assertion = BadgeAssertion(
                 issuedOn=datetime.date.today(),
                 expires=expires,
-                badge=self,
+                badge=badge_or_key,
                 recipient=recipient)
         if put:
             assertion.put()
         return assertion
 
-    def is_issued_to(self, recipient):
+    @classmethod
+    def is_issued_to(cls, badge_or_key, recipient):
         "If the recipient has got this badge, returns the assertion, otherwise None."
-        q = self.assertions
+        q = BadgeAssertion.all()
+        q.filter('badge', badge_or_key)
         q.filter('recipient', recipient)
         return q.get()
 
