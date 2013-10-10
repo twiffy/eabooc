@@ -267,6 +267,32 @@ class Annotation(models.BaseEntity):
             q.filter("whose = ", whose)
         return q
 
+    @classmethod
+    def incomplete(cls, what, who, reason):
+        ann = Annotation()
+        ann.why = 'incomplete'
+        ann.who = who
+        ann.what = what
+        ann.unit = what.unit
+        ann.whose = what.author_key
+        ann.reason = reason
+        ann.put()
+
+    @classmethod
+    def incompletes(cls, what=None, who=None, unit=None, whose=None):
+        q = Annotation.all()
+        q.filter("why =", "incomplete")
+        if what:
+            q.filter("what =", what)
+        if who:
+            q.filter("who =", who)
+        if unit:
+            q.filter("unit =", unit)
+        if whose:
+            q.filter("whose = ", whose)
+        return q
+
+
 class Notification(models.BaseEntity):
     recipient = db.ReferenceProperty(models.Student, collection_name="notification_set")
     url = db.StringProperty(indexed=False)
