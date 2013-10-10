@@ -808,3 +808,14 @@ div.assessment {
 
 .incomplete-reasons {
   color: #500; }
+
+.profile-unit-report {
+  margin: 0.6em; }
+  .profile-unit-report .unit-title {
+    font-weight: bold; }
+    .profile-unit-report .unit-title .status {
+      font-weight: normal;
+      font-style: italic; }
+  .profile-unit-report .unit-stats {
+    font-style: italic;
+    font-size: 95%; }

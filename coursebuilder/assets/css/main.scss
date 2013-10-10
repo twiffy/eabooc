@@ -971,3 +971,18 @@ div.assessment {
   .incomplete-reasons {
     color: #500;
   }
+
+.profile-unit-report {
+  margin: 0.6em;
+  .unit-title {
+    font-weight: bold;
+    .status {
+      font-weight: normal;
+      font-style: italic;
+    }
+  }
+  .unit-stats {
+    font-style: italic;
+    font-size: 95%;
+  }
+}

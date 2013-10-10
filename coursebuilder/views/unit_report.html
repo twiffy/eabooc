@@ -1,0 +1,20 @@
+{% macro unit_report(report) -%}
+<div class="profile-unit-report">
+  <div class="unit-title">Unit {{ report.unit }} <span class="status"> - 
+      {% if report.is_complete() %}Complete!
+      {% elif report.submitted %}Submitted
+      {% else %}Not submitted
+      {% endif %}
+  </span></div>
+  <div class="unit-stats">
+    Promotions: {{ report.promotions }} -
+    Endorsements: {{ report.endorsements }} -
+    Comments: {{ report.comments }}
+  </div>
+  <div class="incomplete-reasons">
+    {% for reason in report.incomplete_reasons %}
+    <p>{{ reason|safe }}</p>
+    {% endfor %}
+  </div>
+</div>
+{%- endmacro %}
