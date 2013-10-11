@@ -31,7 +31,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
     # JSON is the only public view from this handler.
     default_action = 'list'
     get_actions = ['view', 'json', 'edit', 'list']
-    post_actions = ['save']
+    post_actions = ['save', 'delete']
 
     def _action_url(self, action, name=not_specified):
         if name is not_specified:
@@ -108,6 +108,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['title'] = 'Edit %s: %s' % (self.KIND.__name__, obj.key().name())
         self.template_value['form'] = form
         self.template_value['xsrf_token'] = self.create_xsrf_token('save')
+        self.template_value['delete_xsrf_token'] = self.create_xsrf_token('delete')
         self.render('badge_item_edit.html')
 
     def post_save(self):
@@ -123,6 +124,14 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         form.populate_obj(obj)
         obj.put()
         self.redirect(self._action_url('view'))
+
+    def post_delete(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        obj = self._get_object_or_abort()
+        obj.delete()
+        self.redirect(self._action_url('list'))
 
     def get_list(self):
         if not users.is_current_user_admin():

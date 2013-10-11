@@ -14,5 +14,9 @@
 
     <input type="submit" name="Save" value="Save">
   </form>
+  <form action="{{ action_url('delete') }}" method="POST">
+    <input type="hidden" name="xsrf_token" value="{{ delete_xsrf_token }}">
+    <input type="submit" value="DELETE">
+  </form>
 </div>
 {% endblock %}
