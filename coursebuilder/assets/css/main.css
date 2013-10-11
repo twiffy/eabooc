@@ -810,7 +810,12 @@ div.assessment {
     line-height: 1.8; }
 
 .part-report {
-  margin: 0.6em; }
+  margin: 0.6em;
+  background: #cbbbab;
+  border: 2px solid #997b5e;
+  padding: 5px; }
+  .part-report > div {
+    padding: 5px; }
   .part-report .unit-title, .part-report .assessment-title {
     font-weight: bold; }
     .part-report .unit-title .status, .part-report .assessment-title .status {
@@ -823,9 +828,22 @@ div.assessment {
     font-size: 95%; }
   .part-report .scores {
     float: left;
-    max-width: 400px; }
+    width: 35%;
+    max-width: 400px;
+    min-width: 10em; }
   .part-report .part-badge-image {
-    max-width: 275px; }
+    max-width: 275px;
+    width: 28%;
+    float: left; }
   .part-report .badge-share-links {
-    float: right;
+    float: left;
+    width: 28%;
+    min-width: 10em;
     max-width: 275px; }
+
+.clearfix:after {
+  clear: both;
+  content: " ";
+  display: block;
+  height: 0;
+  visibility: hidden; }

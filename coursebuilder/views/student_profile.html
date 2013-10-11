@@ -26,7 +26,7 @@
 
         {% for part in part_reports %}
         {# will need to refactor this, so parts can be used in Evidence page #}
-        <div class="part-report">
+        <div class="part-report clearfix">
           <div class="scores">
             {% for report in part.unit_reports %}
             {{ unit_report.unit_report(report) }}
