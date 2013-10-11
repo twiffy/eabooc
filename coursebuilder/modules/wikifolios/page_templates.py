@@ -94,6 +94,22 @@ class UnitFivePageForm(wtf.Form):
 forms[5] = UnitFivePageForm
 templates[5] = 'wf_temp_u5.html'
 
+class UnitSixPageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    types_of_validity = BleachedTextAreaField()
+    validity_evidence = BleachedTextAreaField()
+    face_and_consequential = BleachedTextAreaField()
+    apply_types = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+    consequential_validity = BleachedTextAreaField()
+    validity_vs_reliability = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[6] = UnitSixPageForm
+templates[6] = 'wf_temp_u6.html'
+
 def viewable_model(model):
     # TODO maybe default values?
     d = db.to_dict(model)
