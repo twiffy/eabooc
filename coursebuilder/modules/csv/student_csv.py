@@ -1,6 +1,8 @@
 from models import custom_modules
 from google.appengine.ext import deferred
 from models.models import Student
+from models.models import EventEntity
+from models import transforms
 from models.roles import Roles
 from modules.regconf.regconf import FormSubmission
 from controllers.utils import BaseHandler
@@ -212,12 +214,54 @@ class UnitCompletionQuery(object):
             #info.update(fields)
             yield info
 
+class StudentEditHistoryQuery(object):
+    fields = [
+            'recorded_on',
+            'page-editor',
+            'page-author',
+            'unit',
+            'before',
+            'after',
+            'is_draft',
+            ]
+
+    def __init__(self, request):
+        if 'student' not in request.GET:
+            raise ValueError('Parameter required: which student? (Give their e-mail address)')
+        self.student_email = request.GET['student']
+
+    def run(self):
+        # find the student's user_id..
+        student = Student.get_enrolled_student_by_email(self.student_email)
+        if not student:
+            raise ValueError('That student was not found!')
+        user_id = student.user_id
+        query = EventEntity.all()
+        query.filter('user_id', str(user_id))
+        query.filter('source', 'edit-wiki-page')
+        query.order('-recorded_on')
+        edits = query.run(limit=2000)
+
+        for edit in edits:
+            fields = transforms.loads(edit.data)
+            fields['recorded_on'] = edit.recorded_on
+            yield fields
+
+    def htmlize_row(self, fields):
+        for field in ['before', 'after']:
+            subfield_template = Markup('<h5>%s</h5>\n%s')
+            new_text = Markup('\n').join(subfield_template % (k,Markup(v)) for k,v in fields[field].iteritems())
+            fields[field] = new_text
+        return fields
+
+
 analytics_queries = {
         'initial_curricular_aim': CurricularAimQuery,
         'unit_completion': UnitCompletionQuery,
         'unit_comments': UnitCommentQuery,
         'current_group_ids': CurrentGroupIDQuery,
         'unit_text_similarity': UnitTextSimilarityQuery,
+        'student_edit_history': StudentEditHistoryQuery,
         'student_csv': StudentCsvQuery,
         }
 
@@ -230,6 +274,8 @@ class AnalyticsHandler(BaseHandler):
                 choices=[('csv', 'csv'), ('table', 'table')],
                 default='table')
         unit = wtf.IntegerField('Unit Number (for unit queries)',
+                [wtf.validators.Optional()])
+        student = wtf.StringField('Student email (for edit history query)',
                 [wtf.validators.Optional()])
 
     def _get_nav(self):
@@ -263,7 +309,10 @@ class AnalyticsHandler(BaseHandler):
         if nav['view'] == 'csv':
             self.render_as_csv(query.fields, query.run())
         else:
-            self.render_as_table(query.fields, query.run())
+            iterator = query.run()
+            if hasattr(query_class, 'htmlize_row'):
+                iterator = [query.htmlize_row(r) for r in iterator]
+            self.render_as_table(query.fields, iterator)
 
     def prettify(self):
         self.personalize_page_and_get_enrolled()

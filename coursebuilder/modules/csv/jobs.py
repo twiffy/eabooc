@@ -175,7 +175,15 @@ class CommentSortKeyJob(Mapper):
                 subject="Done updating comments",
                 body="Yeah buddy!")
 
+class EventEntityIndexerJob(Mapper):
+    KIND = models.EventEntity
+
+    def map(self, event):
+        return ([event], [])
+
+    def finish(self):
+        logging.info('Finished with event entities')
 
 
 
-the_job = CommentSortKeyJob
+the_job = EventEntityIndexerJob

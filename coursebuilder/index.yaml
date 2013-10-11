@@ -20,6 +20,13 @@ indexes:
   - name: timestamp
     direction: desc
 
+- kind: EventEntity
+  properties:
+  - name: source
+  - name: user_id
+  - name: recorded_on
+    direction: desc
+
 - kind: FormSubmission
   properties:
   - name: form_name

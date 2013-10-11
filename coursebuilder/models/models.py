@@ -377,8 +377,8 @@ class EventEntity(BaseEntity):
     elsewhere and depends on the type of the event.
     """
     recorded_on = db.DateTimeProperty(auto_now_add=True, indexed=True)
-    source = db.StringProperty(indexed=False)
-    user_id = db.StringProperty(indexed=False)
+    source = db.StringProperty(indexed=True)
+    user_id = db.StringProperty(indexed=True)
 
     # Each of the following is a string representation of a JSON dict.
     data = db.TextProperty(indexed=False)
