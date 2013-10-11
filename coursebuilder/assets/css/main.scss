@@ -951,6 +951,10 @@ div.save-buttons {
     background-image: linear-gradient(top,#4a4,#282);
   }
 }
+.incomplete-reasons {
+color: #500;
+}
+
 
 abbr.wiki-draft-sign {
   font-size: 130%;
@@ -968,21 +972,32 @@ div.assessment {
   }
 }
 
-  .incomplete-reasons {
-    color: #500;
-  }
-
-.profile-unit-report {
+.part-report {
   margin: 0.6em;
-  .unit-title {
+  .unit-title, .assessment-title {
     font-weight: bold;
     .status {
       font-weight: normal;
       font-style: italic;
+      .complete {
+        color: #060;
+      }
     }
   }
-  .unit-stats {
+  .unit-stats, .assessment-stats {
     font-style: italic;
     font-size: 95%;
+  }
+
+  .scores {
+    float: left;
+    max-width: 400px;
+  }
+  .part-badge-image {
+    max-width: 275px;
+  }
+  .badge-share-links {
+    float: right;
+    max-width: 275px;
   }
 }

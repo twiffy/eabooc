@@ -24,8 +24,32 @@
 
         {% include 'student_data_table.html' %}
 
-        {% for report in unit_reports %}
-        {{ unit_report.unit_report(report) }}
+        {% for part in part_reports %}
+        {# will need to refactor this, so parts can be used in Evidence page #}
+        <div class="part-report">
+          <div class="scores">
+            {% for report in part.unit_reports %}
+            {{ unit_report.unit_report(report) }}
+            {% endfor %}
+            {% for exam in part.assessment_scores %}
+            <div class="assessment-title">{{ exam.title|striptags }} <span class="status"> -
+                {% if exam.did_pass %}<span class="complete">Complete!</span>
+                {% elif exam.completed %}Submitted
+                {% else %}Not submitted
+                {% endif %}
+            </span></div>
+            <div class="assessment-stats">
+              {{ exam.score }} out of 100, {{ exam.passing_score }} required to pass
+            </div>
+            {% endfor %}
+          </div>
+          <div class="part-badge-image">
+            BADGE IMAGE HERE
+          </div>
+          <div class="badge-share-links">
+            SHARING LINKS HERE
+          </div>
+        </div>
         {% endfor %}
 
         {% for assertion in badge_assertions %}

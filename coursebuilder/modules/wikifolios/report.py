@@ -1,5 +1,6 @@
 from google.appengine.ext import db
 from common.prefetch import ensure_key
+import datetime
 import logging
 from wiki_models import *
 COUNT_LIMIT = 100
@@ -38,3 +39,32 @@ class UnitReport(object):
                 not self.incomplete_reasons,
                 ))
 
+
+_parts = {
+        1: {
+            'assessments': 'Practices',
+            'units': [1,2,3,4],
+            'name': 'Assessment Practices',
+            'slug': 'practices',
+            'deadline': datetime.datetime(year=2013, month=10, day=20, hour=0, minute=0, second=0),
+            },
+        }
+
+ASSESSMENT_PASSING_SCORE = 80
+
+class PartReport(object):
+    @classmethod
+    def on(cls, student, course, part):
+        return cls(student, course, part)
+
+    def __init__(self, student, course, part):
+        for k,v in _parts[part].iteritems():
+            setattr(self, k, v)
+        self.unit_reports = [UnitReport.on(student, u) for u in self.units]
+        self.assessment_scores = []
+        score_list = course.get_all_scores(student)
+        for exam in score_list:
+            if exam['id'] in self.assessments:
+                exam['passing_score'] = ASSESSMENT_PASSING_SCORE
+                exam['did_pass'] = exam['score'] >= ASSESSMENT_PASSING_SCORE
+                self.assessment_scores.append(exam)
