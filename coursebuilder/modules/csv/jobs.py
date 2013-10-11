@@ -65,7 +65,8 @@ class Mapper(object):
             self._batch_write()
         except DeadlineExceededError:
             # Write any unfinished updates to the datastore.
-            self._batch_write()
+            # this takes too long...?
+            #self._batch_write()
             # Queue a new task to pick up where we left off.
             deferred.defer(self._continue, start_key, batch_size)
             return
@@ -182,7 +183,10 @@ class EventEntityIndexerJob(Mapper):
         return ([event], [])
 
     def finish(self):
-        logging.info('Finished with event entities')
+        mail.send_mail(sender="booc.class@gmail.com",
+                to="thomathom@gmail.com",
+                subject="Done updating event entities",
+                body="Yeah buddy!")
 
 
 
