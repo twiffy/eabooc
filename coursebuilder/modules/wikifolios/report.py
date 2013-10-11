@@ -3,6 +3,7 @@ from common.prefetch import ensure_key
 import datetime
 import logging
 from wiki_models import *
+from modules.badges.badge_models import *
 COUNT_LIMIT = 100
 
 class UnitReport(object):
@@ -68,3 +69,8 @@ class PartReport(object):
                 exam['passing_score'] = ASSESSMENT_PASSING_SCORE
                 exam['did_pass'] = exam['score'] >= ASSESSMENT_PASSING_SCORE
                 self.assessment_scores.append(exam)
+
+        # Find badge stuff!
+        self.badge = Badge.get_by_key_name(self.slug)
+        if self.badge:
+            self.badge_assertion = Badge.is_issued_to(self.badge, student) # may be None

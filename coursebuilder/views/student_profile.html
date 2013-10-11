@@ -44,16 +44,16 @@
             {% endfor %}
           </div>
           <div class="part-badge-image">
-            BADGE IMAGE HERE
+            {% if part.badge %}
+            {{ badge_views.profile(part.badge, part.badge_assertion, assertion_link) }}
+            {% else %}
+            (There's no badge set up for this part yet - it should have key_name {{ part.slug }})
+            {% endif %}
           </div>
           <div class="badge-share-links">
             SHARING LINKS HERE
           </div>
         </div>
-        {% endfor %}
-
-        {% for assertion in badge_assertions %}
-        {{ badge_views.profile(assertion, assertion_link) }}
         {% endfor %}
 
         <form action='student/editstudent' method='post'>

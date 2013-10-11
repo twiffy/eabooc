@@ -1,9 +1,13 @@
-{% macro profile(assertion, assertion_link) -%}
+{% macro profile(badge, assertion, assertion_link) -%}
 <div class="profile-badge-info">
-  <div class="badge-title">{{ assertion.badge.name }}</div>
-  <img src="{{ assertion.badge.image }}">
+  <div class="badge-title">{{ badge.name }}</div>
+  <img src="{{ badge.image }}" {% if not assertion %}class="not-issued"{% endif %}>
+  {% if assertion %}
   <div class="issue-link">
     <a href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">Click here to claim your badge!</a>
   </div>
+  {% else %}
+  <div class="not-earned">(You have not earned this badge yet)</div>
+  {% endif %}
 </div>
 {%- endmacro %}
