@@ -188,6 +188,20 @@ class EventEntityIndexerJob(Mapper):
                 subject="Done updating event entities",
                 body="Yeah buddy!")
 
+class NotificationNoAutoNowJob(Mapper):
+    KIND = Notification
+
+    def map(self, note):
+        if 'created' not in note._entity:
+            note.created = None
+        return ([note], [])
+
+    def finish(self):
+        mail.send_mail(sender="booc.class@gmail.com",
+                to="thomathom@gmail.com",
+                subject="Done updating notifications",
+                body="Yeah buddy!")
 
 
-the_job = EventEntityIndexerJob
+
+the_job = NotificationNoAutoNowJob
