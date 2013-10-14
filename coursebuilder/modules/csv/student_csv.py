@@ -111,7 +111,11 @@ class StudentQuizScoresQuery(object):
                     if answer['correct']:
                         d[k] = 'correct'
                     else:
-                        d[k] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[answer['value']]
+                        if answer['value']:
+                            d[k] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[answer['value']]
+                        else:
+                            d[k] = ''
+
                 yield d
 
 class CurrentGroupIDQuery(object):
