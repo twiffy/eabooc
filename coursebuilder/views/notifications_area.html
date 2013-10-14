@@ -5,7 +5,11 @@
     <div class="gcb-col-3"></div>
     <div id="wiki-notifications" class="gcb-col-4">
       {% endif %}
-      <span><a href="{{ note.link }}">{{ note.text | safe }}</a></span><br>
+      <span><a href="{{ note.link }}">{{ note.text | safe }}</a>
+        {% if note.created %}
+        <small>({{ humanize.naturaltime(note.created) }})</small>
+        {% endif %}
+      </span><br>
       {% if loop.last %}
     </div>
   </div>

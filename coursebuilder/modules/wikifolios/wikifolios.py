@@ -143,7 +143,10 @@ class WikiBaseHandler(BaseHandler):
         return user
 
     def show_notifications(self, current_student):
-        self.template_value['notifications'] = current_student.notification_set.filter('seen', False).run(limit=20)
+        notes = current_student.notification_set.filter('seen', False).run(limit=20)
+        self.template_value['notifications'] = sorted(notes,
+                key=Notification.sort_key_func,
+                reverse=True)
 
     def _editor_role(self, query, current_student, template=True):
         if not (query and current_student):
@@ -1193,7 +1196,11 @@ class NotificationListHandler(WikiBaseHandler):
         if not user:
             return
 
-        self.template_value['notifications'] = user.notification_set.run()
+        notes = user.notification_set.run()
+        notes = sorted(notes,
+                key=Notification.sort_key_func,
+                reverse=True)
+        self.template_value['notifications'] = notes
         self.render('wf_all_notifications.html')
 
 

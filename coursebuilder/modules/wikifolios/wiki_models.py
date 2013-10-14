@@ -1,3 +1,4 @@
+from datetime import datetime
 from models import models
 from google.appengine.ext import db
 from google.appengine.ext import deferred
@@ -278,4 +279,7 @@ class Notification(models.BaseEntity):
     def link(self):
         return '/notification?id=%d' % self.key().id()
 
+    @staticmethod
+    def sort_key_func(note):
+        return note.created if note.created else datetime.min
 
