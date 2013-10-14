@@ -2,6 +2,7 @@ from models import custom_modules
 from google.appengine.ext import deferred
 from models.models import Student
 from models.models import EventEntity
+from models.models import StudentAnswersEntity
 from models import transforms
 from models.roles import Roles
 from modules.regconf.regconf import FormSubmission
@@ -85,6 +86,33 @@ class UnitTextSimilarityQuery(object):
         results = [dict(zip(self.fields, (v, k[0], k[1]))) for k,v in confidences.iteritems()]
         return sorted(results, key=itemgetter('10_word_phrases_in_common'), reverse=True)
 
+class StudentQuizScoresQuery(object):
+    def __init__(self, request):
+        pass
+
+    fields = [
+            'email',
+            'assessment',
+            ] + ['q%d' % n for n in range(1, 100)]
+
+    def run(self):
+        query = StudentAnswersEntity.all().run(limit=600)
+        for ans_ent in query:
+            ans_dict = transforms.loads(ans_ent.data)
+            for assessment, answers in ans_dict.iteritems():
+                student = Student.all().filter('user_id', ans_ent.key().name()).get()
+                d = {
+                        'email': student.key().name(),
+                        'assessment': assessment,
+                        }
+
+                for answer in answers:
+                    k = 'q%d' % (answer['index'] + 1)
+                    if answer['correct']:
+                        d[k] = 'correct'
+                    else:
+                        d[k] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[answer['value']]
+                yield d
 
 class CurrentGroupIDQuery(object):
     def __init__(self, request):
@@ -263,6 +291,7 @@ analytics_queries = {
         'unit_text_similarity': UnitTextSimilarityQuery,
         'student_edit_history': StudentEditHistoryQuery,
         'student_csv': StudentCsvQuery,
+        'student_quiz_answers': StudentQuizScoresQuery,
         }
 
 
