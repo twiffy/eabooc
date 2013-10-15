@@ -63,6 +63,8 @@
           (draft)
           {%       endif %}</li>
           {%     endif %}
+          {%   elif unit.type == 'A' and unit.now_available and editor_role == 'author' %}
+          <li><a href="assessment?name={{ unit.unit_id }}">{{ unit.title | safe }}</a></li>
           {%   endif %}
           {% else %}
           (no pages yet)
