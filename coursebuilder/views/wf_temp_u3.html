@@ -1,4 +1,4 @@
-{% extends 'wf_page.html' %}
+{% extends layout_template if layout_template is defined else 'wf_page.html' %}
 {% block wiki_content %}
 <style type="text/css">
   .wiki-question ol{margin:0;padding:0}
