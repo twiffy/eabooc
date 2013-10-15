@@ -71,7 +71,7 @@ class BadgeAssertion(BaseEntity):
 
     @cached_property
     def uid(self):
-        return 'booc.assertion.' + self.key().id_or_name()
+        return 'booc.assertion.' + str(self.key().id_or_name())
 
     # @cached_property
     # def recipient_dict(self):

@@ -90,7 +90,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         obj = self._get_object_or_abort()
 
         self.template_value['action_url'] = self._action_url
-        self.template_value['title'] = '%s: %s' % (self.KIND.__name__, obj.key().name())
+        self.template_value['title'] = '%s: %s' % (self.KIND.__name__, obj.key().id_or_name())
         fields = self.to_dict(obj)
         self.template_value['fields'] = self.htmlize_fields(fields)
         self.render('badge_item_view.html')
@@ -105,7 +105,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
 
     def render_edit(self, form, obj):
         self.template_value['action_url'] = self._action_url
-        self.template_value['title'] = 'Edit %s: %s' % (self.KIND.__name__, obj.key().name())
+        self.template_value['title'] = 'Edit %s' % (self.KIND.__name__,)
         self.template_value['form'] = form
         self.template_value['xsrf_token'] = self.create_xsrf_token('save')
         self.template_value['delete_xsrf_token'] = self.create_xsrf_token('delete')
@@ -123,7 +123,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
 
         form.populate_obj(obj)
         obj.put()
-        self.redirect(self._action_url('view'))
+        self.redirect(self._action_url('view', name=obj.key().id_or_name()))
 
     def post_delete(self):
         if not users.is_current_user_admin():
@@ -180,6 +180,23 @@ class BadgeHandler(BadgeItemHandler):
 class AssertionHandler(BadgeItemHandler):
     KIND = BadgeAssertion
     FORM = model_form(BadgeAssertion)
+
+    def _get_object_or_abort(self, create=False):
+        if 'name' not in self.request.GET:
+            self.abort(400)
+
+        try:
+            key_id = int(self.request.GET.get('name', -1))
+        except ValueError:
+            self.abort(400, "Your assertion ID must be an integer")
+        logging.info('key_id is %d', key_id)
+        obj = self.KIND.get_by_id(key_id)
+        if not obj:
+            if not create:
+                self.abort(404)
+            else: # yes create
+                obj = self.KIND()
+        return obj
 
     def to_dict(self, obj):
         d = super(AssertionHandler, self).to_dict(obj)
