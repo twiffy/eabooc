@@ -32,7 +32,7 @@ class UnitReport(object):
         self.promotions = Annotation.exemplaries(page).count(limit=COUNT_LIMIT)
         self.incomplete_reasons = [inc.reason for inc in Annotation.incompletes(page).run(limit=10)]
 
-
+    @property
     def is_complete(self):
         return all((
                 self.submitted,

@@ -1,7 +1,7 @@
 {% macro unit_report(report) -%}
 <div class="profile-unit-report">
   <div class="unit-title">Unit {{ report.unit }} <span class="status"> - 
-      {% if report.is_complete() %}<span class="complete">Complete!</span>
+      {% if report.is_complete %}<span class="complete">Complete!</span>
       {% elif report.submitted %}Submitted
       {% else %}Not submitted
       {% endif %}
