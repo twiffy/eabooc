@@ -283,3 +283,16 @@ class Notification(models.BaseEntity):
     def sort_key_func(note):
         return note.created if note.created else datetime.min
 
+    @classmethod
+    def notify_all_students(cls, url, text, defer=True):
+        if defer:
+            deferred.defer(
+                    cls.notify_all_students, url, text, defer=False)
+            return
+
+        all_students = models.Student.all().filter('is_participant', True).run(keys_only=True)
+        to_put = []
+        for student in all_students:
+            note = cls(recipient=student, url=url, text=text)
+            to_put.append(note)
+        db.put(to_put)

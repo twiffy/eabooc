@@ -33,6 +33,7 @@ from models import transforms
 from models.models import MemcacheManager
 import modules.announcements.samples as samples
 from modules.oeditor import oeditor
+from modules.wikifolios.wiki_models import Notification
 
 from google.appengine.ext import db
 
@@ -306,6 +307,10 @@ class AnnouncementsItemRESTHandler(BaseRESTHandler):
             transforms.loads(payload),
             AnnouncementsItemRESTHandler.SCHEMA_DICT))
         entity.put()
+
+        if not entity.is_draft:
+            Notification.notify_all_students(url='/announcements',
+                    text=entity.title)
 
         email_sent = False
         if entity.send_email:
