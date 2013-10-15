@@ -2,8 +2,9 @@ from google.appengine.ext import db
 from common.prefetch import ensure_key
 import datetime
 import logging
-from wiki_models import *
+from wiki_models import WikiPage, WikiComment, Annotation
 from models.models import Student
+from models import transforms
 from modules.badges.badge_models import *
 COUNT_LIMIT = 100
 
@@ -48,6 +49,7 @@ class UnitReport(db.Model):
         self.endorsements = Annotation.endorsements(page).count(limit=COUNT_LIMIT)
         self.promotions = Annotation.exemplaries(page).count(limit=COUNT_LIMIT)
         self.incomplete_reasons = [inc.reason for inc in Annotation.incompletes(page).run(limit=10)]
+        self.wiki_fields = transforms.dumps({k: getattr(page, k) for k in page.dynamic_properties()})
 
     @property
     def is_complete(self):
@@ -82,6 +84,8 @@ class PartReport(object):
         self.assessment_scores = []
         score_list = course.get_all_scores(student)
         for exam in score_list:
+            # Maybe this loop should be over self.assessments, so we make sure they show up
+            # even if they are not submitted.
             if exam['id'] in self.assessments:
                 exam['passing_score'] = ASSESSMENT_PASSING_SCORE
                 exam['did_pass'] = exam['score'] >= ASSESSMENT_PASSING_SCORE
