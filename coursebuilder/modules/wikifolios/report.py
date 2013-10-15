@@ -74,3 +74,11 @@ class PartReport(object):
         self.badge = Badge.get_by_key_name(self.slug)
         if self.badge:
             self.badge_assertion = Badge.is_issued_to(self.badge, student) # may be None
+
+    @property
+    def is_complete(self):
+        units_done = all((
+            u.is_complete for u in self.unit_reports))
+        assessments_done = all((
+            e['did_pass'] for e in self.assessment_scores))
+        return units_done and assessments_done
