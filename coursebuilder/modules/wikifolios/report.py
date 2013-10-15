@@ -3,20 +3,37 @@ from common.prefetch import ensure_key
 import datetime
 import logging
 from wiki_models import *
+from models.models import Student
 from modules.badges.badge_models import *
 COUNT_LIMIT = 100
 
-class UnitReport(object):
-    # Maybe should be a handler?  Do I need course data?
+class UnitReport(db.Model):
+    student = db.ReferenceProperty(Student, indexed=True)
+    unit = db.IntegerProperty(indexed=True)
+    timestamp = db.DateTimeProperty(indexed=False, auto_now_add=True)
+
+    comments = db.IntegerProperty(indexed=False)
+    endorsements = db.IntegerProperty(indexed=False)
+    promotions = db.IntegerProperty(indexed=False)
+    submitted = db.BooleanProperty(indexed=False)
+
+    # JSON encoded..
+    wiki_fields = db.TextProperty()
+
     @classmethod
     def on(cls, student, unit):
-        # Might change this to be a query rather than a creation
-        return cls(student, unit)
+        q = cls.all()
+        q.filter('student', student)
+        q.filter('unit', unit)
+        report = q.get()
+        if not report:
+            report = cls(student=student, unit=unit)
+        return report
 
-    def __init__(self, student, unit):
-        self.student = student
-        self.unit = unit
-        self._run()
+    def __init__(self, *args, **kwargs):
+        super(UnitReport, self).__init__(*args, **kwargs)
+        if not self.is_saved():
+            self._run()
 
     def _run(self):
         page = WikiPage.get_page(self.student, self.unit)
