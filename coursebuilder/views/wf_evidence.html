@@ -39,55 +39,13 @@
     </div>
   </div>
   <div class="gcb-cols">
-    <div id="assignment-completion" class="gcb-col-11 wiki-area">
-      <span class="wiki-grey-theme">
-        {% block assignment_completion_instructions %}
-        {% endblock %}
-      </span>
-      <div id="endorsements" class="gcb-col-5">
-        {% for e in endorsements %}
-        {% if loop.first %}This page has been endorsed as complete by{% endif %}
-        {% if loop.last and not loop.first %} and {% endif %}
-        <a href="wikiprofile?student={{ e.who.wiki_id }}">{{ e.who.name }}</a>{% if not loop.last%},{%endif%}
-        {% else %}
-        <b>This page has not been endorsed as complete.</b>
-        {% endfor %}
-      </div>
-      <div id="exemplaries" class="gcb-col-5">
-        {% for e in exemplaries %}
-        {% if loop.first %}<span style="font-size: 2em; color: #fc0;">&#9733;</span> This page has been promoted as exemplary by{% endif %}
-        {% if loop.last and not loop.first %} and {% endif %}
-        {{ student_link(e.who) }}{% if not loop.last%},{%endif%}
-        {% else %}<!-- no exemplaries -->
-        {% endfor %}
-        {% for e in exemplaries %}
-        {% if loop.first %}
-        <div id="exemplary-reasons">
-          <div id="exemplary-header">Show reasons...</div>
-          <div id="exemplary-text">
-            {% endif %}
-            {{ student_link(e.who) }} says: {{ e.reason | safe }}<br>
-            {% if loop.last %}
-          </div>
-        </div>
-        {% endif %}
-        {% else %}
-        {% if editor_role %}<b>This page has not been marked as exemplary.</b>{% endif %}
-        {% endfor %}
-      </div>
-      <div class="gcb-col-11">
-        <small>Warning: If you are in the middle of writing a comment, finish and post it before using the Endorse and Exemplary buttons.</small>
-      </div>
-    </div>
-  </div>
-  <div class="gcb-cols">
-    <div class="gcb-col-11 wiki-area" id="comment-area">
-      <span class="wiki-grey-theme">
-        {% block comment_instructions %}
-        {% endblock %}
-      </span>
-
-      {% include "comment_area.html" %}
+    <div id="assignment-completion" class="gcb-col-11 gcb-aside">
+      <p>At the badge issuance time, {{ report.timestamp.strftime('%Y-%m-%d at %H:%M UTC') }}:</p>
+      <p>This assignment was endorsed as complete by {{ report.endorsements }} participants.</p>
+      {% if report.promotions %}
+      <p>It was promoted as exemplary {{ report.promotions }} times.</p>
+      {% endif %}
+      <p>The discussion generated {{ report.comments }} comments.</p>
     </div>
   </div>
 </div>
