@@ -21,7 +21,7 @@ class Badge(BaseEntity):
     # Fields from the OBI specification
     name = db.StringProperty(indexed=False)
     description = db.StringProperty(indexed=False)
-    image = db.LinkProperty(indexed=False)
+    image = db.StringProperty(indexed=False)
     criteria = db.TextProperty() # Served from a separate link...
     issuer = db.ReferenceProperty(Issuer)
     tags = db.StringListProperty(indexed=False)
