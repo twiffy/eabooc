@@ -63,23 +63,15 @@ class BadgeAssertion(BaseEntity):
     recipient = db.ReferenceProperty(Student, collection_name='badge_assertions')
     # maybe add .revoked.
 
-    # evidence: how to store this?
+    evidence = db.StringProperty() # URL of evidence
 
     @cached_property
     def recipient_email(self):
-        return BaseEntity.recipient.get_value_for_datastore(self).name()
+        return BadgeAssertion.recipient.get_value_for_datastore(self).name()
 
     @cached_property
     def uid(self):
         return 'booc.assertion.' + str(self.key().id_or_name())
-
-    # @cached_property
-    # def recipient_dict(self):
-    #     return {
-    #             'type': 'email',
-    #             'hashed': True,
-    #             'not done': True,
-    #             }
 
     def __str__(self):
         return '%s: %s' % (

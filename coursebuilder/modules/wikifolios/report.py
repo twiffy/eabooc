@@ -8,6 +8,98 @@ from models import transforms
 from modules.badges.badge_models import *
 COUNT_LIMIT = 100
 
+_parts = {
+        1: {
+            'assessments': ['Practices'],
+            'units': [1,2,3,4],
+            'name': 'Assessment Practices',
+            'slug': 'practices',
+            'deadline': datetime.datetime(year=2013, month=10, day=20, hour=0, minute=0, second=0),
+            },
+        }
+
+ASSESSMENT_PASSING_SCORE = 80
+
+
+class PartReport(db.Model):
+    part = db.IntegerProperty()
+    slug = db.StringProperty()
+    assessment_scores_json = db.TextProperty()
+    student = db.ReferenceProperty(Student, indexed=True)
+    timestamp = db.DateTimeProperty(indexed=False, auto_now_add=True)
+
+    @classmethod
+    def on(cls, student, course, part):
+        q = cls.all()
+        q.filter('student', student)
+        q.filter('part', part)
+        reports = q.fetch(limit=2)
+        if len(reports) > 1:
+            raise AssertionError('Found more than one part report for part %d student %s' % (
+                part, student.key().name()))
+        elif len(reports) == 1:
+            report = reports[0]
+        else:
+            report = cls(None, course=course, student=student, part=part)
+        return report
+
+    def __init__(self, *args, **kwargs):
+        course = None
+        if 'course' in kwargs:
+            course = kwargs['course']
+            del kwargs['course']
+        super(PartReport, self).__init__(*args, **kwargs)
+
+        self._config = _parts[self.part]
+
+        if not self.is_saved():
+            self._run(course)
+
+    def _run(self, course):
+        config = _parts[self.part]
+        self.slug = config['slug']
+        student_scores = course.get_all_scores(self.student)
+        scores_to_save = []
+
+        for exam_id in config['assessments']:
+            for maybe_exam in student_scores:
+                print 'Considering %s for %s' % (maybe_exam['id'], exam_id)
+                if maybe_exam['id'] != exam_id:
+                    continue
+                exam = maybe_exam
+                exam['passing_score'] = ASSESSMENT_PASSING_SCORE
+                exam['did_pass'] = exam['score'] >= ASSESSMENT_PASSING_SCORE
+                scores_to_save.append(exam)
+
+        self.assessment_scores_json = transforms.dumps(scores_to_save)
+
+    @property
+    def badge(self):
+        return Badge.get_by_key_name(self.slug)
+
+    @property
+    def badge_assertion(self):
+        if self.badge:
+            return Badge.is_issued_to(self.badge, self.student) # may be None
+
+    @property
+    def assessment_scores(self):
+        return transforms.loads(self.assessment_scores_json)
+
+    @property
+    def unit_reports(self):
+        return [UnitReport.on(self.student, u) for u in self._config['units']]
+
+
+    @property
+    def is_complete(self):
+        units_done = all((
+            u.is_complete for u in self.unit_reports))
+        assessments_done = all((
+            e['did_pass'] for e in self.assessment_scores))
+        return units_done and assessments_done
+
+
 class UnitReport(db.Model):
     student = db.ReferenceProperty(Student, indexed=True)
     unit = db.IntegerProperty(indexed=True)
@@ -17,6 +109,7 @@ class UnitReport(db.Model):
     endorsements = db.IntegerProperty(indexed=False)
     promotions = db.IntegerProperty(indexed=False)
     submitted = db.BooleanProperty(indexed=False)
+    incomplete_reasons = db.StringListProperty(indexed=False)
 
     # JSON encoded..
     wiki_fields = db.TextProperty()
@@ -26,8 +119,13 @@ class UnitReport(db.Model):
         q = cls.all()
         q.filter('student', student)
         q.filter('unit', unit)
-        report = q.get()
-        if not report:
+        reports = q.fetch(limit=2)
+        if len(reports) > 1:
+            raise AssertionError('Found more than one unit report for unit %d student %s' % (
+                unit, student.key().name()))
+        elif len(reports) == 1:
+            report = reports[0]
+        else:
             report = cls(student=student, unit=unit)
         return report
 
@@ -58,48 +156,3 @@ class UnitReport(db.Model):
                 self.endorsements > 0,
                 not self.incomplete_reasons,
                 ))
-
-
-_parts = {
-        1: {
-            'assessments': 'Practices',
-            'units': [1,2,3,4],
-            'name': 'Assessment Practices',
-            'slug': 'practices',
-            'deadline': datetime.datetime(year=2013, month=10, day=20, hour=0, minute=0, second=0),
-            },
-        }
-
-ASSESSMENT_PASSING_SCORE = 80
-
-class PartReport(object):
-    @classmethod
-    def on(cls, student, course, part):
-        return cls(student, course, part)
-
-    def __init__(self, student, course, part):
-        for k,v in _parts[part].iteritems():
-            setattr(self, k, v)
-        self.unit_reports = [UnitReport.on(student, u) for u in self.units]
-        self.assessment_scores = []
-        score_list = course.get_all_scores(student)
-        for exam in score_list:
-            # Maybe this loop should be over self.assessments, so we make sure they show up
-            # even if they are not submitted.
-            if exam['id'] in self.assessments:
-                exam['passing_score'] = ASSESSMENT_PASSING_SCORE
-                exam['did_pass'] = exam['score'] >= ASSESSMENT_PASSING_SCORE
-                self.assessment_scores.append(exam)
-
-        # Find badge stuff!
-        self.badge = Badge.get_by_key_name(self.slug)
-        if self.badge:
-            self.badge_assertion = Badge.is_issued_to(self.badge, student) # may be None
-
-    @property
-    def is_complete(self):
-        units_done = all((
-            u.is_complete for u in self.unit_reports))
-        assessments_done = all((
-            e['did_pass'] for e in self.assessment_scores))
-        return units_done and assessments_done

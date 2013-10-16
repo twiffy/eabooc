@@ -540,7 +540,7 @@ class StudentProfileHandler(BaseHandler):
         self.template_value['score_list'] = course.get_all_scores(student)
         self.template_value['overall_score'] = course.get_overall_score(student)
         #self.template_value['unit_reports'] = list([UnitReport(student, u) for u in range(1, 12)])
-        self.template_value['part_reports'] = [PartReport(student, course, 1)]
+        self.template_value['part_reports'] = [PartReport.on(student, course, 1)]
         self.template_value['student_edit_xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('student-edit'))
         self.render('student_profile.html')

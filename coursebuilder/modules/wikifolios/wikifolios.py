@@ -1299,7 +1299,6 @@ class NotificationListHandler(WikiBaseHandler):
         self.render('wf_all_notifications.html')
 
 
-
 class WarmupHandler(WikiBaseHandler):
     def get(self):
         # warm up the caches for jinja templates
@@ -1319,6 +1318,7 @@ module = None
 def register_module():
     global module
 
+    from report_handlers import EvidenceHandler
     handlers = [
             ('/wiki', WikiPageHandler),
             ('/wikicomment', WikiCommentHandler),
@@ -1331,6 +1331,7 @@ def register_module():
             ('/comment_stream', WikiCommentStreamHandler),
             ('/grump', HarrumphHandler),
             ('/exam_reset', ExamResetHandler),
+            ('/badges/evidence', EvidenceHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",
