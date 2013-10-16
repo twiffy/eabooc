@@ -1,4 +1,5 @@
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
+from models import transforms
 from modules.badges.badge_models import Badge, BadgeAssertion
 from report import UnitReport, PartReport
 from models.models import Student
@@ -6,34 +7,54 @@ from jinja2 import Markup
 import urllib
 import wtforms as wtf
 from google.appengine.api import users
+import page_templates
 
 
 class EvidenceHandler(BaseHandler):
     def get(self):
         try:
-            assertion = BadgeAssertion.get_by_id(int(self.request.GET.get('assertion', -1)))
-        except ValueError:
-            assertion = None
-        if not assertion:
-            self.abort(404)
-
-        self.response.write('hi')
-
-        #OK, so maybe something needs to live in the DB that "is" the evidence.
-        # It needs to at least give enough info that you can make a PartReport.
-        # Can I put something in the badges/ part that is fairly open-ended?
-
-
-class UnitReportHandler(BaseHandler):
-    def get(self):
-        try:
-            report = UnitReport.get_by_id(int(self.request.GET.get('report', -1)))
+            report = PartReport.get_by_id(int(self.request.GET.get('id', -1)))
         except ValueError:
             report = None
         if not report:
             self.abort(404)
 
-        self.response.write('hi')
+        self.report = report
+        self.template_value['navbar'] = {}
+        self.template_value['author'] = self.report.student
+        self.template_value['unit_link'] = self._unit_link
+
+        try:
+            self.unit_num = int(self.request.GET.get('unit', ''))
+        except ValueError:
+            self.unit_num = None
+
+        if self.unit_num:
+            self.unit = self.report.get_unit(self.unit_num)
+            if self.unit:
+                self.render_unit()
+                return
+            else:
+                logging.warning('Could not find the right unit %d for PartReport %s',
+                        self.unit_num, self.report.key())
+        self.render_top()
+
+    def _unit_link(self, unit):
+        return self.request.path + "?" + urllib.urlencode({
+            'id': self.request.GET['id'],
+            'unit': unit,
+            })
+
+    def render_unit(self):
+        self.template_value['fields'] = {
+                k: Markup(v) for k,v in transforms.loads(self.unit.wiki_fields).iteritems()}
+        self.template_value['unit'] = self.find_unit_by_id(self.unit_num)
+        self.template_value['layout_template'] = 'wf_evidence.html'
+        self.render(page_templates.templates[self.unit_num])
+
+    def render_top(self):
+        self.template_value['part'] = self.report
+        self.render('wf_evidence_top.html')
 
 
 class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):

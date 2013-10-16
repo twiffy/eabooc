@@ -19,3 +19,12 @@
   {% endif %}
 </div>
 {%- endmacro %}
+{% macro evidence(badge, assertion) -%}
+<div class="part-badge-image">
+  <div class="profile-badge-info">
+    <img src="{{ badge.image }}" {% if not assertion %}class="not-issued"{% endif %}>
+  </div>
+</div>
+<div class="badge-share-links">
+</div>
+{%- endmacro %}

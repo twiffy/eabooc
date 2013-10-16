@@ -32,7 +32,7 @@
         <abbr class="wiki-draft-sign"
           title="This page is not 'done' according to the author.">DRAFT</abbr>
         {% endif %}
-        by {{ student_link(author) }}</div>
+        by {{ author.name }}</div>
         {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
         {% block wiki_content %}
         {% endblock %}
@@ -90,15 +90,5 @@
       {% include "comment_area.html" %}
     </div>
   </div>
-  <center><a onclick="$(this).next().toggle()" style="color: #c33;">Flag inappropriate content</a>
-    <div id="flag-form" style="display: none;">
-      <form action="{{ action_url('flag') }}" method="POST">
-        <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('flag') }}">
-        You can alert an instructor regarding inappropriate content on this page:<br>
-        <input size="60" name="reason"></input>
-        <input type="submit" value="Report">
-      </form>
-    </div>
-  </center>
 </div>
 {% endblock %}

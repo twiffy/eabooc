@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% import 'part_report.html' as part_report %}
+{% block subtitle %}Badge Evidence{% endblock %}
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      {{ part_report.evidence_view(part, unit_link) }}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

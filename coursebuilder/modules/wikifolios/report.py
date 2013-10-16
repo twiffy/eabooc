@@ -86,7 +86,7 @@ class PartReport(db.Model):
     def assessment_scores(self):
         return transforms.loads(self.assessment_scores_json)
 
-    @property
+    @cached_property
     def unit_reports(self):
         return [UnitReport.on(self.student, u) for u in self._config['units']]
 
@@ -94,6 +94,13 @@ class PartReport(db.Model):
         for rep in self.unit_reports:
             rep.put()
         self.put()
+
+    def get_unit(self, num):
+        reports = self.unit_reports
+        for r in reports:
+            if r.unit == num:
+                return r
+        return None
 
     @property
     def is_complete(self):
