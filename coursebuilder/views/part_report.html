@@ -27,7 +27,13 @@
   {% endif %}
 </div>
 {% endmacro %}
-{% macro evidence_view(part, evidence_link) %}
+
+{% macro evidence_view(part, student, evidence_link) %}
+<h1>{{ part.badge.name }}</h1>
+<div>{{ student.name }} earned this badge by participating in the <a href="https://booc-iu.appspot.com/">Educational Assessment BOOC</a></div>
+<h2>Criteria for issuance:</h2>
+<div>{{ part.badge.criteria }}</div>
+<h2>Evidence</h2>
 <div class="part-report clearfix">
   <div class="scores">
     <div class="timestamp">As of {{ part.timestamp.strftime('%Y-%m-%d at %H:%M UTC:') }}</div>

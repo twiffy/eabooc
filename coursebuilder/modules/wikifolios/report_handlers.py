@@ -116,7 +116,10 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
 
             if report.is_complete:
                 if REALLY:
-                    b = Badge.issue(badge, student) # need to include evidence URL here somehow
+                    b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
+                    b.evidence = self.request.host_url + '/badges/evidence?id=%d' % report.key().id()
+                    b.put()
+
                     student_infos.append(Markup(' Issued badge, assertion id=%d') % b.key().id())
                 else:
                     student_infos.append(' WOULD issue badge.')
