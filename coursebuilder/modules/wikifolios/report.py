@@ -90,6 +90,10 @@ class PartReport(db.Model):
     def unit_reports(self):
         return [UnitReport.on(self.student, u) for u in self._config['units']]
 
+    def put_all(self):
+        for rep in self.unit_reports:
+            rep.put()
+        self.put()
 
     @property
     def is_complete(self):
