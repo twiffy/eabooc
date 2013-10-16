@@ -308,9 +308,11 @@ class AnnouncementsItemRESTHandler(BaseRESTHandler):
             AnnouncementsItemRESTHandler.SCHEMA_DICT))
         entity.put()
 
-        if not entity.is_draft:
+        if not (entity.is_draft or entity.already_notified):
             Notification.notify_all_students(url='/announcements',
                     text=entity.title)
+            entity.already_notified = True
+            entity.put()
 
         email_sent = False
         if entity.send_email:
@@ -335,6 +337,7 @@ class AnnouncementEntity(entities.BaseEntity):
     html = db.TextProperty(indexed=False)
     is_draft = db.BooleanProperty()
     send_email = db.BooleanProperty()
+    already_notified = db.BooleanProperty(default=False)
 
     memcache_key = 'announcements'
 
