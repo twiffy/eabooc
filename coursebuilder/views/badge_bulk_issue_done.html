@@ -1,0 +1,11 @@
+{% extends 'badge_base.html' %}
+{% block content %}
+<div style="background-color: #faa;">
+  {{ '<br>'.join(problems) }}
+</div>
+<div>
+  {% for entry in log %}
+  {{ entry }}
+  {% endfor %}
+</div>
+{% endblock %}

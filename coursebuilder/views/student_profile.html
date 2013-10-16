@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
-{% import 'badge_views.html' as badge_views %}
-{% import 'unit_report.html' as unit_report %}
+{% import 'part_report.html' as part_report %}
 
 {% block subtitle %}
   {# I18N: Title of the webpage. #}
@@ -25,35 +24,7 @@
         {% include 'student_data_table.html' %}
 
         {% for part in part_reports %}
-        {# will need to refactor this, so parts can be used in Evidence page #}
-        <div class="part-report clearfix">
-          <div class="scores">
-            {% for report in part.unit_reports %}
-            {{ unit_report.unit_report(report) }}
-            {% endfor %}
-            {% for exam in part.assessment_scores %}
-            <div class="assessment-title">{{ exam.title|striptags }} <span class="status"> -
-                {% if exam.did_pass %}<span class="complete">Complete!</span>
-                {% elif exam.completed %}Submitted
-                {% else %}Not submitted
-                {% endif %}
-            </span></div>
-            <div class="assessment-stats">
-              {{ exam.score }} out of 100, {{ exam.passing_score }} required to pass
-            </div>
-            {% endfor %}
-          </div>
-          <div class="part-badge-image">
-            {% if part.badge %}
-            {{ badge_views.profile(part.badge, part.badge_assertion, assertion_link) }}
-            {% else %}
-            (There's no badge set up for this part yet - it should have key_name {{ part.slug }})
-            {% endif %}
-          </div>
-          <div class="badge-share-links">
-            SHARING LINKS HERE
-          </div>
-        </div>
+        {{ part_report.profile_view(part, assertion_link) }}
         {% endfor %}
 
         <form action='student/editstudent' method='post'>

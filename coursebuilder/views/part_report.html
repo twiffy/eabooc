@@ -1,0 +1,28 @@
+{% import 'unit_report.html' as unit_report %}
+{% import 'badge_views.html' as badge_views %}
+{% macro profile_view(part, assertion_link) %}
+<div class="part-report clearfix">
+  <div class="scores">
+    <div class="timestamp">As of {{ part.timestamp.strftime('%Y-%m-%d at %H:%M UTC:') }}</div>
+    {% for report in part.unit_reports %}
+    {{ unit_report.unit_report(report) }}
+    {% endfor %}
+    {% for exam in part.assessment_scores %}
+    <div class="assessment-title">{{ exam.title|striptags }} <span class="status"> -
+        {% if exam.did_pass %}<span class="complete">Complete!</span>
+        {% elif exam.completed %}Submitted
+        {% else %}Not submitted
+        {% endif %}
+    </span></div>
+    <div class="assessment-stats">
+      {{ exam.score }} out of 100, {{ exam.passing_score }} required to pass
+    </div>
+    {% endfor %}
+  </div>
+  {% if part.badge %}
+  {{ badge_views.profile(part.badge, part.badge_assertion, assertion_link) }}
+  {% else %}
+  <!-- (There's no badge set up for this part yet - it should have key_name {{ part.slug }}) -->
+  {% endif %}
+</div>
+{% endmacro %}

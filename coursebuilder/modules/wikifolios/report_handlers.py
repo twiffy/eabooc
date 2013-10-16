@@ -63,7 +63,7 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['xsrf_token'] = self.create_xsrf_token('start')
         self.template_value['action_url'] = self._action_url('start')
         self.template_value['title'] = 'Bulk Issue Badges'
-        self.render('badges_bulk_issue.html')
+        self.render('badge_bulk_issue.html')
 
     def post_start(self):
         if not users.is_current_user_admin():

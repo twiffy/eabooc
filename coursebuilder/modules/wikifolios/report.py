@@ -73,11 +73,11 @@ class PartReport(db.Model):
 
         self.assessment_scores_json = transforms.dumps(scores_to_save)
 
-    @property
+    @cached_property
     def badge(self):
         return Badge.get_by_key_name(self.slug)
 
-    @property
+    @cached_property
     def badge_assertion(self):
         if self.badge:
             return Badge.is_issued_to(self.badge, self.student) # may be None

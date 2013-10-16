@@ -1007,6 +1007,10 @@ div.assessment {
     max-width: 275px;
     width: 28%;
     float: left;
+    img.not-issued {
+      opacity: 0.5;
+      filter:alpha(opacity=50); /* for ie8 */
+    }
   }
   .badge-share-links {
     float: left;

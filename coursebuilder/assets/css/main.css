@@ -835,6 +835,10 @@ div.assessment {
     max-width: 275px;
     width: 28%;
     float: left; }
+    .part-report .part-badge-image img.not-issued {
+      opacity: 0.5;
+      filter: alpha(opacity=50);
+      /* for ie8 */ }
   .part-report .badge-share-links {
     float: left;
     width: 28%;
