@@ -155,7 +155,11 @@ class BulkLeaderIssueMapper(LoggingMapper):
         if self.really:
             leader_badge = Badge.get_by_key_name(self.leader_badge_key)
         for group_id, (emails, count) in self.best_by_group.iteritems():
-            self.log.append('Considering group %s' % str(group_id))
+            self.log.append('Considering group %s, best score is %d' % (
+                str(group_id), count))
+            if count < 1:
+                self.log.append('... Best score is too low, skipping.')
+                continue
             if self.really:
                 for email in emails:
                     # TODO need to get the evidence connected up here.
