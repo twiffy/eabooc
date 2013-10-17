@@ -18,16 +18,17 @@
   </div>
 </div>
 {%- endmacro %}
-{% macro evidence_unit_report(report, evidence_link) %}
+{% macro evidence_unit_report(report, evidence_link, unit_title) %}
 <div class="profile-unit-report">
   <div class="unit-title">
     <a href="{{ evidence_link(report.unit) }}">
-    Unit {{ report.unit }} <span class="status"> - 
-      {% if report.is_complete %}<span class="complete">Complete!</span>
+      Unit {{ report.unit }} - {{ unit_title(report.unit) }}</a>
+    <span class="status">
+      {% if report.is_complete %}
+      <br><span class="complete">Complete!</span>
       {% elif report.submitted %}Submitted
       {% else %}Not submitted
       {% endif %}
-    </a>
   </span></div>
   <div class="unit-stats">
     Promotions: {{ report.promotions }} -

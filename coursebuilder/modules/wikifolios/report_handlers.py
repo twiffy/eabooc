@@ -1,4 +1,5 @@
 from controllers.utils import BaseHandler, ReflectiveRequestHandler
+import re
 from collections import defaultdict
 from models import transforms
 from modules.badges.badge_models import Badge, BadgeAssertion
@@ -29,6 +30,7 @@ class EvidenceHandler(BaseHandler):
         self.template_value['navbar'] = {}
         self.template_value['author'] = self.report.student
         self.template_value['unit_link'] = self._unit_link
+        self.template_value['unit_title'] = self._unit_title
 
         try:
             self.unit_num = int(self.request.GET.get('unit', ''))
@@ -50,6 +52,12 @@ class EvidenceHandler(BaseHandler):
             'id': self.request.GET['id'],
             'unit': unit,
             })
+
+    def _unit_title(self, unit):
+        unit_obj = self.find_unit_by_id(unit)
+        title = unit_obj.title
+        title = re.sub(r'\(.*?\)', '', title)
+        return title.strip()
 
     def render_unit(self):
         self.template_value['fields'] = {

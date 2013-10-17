@@ -28,17 +28,24 @@
 </div>
 {% endmacro %}
 
-{% macro evidence_view(part, student, evidence_link) %}
+{% macro evidence_view(part, student, evidence_link, unit_title) %}
 <h1>{{ part.badge.name }}</h1>
-<div>{{ student.name }} earned this badge by participating in the <a href="https://booc-iu.appspot.com/">Educational Assessment BOOC</a></div>
+<div>
+  {{ student.name }} earned this badge by participating in the <a
+    href="https://booc-iu.appspot.com/">Educational Assessment BOOC</a>.
+</div>
 <h2>Criteria for issuance</h2>
 <div>{{ part.badge.criteria|safe }}</div>
 <h2>Evidence</h2>
+<div>
+  To see their work, follow the links below.  The discussions are
+  not included in this view, for peer privacy.
+</div>
 <div class="part-report clearfix">
   <div class="scores">
     <div class="timestamp">As of {{ part.timestamp.strftime('%Y-%m-%d at %H:%M UTC:') }}</div>
     {% for report in part.unit_reports %}
-    {{ unit_report.evidence_unit_report(report, evidence_link) }}
+    {{ unit_report.evidence_unit_report(report, evidence_link, unit_title) }}
     {% endfor %}
     {% for exam in part.assessment_scores %}
     <div class="assessment-title">{{ exam.title|striptags }} <span class="status"> -
