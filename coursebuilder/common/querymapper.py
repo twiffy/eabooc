@@ -1,5 +1,7 @@
 from google.appengine.ext import deferred, db
 from google.appengine.runtime import DeadlineExceededError
+import uuid
+import logging
 
 # straight from google
 class Mapper(object):
@@ -65,9 +67,43 @@ class Mapper(object):
             self._batch_write()
         except DeadlineExceededError:
             # Write any unfinished updates to the datastore.
-            self._batch_write()
+            # There is not enough time for this.
+            #self._batch_write()
             # Queue a new task to pick up where we left off.
             deferred.defer(self._continue, start_key, batch_size)
             return
         self.finish()
 
+
+class LogEntity(db.Model):
+    messages = db.StringListProperty(indexed=False)
+    sort_key = db.IntegerProperty()
+    job_id = db.StringProperty()
+
+
+class LoggingMapper(Mapper):
+    def __init__(self):
+        super(LoggingMapper, self).__init__()
+        self.log = []
+        logging.debug('initializing LoggingMapper')
+        self.log_number = 0
+        self.job_id = str(uuid.uuid4())
+
+    def _batch_write(self):
+        if self.log:
+            self.to_put.append(
+                    LogEntity(messages=self.log,
+                        sort_key=self.log_number,
+                        job_id=self.job_id))
+            self.log_number += 1
+        super(LoggingMapper, self)._batch_write()
+
+    @classmethod
+    def logs_for_job(cls, job_id):
+        ents = LogEntity.all()
+        ents.filter('job_id', job_id)
+        ents.order('sort_key')
+
+        for ent in ents:
+            for message in ent.messages:
+                yield message
