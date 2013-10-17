@@ -96,6 +96,7 @@ class LoggingMapper(Mapper):
                         sort_key=self.log_number,
                         job_id=self.job_id))
             self.log_number += 1
+            self.log = []
         super(LoggingMapper, self)._batch_write()
 
     @classmethod
