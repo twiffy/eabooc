@@ -77,10 +77,8 @@ class PartReport(db.Model):
             self._run(course)
 
         (b, a) = find_badge_and_assertion(self.student, self.part)
-        logging.info('about to set badge and ass')
         self.badge = b
         self.badge_assertion = a
-        logging.info('have set badge and ass')
 
     def _run(self, course):
         config = _parts[self.part]
@@ -90,7 +88,6 @@ class PartReport(db.Model):
 
         for exam_id in config['assessments']:
             for maybe_exam in student_scores:
-                print 'Considering %s for %s' % (maybe_exam['id'], exam_id)
                 if maybe_exam['id'] != exam_id:
                     continue
                 exam = maybe_exam
