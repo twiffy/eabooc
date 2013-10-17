@@ -72,7 +72,7 @@ class Mapper(object):
             # Queue a new task to pick up where we left off.
             deferred.defer(self._continue, start_key, batch_size)
             return
-        self.finish()
+        deferred.defer(self.finish)
 
 
 class LogEntity(db.Model):

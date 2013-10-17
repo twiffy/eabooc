@@ -13,6 +13,7 @@ from google.appengine.ext import db
 from google.appengine.ext import deferred
 import page_templates
 from common.querymapper import LoggingMapper
+import logging
 
 
 class EvidenceHandler(BaseHandler):
@@ -63,95 +64,6 @@ class EvidenceHandler(BaseHandler):
         self.render('wf_evidence_top.html')
 
 
-class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
-    default_action = 'prep'
-    get_actions = ['prep', 'watch']
-    post_actions = ['start']
-
-    TITLE = 'Bulk Issue Badges'
-
-    def _action_url(self, action, **kwargs):
-        params = dict(kwargs)
-        params['action'] = action
-        return '?'.join((
-            self.request.path,
-            urllib.urlencode(params)))
-
-    class IssueForm(wtf.Form):
-        part = wtf.IntegerField('Which part of the course to issue a badge for? (1,2,3)')
-        really_save = wtf.BooleanField('Really issue the badges and freeze the scores?', default=False)
-
-    def get_prep(self):
-        if not users.is_current_user_admin():
-            self.abort(403)
-        self.render_form(self.IssueForm())
-
-    def render_form(self, form):
-        self.template_value['form'] = form
-        self.template_value['xsrf_token'] = self.create_xsrf_token('start')
-        self.template_value['action_url'] = self._action_url('start')
-        self.template_value['title'] = self.TITLE
-        self.render('badge_bulk_issue.html')
-
-    def post_start(self):
-        if not users.is_current_user_admin():
-            self.abort(403)
-
-        form = self.IssueForm(self.request.POST)
-        if not form.validate():
-            self.render_form(form)
-            return
-
-        REALLY = form.really_save.data
-        part_num = form.part.data
-
-        problems = set()
-        student_infos = []
-
-        job = BulkIssueMapper(REALLY, self.get_course(), part_num)
-        job_id = job.job_id
-        deferred.defer(job.run)
-        self.redirect(self._action_url('watch', job_id=job_id))
-
-    def get_watch(self):
-        if not users.is_current_user_admin():
-            self.abort(403)
-
-        job_id = self.request.GET.get('job_id', None)
-        if not job_id:
-            self.abort(404)
-
-        messages = BulkIssueMapper.logs_for_job(job_id)
-
-        self.template_value['title'] = self.TITLE
-        self.template_value['problems'] = []
-        self.template_value['log'] = messages
-        self.render('badge_bulk_issue_done.html')
-
-    def issue_badges(self, REALLY, part_num, problems, student_infos):
-        for student in Student.all().filter('is_participant', True).run():
-            student_infos.append(Markup('<p>Student %s') % student.key().name())
-
-            report = PartReport.on(student, course=self.get_course(), part=part_num)
-            if REALLY:
-                report.put_all()
-            student_infos.append(Markup(' Passed? %s.') % report.is_complete)
-
-            badge = report.badge
-            if not badge:
-                problems.add('There is no badge with key_name %s (so I cannot issue a badge)' % report.slug)
-                continue
-
-            if report.is_complete:
-                if REALLY:
-                    b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
-                    b.evidence = self.request.host_url + '/badges/evidence?id=%d' % report.key().id()
-                    b.put()
-
-                    student_infos.append(Markup(' Issued badge, assertion id=%d') % b.key().id())
-                else:
-                    student_infos.append(' WOULD issue badge.')
-
 class BulkIssueMapper(LoggingMapper):
     KIND = Student
     FILTERS = [('is_participant', True)]
@@ -187,57 +99,145 @@ class BulkIssueMapper(LoggingMapper):
 
 
 NOBODY = object()
-class BulkLeaderIssuanceHandler(BulkIssuanceHandler):
-    TITLE = 'Bulk Issue LEADER Badges'
+def default_dict_entry():
+    return ([NOBODY], -1)
 
-    def issue_badges(self, REALLY, part_num, problems, student_infos):
-        best_by_group = defaultdict(
-                lambda: ([NOBODY], -1))
+class BulkLeaderIssueMapper(LoggingMapper):
+    KIND = Student
+    FILTERS = [('is_participant', True)]
 
-        leader_badge_key = part_config[part_num]['slug'] + '.leader'
-        leader_badge = Badge.get_by_key_name(leader_badge_key)
+    def __init__(self, really, course, part):
+        super(BulkLeaderIssueMapper, self).__init__()
+        self.really = really
+        self.course = course
+        self.part = part
+        self.best_by_group = defaultdict(default_dict_entry)
+        self.leader_badge_key = part_config[part]['slug'] + '.leader'
+
+        leader_badge = Badge.get_by_key_name(self.leader_badge_key)
         if not leader_badge:
-            problems.add(Markup('No badge with key_name: %s') % leader_badge_key)
-            if REALLY:
-                return
+            logging.warning('No badge with key_name: %s', self.leader_badge_key)
+            self.log.append('No badge with key_name: %s'% self.leader_badge_key)
+            if self.really:
+                raise ValueError('No badge with key_name: %s' % self.leader_badge_key)
 
-        for student in Student.all().filter('is_participant', True).run():
-            student_infos.append(Markup('<p>Student %s') % student.key().name())
+    def map(self, student):
+        self.log.append('######### Student %s ##########' % student.key().name())
 
-            part_report = PartReport.on(student, course=self.get_course(), part=part_num)
-            if not part_report.is_complete:
-                student_infos.append(Markup(' Skipping, since not complete.'))
-                continue
+        part_report = PartReport.on(student, course=self.course, part=self.part)
+        if not part_report.is_complete:
+            self.log.append(' Skipping, since not complete.')
+            return ([], [])
 
-            student_infos.append(' .. Part is complete, considering units.')
+        self.log.append(' Part is complete, considering units.')
 
-            unit_reports = part_report.unit_reports
-            promotions = 0
+        unit_reports = part_report.unit_reports
+        promotions = 0
 
-            for ur in unit_reports:
-                promotions += ur.promotions
+        for ur in unit_reports:
+            promotions += ur.promotions
 
-            if promotions > best_by_group[student.group_id][1]:
-                best_by_group[student.group_id] = ([student.key().name()], promotions)
+        best_so_far = self.best_by_group[student.group_id][1]
+        if promotions > best_so_far:
+            self.best_by_group[student.group_id] = ([student.key().name()], promotions)
 
-                student_infos.append(Markup(' They have current best for group %s, with %d.') % (
-                    student.group_id, promotions))
+            self.log.append(' They have current best for group %s, with %d.' % (
+                student.group_id, promotions))
 
-            elif promotions == best_by_group[student.group_id][1]:
-                best_by_group[student.group_id][0].append(student.key().name())
+        elif promotions == best_so_far:
+            self.best_by_group[student.group_id][0].append(student.key().name())
 
-                student_infos.append(Markup(' They <b>ARE TIED for current best</b> for group %s, with %d.') % (
-                    student.group_id, promotions))
+            self.log.append(Markup(' They ARE TIED FOR CURRENT BEST for group %s, with %d.') % (
+                student.group_id, promotions))
+        return ([], [])
 
-        for group_id, (emails, count) in best_by_group.iteritems():
-            student_infos.append(Markup('<p>Considering group %s') % str(group_id))
-            if REALLY:
+    def finish(self):
+        if self.really:
+            leader_badge = Badge.get_by_key_name(self.leader_badge_key)
+        for group_id, (emails, count) in self.best_by_group.iteritems():
+            self.log.append('Considering group %s' % str(group_id))
+            if self.really:
                 for email in emails:
-                    if email is NOBODY:
-                        student_infos.append('NOBODY')
-                        continue
+                    # TODO need to get the evidence connected up here.
                     a = Badge.issue(leader_badge,
                             db.Key.from_path(Student.kind(), email))
-                    student_infos.append(Markup('... ISSUED leader badge to %s, id=%d') % (email, a.key().id()))
+                    self.log.append('... ISSUED leader badge to %s, id=%d' % (email, a.key().id()))
             else:
-                student_infos.append(Markup('... WOULD ISSUE leader badge to %s') % ' '.join(emails))
+                self.log.append('... WOULD ISSUE leader badge to %s' % ' '.join(emails))
+        self._batch_write()
+
+
+issuer_mappers = {
+        'completion': BulkIssueMapper,
+        'leader': BulkLeaderIssueMapper,
+        }
+
+
+class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
+    default_action = 'prep'
+    get_actions = ['prep', 'watch']
+    post_actions = ['start']
+
+    TITLE = 'Bulk Issue Badges'
+
+    class IssueForm(wtf.Form):
+        part = wtf.IntegerField('Which part of the course to issue a badge for? (1,2,3)')
+        really_save = wtf.BooleanField('Really issue the badges and freeze the scores?', default=False)
+        leader_or_completion = wtf.RadioField('Do you want to issue completion badges, or leader badges?',
+                choices=[(k, k) for k in issuer_mappers.keys()])
+
+    def _action_url(self, action, **kwargs):
+        params = dict(kwargs)
+        params['action'] = action
+        return '?'.join((
+            self.request.path,
+            urllib.urlencode(params)))
+
+    def get_prep(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+        self.render_form(self.IssueForm())
+
+    def render_form(self, form):
+        self.template_value['form'] = form
+        self.template_value['xsrf_token'] = self.create_xsrf_token('start')
+        self.template_value['action_url'] = self._action_url('start')
+        self.template_value['title'] = self.TITLE
+        self.render('badge_bulk_issue.html')
+
+    def post_start(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        form = self.IssueForm(self.request.POST)
+        if not form.validate():
+            self.render_form(form)
+            return
+
+        REALLY = form.really_save.data
+        part_num = form.part.data
+
+        problems = set()
+        student_infos = []
+
+        issuer = issuer_mappers[form.leader_or_completion.data]
+
+        job = issuer(REALLY, self.get_course(), part_num)
+        job_id = job.job_id
+        deferred.defer(job.run)
+        self.redirect(self._action_url('watch', job_id=job_id))
+
+    def get_watch(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        job_id = self.request.GET.get('job_id', None)
+        if not job_id:
+            self.abort(404)
+
+        messages = BulkIssueMapper.logs_for_job(job_id)
+
+        self.template_value['title'] = self.TITLE
+        self.template_value['problems'] = []
+        self.template_value['log'] = messages
+        self.render('badge_bulk_issue_done.html')
