@@ -73,6 +73,7 @@ class BulkIssueMapper(LoggingMapper):
         self.really = really
         self.course = course
         self.part = part
+        self.num_issued = 0
 
     def map(self, student):
         self.log.append('########## Student %s ##########' % student.key().name())
@@ -88,6 +89,7 @@ class BulkIssueMapper(LoggingMapper):
             self.log.append(' There is no badge with key_name %s (so I cannot issue a badge)' % report.slug)
 
         if report.is_complete:
+            self.num_issued += 1
             if self.really and badge:
                 b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
                 b.evidence = self.request.host_url + '/badges/evidence?id=%d' % report.key().id()
@@ -96,6 +98,10 @@ class BulkIssueMapper(LoggingMapper):
             else:
                 self.log.append(' WOULD issue badge.')
         return ([], [])
+
+    def finish(self):
+        self.log.append('DONE.  Issued %d badges total.' % self.num_issued)
+        self._batch_write()
 
 
 NOBODY = object()
