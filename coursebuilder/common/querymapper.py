@@ -79,6 +79,7 @@ class LogEntity(db.Model):
     messages = db.StringListProperty(indexed=False)
     sort_key = db.IntegerProperty()
     job_id = db.StringProperty()
+    timestamp = db.DateTimeProperty(auto_now_add=True)
 
 
 class LoggingMapper(Mapper):
