@@ -9,6 +9,7 @@ from jinja2 import Markup
 import urllib
 import wtforms as wtf
 from google.appengine.api import users
+from google.appengine.ext import db
 import page_templates
 
 
@@ -182,7 +183,8 @@ class BulkLeaderIssuanceHandler(BulkIssuanceHandler):
             student_infos.append(Markup('<p>Considering group %s') % str(group_id))
             if REALLY:
                 for email in emails:
-                    a = Badge.issue(leader_badge, email)
+                    a = Badge.issue(leader_badge,
+                            db.Key.from_path(Student.kind(), email))
                     student_infos.append(Markup('... ISSUED leader badge to %s, id=%d') % (email, a.key().id()))
             else:
                 student_infos.append(Markup('... WOULD ISSUE leader badge to %s') % ' '.join(emails))

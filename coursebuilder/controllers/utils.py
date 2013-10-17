@@ -533,13 +533,11 @@ class StudentProfileHandler(BaseHandler):
 
         self.template_value['navbar'] = {'myprofile': True}
         self.template_value['student'] = student
-        self.template_value['badge_assertions'] = student.badge_assertions.fetch(limit=50)
         self.template_value['assertion_link'] = lambda a: self.request.host_url + modules.badges.util.url_for_key(a.key())
         self.template_value['date_enrolled'] = student.enrolled_on.strftime(
             HUMAN_READABLE_DATE_FORMAT)
         self.template_value['score_list'] = course.get_all_scores(student)
         self.template_value['overall_score'] = course.get_overall_score(student)
-        #self.template_value['unit_reports'] = list([UnitReport(student, u) for u in range(1, 12)])
         self.template_value['part_reports'] = [PartReport.on(student, course, 1)]
         self.template_value['student_edit_xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('student-edit'))

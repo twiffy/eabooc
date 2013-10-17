@@ -20,6 +20,27 @@ _parts = {
 
 ASSESSMENT_PASSING_SCORE = 80
 
+def find_badge_and_assertion(student, part):
+    config = _parts[part]
+    # in order of preference for issuing
+    slugs = (config['slug'] + '.leader', config['slug'])
+    badge_keys = [db.Key.from_path(Badge.kind(), s) for s in slugs]
+    badge_ents = db.get(badge_keys)
+
+
+    assertions = [Badge.is_issued_to(bk, student) for bk in badge_keys]
+
+    for badge, assertion in zip(badge_ents, assertions):
+        if assertion:
+            if badge:
+                return (badge, assertion)
+            else:
+                logging.warning('Found assertion %s for nonexistant badge :(',
+                        assertion.key())
+
+    logging.warning('No badges found with key_name %s (or .leader)', config['slug'])
+    return (None, None)
+
 
 class PartReport(db.Model):
     part = db.IntegerProperty()
@@ -55,6 +76,12 @@ class PartReport(db.Model):
         if not self.is_saved():
             self._run(course)
 
+        (b, a) = find_badge_and_assertion(self.student, self.part)
+        logging.info('about to set badge and ass')
+        self.badge = b
+        self.badge_assertion = a
+        logging.info('have set badge and ass')
+
     def _run(self, course):
         config = _parts[self.part]
         self.slug = config['slug']
@@ -72,15 +99,6 @@ class PartReport(db.Model):
                 scores_to_save.append(exam)
 
         self.assessment_scores_json = transforms.dumps(scores_to_save)
-
-    @cached_property
-    def badge(self):
-        return Badge.get_by_key_name(self.slug)
-
-    @cached_property
-    def badge_assertion(self):
-        if self.badge:
-            return Badge.is_issued_to(self.badge, self.student) # may be None
 
     @property
     def assessment_scores(self):
