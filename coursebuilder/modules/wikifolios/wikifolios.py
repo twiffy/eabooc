@@ -1318,7 +1318,7 @@ module = None
 def register_module():
     global module
 
-    from report_handlers import EvidenceHandler, BulkIssuanceHandler
+    from report_handlers import EvidenceHandler, BulkIssuanceHandler, BulkLeaderIssuanceHandler
     handlers = [
             ('/wiki', WikiPageHandler),
             ('/wikicomment', WikiCommentHandler),
@@ -1333,6 +1333,7 @@ def register_module():
             ('/exam_reset', ExamResetHandler),
             ('/badges/evidence', EvidenceHandler),
             ('/badges/bulk_issue', BulkIssuanceHandler),
+            ('/badges/bulk_leader_issue', BulkLeaderIssuanceHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",
