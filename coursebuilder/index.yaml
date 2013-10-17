@@ -34,6 +34,11 @@ indexes:
   - name: submitted
     direction: desc
 
+- kind: LogEntity
+  properties:
+  - name: job_id
+  - name: sort_key
+
 - kind: Post
   properties:
   - name: forum

@@ -1,11 +1,14 @@
 {% extends 'badge_base.html' %}
 {% block content %}
+<div>
+  Press reload to get more log messages.
+</div>
 <div style="background-color: #faa;">
   {{ '<br>'.join(problems) }}
 </div>
 <div>
   {% for entry in log %}
-  {{ entry }}
+  {{ entry }}<br>
   {% endfor %}
 </div>
 {% endblock %}

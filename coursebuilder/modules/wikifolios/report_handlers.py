@@ -10,7 +10,9 @@ import urllib
 import wtforms as wtf
 from google.appengine.api import users
 from google.appengine.ext import db
+from google.appengine.ext import deferred
 import page_templates
+from common.querymapper import LoggingMapper
 
 
 class EvidenceHandler(BaseHandler):
@@ -63,15 +65,14 @@ class EvidenceHandler(BaseHandler):
 
 class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
     default_action = 'prep'
-    get_actions = ['prep']
+    get_actions = ['prep', 'watch']
     post_actions = ['start']
 
     TITLE = 'Bulk Issue Badges'
 
-    def _action_url(self, action):
-        params = {
-                'action': action,
-                }
+    def _action_url(self, action, **kwargs):
+        params = dict(kwargs)
+        params['action'] = action
         return '?'.join((
             self.request.path,
             urllib.urlencode(params)))
@@ -106,10 +107,25 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
 
         problems = set()
         student_infos = []
-        self.issue_badges(REALLY, part_num, problems, student_infos)
+
+        job = BulkIssueMapper(REALLY, self.get_course(), part_num)
+        job_id = job.job_id
+        deferred.defer(job.run)
+        self.redirect(self._action_url('watch', job_id=job_id))
+
+    def get_watch(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        job_id = self.request.GET.get('job_id', None)
+        if not job_id:
+            self.abort(404)
+
+        messages = BulkIssueMapper.logs_for_job(job_id)
+
         self.template_value['title'] = self.TITLE
-        self.template_value['problems'] = problems
-        self.template_value['log'] = student_infos
+        self.template_value['problems'] = []
+        self.template_value['log'] = messages
         self.render('badge_bulk_issue_done.html')
 
     def issue_badges(self, REALLY, part_num, problems, student_infos):
@@ -135,6 +151,40 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
                     student_infos.append(Markup(' Issued badge, assertion id=%d') % b.key().id())
                 else:
                     student_infos.append(' WOULD issue badge.')
+
+class BulkIssueMapper(LoggingMapper):
+    KIND = Student
+    FILTERS = [('is_participant', True)]
+
+    def __init__(self, really, course, part):
+        super(BulkIssueMapper, self).__init__()
+        self.really = really
+        self.course = course
+        self.part = part
+
+    def map(self, student):
+        self.log.append('########## Student %s ##########' % student.key().name())
+        report = PartReport.on(student, course=self.course, part=self.part)
+        if self.really:
+            # not waiting for the batch because we need its key id.
+            report.put_all()
+
+        self.log.append(' Passed? %s.' % report.is_complete)
+
+        badge = report.badge
+        if not badge:
+            self.log.append(' There is no badge with key_name %s (so I cannot issue a badge)' % report.slug)
+
+        if report.is_complete:
+            if self.really and badge:
+                b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
+                b.evidence = self.request.host_url + '/badges/evidence?id=%d' % report.key().id()
+                self.log.append(' Issued badge, assertion id=%d' % b.key().id())
+                return ([b], [])
+            else:
+                self.log.append(' WOULD issue badge.')
+        return ([], [])
+
 
 NOBODY = object()
 class BulkLeaderIssuanceHandler(BulkIssuanceHandler):
