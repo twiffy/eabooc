@@ -183,6 +183,9 @@ class BulkLeaderIssuanceHandler(BulkIssuanceHandler):
             student_infos.append(Markup('<p>Considering group %s') % str(group_id))
             if REALLY:
                 for email in emails:
+                    if email is NOBODY:
+                        student_infos.append('NOBODY')
+                        continue
                     a = Badge.issue(leader_badge,
                             db.Key.from_path(Student.kind(), email))
                     student_infos.append(Markup('... ISSUED leader badge to %s, id=%d') % (email, a.key().id()))
