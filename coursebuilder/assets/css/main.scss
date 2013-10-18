@@ -1027,3 +1027,13 @@ div.assessment {
   height: 0;
   visibility: hidden;
 }
+
+.share-button {
+  padding: 4px;
+
+  img {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+  }
+}

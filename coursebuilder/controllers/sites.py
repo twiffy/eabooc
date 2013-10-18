@@ -766,6 +766,7 @@ class ApplicationContext(object):
         jinja_environment.install_gettext_translations(i18n)
         jinja_environment.filters['gcb_tags'] = jinja_filters.gcb_tags
         jinja_environment.filters['escapejs'] = jinja_filters.escapejs
+        jinja_environment.filters['urlencode'] = jinja_filters.do_urlencode
 
         return jinja_environment
 

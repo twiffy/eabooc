@@ -1,3 +1,4 @@
+{% import 'share_buttons.html' as share_buttons %}
 {% macro profile(badge, assertion, assertion_link) -%}
 <div class="part-badge-image">
   <div class="profile-badge-info">
@@ -6,14 +7,17 @@
 </div>
 <div class="badge-share-links">
   {% if assertion %}
-  <div class="issue-link">
+  <div class="issue-link share-button">
     <a href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">Click here to claim your badge!</a>
   </div>
   {% if assertion.evidence %}
-  <div>
+  <div class="share-button">
     <a href="{{ assertion.evidence }}">View badge evidence</a>
   </div>
+  {{ share_buttons.facebook(assertion.evidence) }}
+  {{ share_buttons.twitter(assertion.evidence) }}
   {% endif %}
+  {{ share_buttons.facebook('http://wtfwat.com') }}
   {% else %}
   <div class="not-earned">(You have not earned this badge yet)</div>
   {% endif %}

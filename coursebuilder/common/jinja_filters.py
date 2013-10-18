@@ -18,7 +18,9 @@ __author__ = 'John Orr (jorr@google.com)'
 
 import jinja2
 import safe_dom
+import logging
 import tags
+import urllib
 from models.models import MemcacheManager
 
 
@@ -74,6 +76,35 @@ _js_escapes.update((ord(u'%c' % z), u'\\u%04X' % z) for z in range(32))
 def escapejs(value):
     """Hex encodes characters for use in JavaScript strings."""
     return jinja2.utils.Markup(unicode(value).translate(_js_escapes))
+
+
+# Lifted from a newer version of jinja2
+string_types = (str, unicode)
+def do_urlencode(value):
+    """Escape strings for use in URLs (uses UTF-8 encoding).  It accepts both
+    dictionaries and regular strings as well as pairwise iterables.
+
+    .. versionadded:: 2.7
+    """
+    itemiter = None
+    if isinstance(value, dict):
+        itemiter = value.iteritems()
+    elif not isinstance(value, string_types):
+        try:
+            itemiter = iter(value)
+        except TypeError:
+            pass
+    if itemiter is None:
+        logging.debug('value is  %s, type %s', value, type(value))
+        if not isinstance(value, string_types):
+            value = unicode(value)
+        if isinstance(value, unicode):
+            value = value.encode('utf-8')
+        logging.debug('value now %s, type %s', value, type(value))
+        return unicode(urllib.quote(value))
+    return u'&'.join(unicode_urlencode(k) + '=' +
+                     unicode_urlencode(v) for k, v in itemiter)
+
 
 class MemcacheManagerWithTTL(object):
     def __init__(self, ttl):

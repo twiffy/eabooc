@@ -851,3 +851,10 @@ div.assessment {
   display: block;
   height: 0;
   visibility: hidden; }
+
+.share-button {
+  padding: 4px; }
+  .share-button img {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle; }
