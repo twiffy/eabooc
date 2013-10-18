@@ -242,7 +242,7 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
 
         job = issuer(REALLY, self.get_course(), part_num)
         job_id = job.job_id
-        deferred.defer(job.run)
+        deferred.defer(job.run, batch_size=50)
         self.redirect(self._action_url('watch', job_id=job_id))
 
     def get_watch(self):
