@@ -4,7 +4,7 @@ Wikifolios module for Google Course Builder
 
 from models import custom_modules, transforms
 from models.config import ConfigProperty
-from models.models import Student, EventEntity, MemcacheManager
+from models.models import Student, EventEntity, MemcacheManager, AssessmentTracker
 from models.roles import Roles
 from common import ckeditor, prefetch
 import bleach
@@ -1110,6 +1110,62 @@ class WikiUpdateListHandler(WikiBaseHandler):
         self.template_value['unit'] = self.find_unit_by_id
         self.render('wf_update_list.html')
 
+class ExamResetHandler(BaseHandler):
+    def get(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        if not Roles.is_super_admin():
+            self.abort(403, "no.")
+
+        self.response.write(Markup('''
+        <html><body>exam reset csv: (email,exam to reset)<br>
+        like 'test@example.com,Practices'<br>
+        <form action="/exam_reset" method="POST"><textarea name="group_csv"></textarea>
+        <br><input type="hidden" name="xsrf_token" value="%(xsrf)s">
+        <br><label><input type="checkbox" name="really"> really do it?</label>
+        <br><input type="submit"></form>
+        </body>
+        </html>
+        ''') % { 'xsrf': XsrfTokenManager.create_xsrf_token('exam_reset') })
+
+    def post(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        if not Roles.is_super_admin():
+            self.abort(403, "no.")
+
+        if not self.assert_xsrf_token_or_fail(self.request, 'exam_reset'):
+            return
+
+        import unicodecsv as csv
+        import StringIO
+
+        reader = csv.reader(
+                StringIO.StringIO(self.request.get('group_csv')),
+                delimiter=",",
+                )
+        really = bool(self.request.get('really', False))
+        self.response.write(Markup("Really do it? %s<br>") % str(really))
+        for line in reader:
+            student = Student.get_enrolled_student_by_email(line[0])
+
+            if student:
+                self.response.write(Markup('<span style="color: #060;"> . </span>'))
+                if really:
+                    AssessmentTracker.reset(student, line[1])
+                    EventEntity.record(
+                            'assessment-reset',
+                            users.get_current_user(),
+                            transforms.dumps({
+                                'student-email': student.key().name(),
+                                'assessment': line[1],
+                                }))
+
+            else:
+                self.response.write(Markup("<br>Couldn't find student by email: %s<br>") % repr(line))
+
 
 class HarrumphHandler(BaseHandler):
     def get(self):
@@ -1235,6 +1291,7 @@ def register_module():
             ('/updates', WikiUpdateListHandler),
             ('/comment_stream', WikiCommentStreamHandler),
             ('/grump', HarrumphHandler),
+            ('/exam_reset', ExamResetHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",

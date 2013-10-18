@@ -524,3 +524,10 @@ class AssessmentTracker(object):
 
         info['tries_left'] -= 1
         cls.set_info(student, unit_id, info)
+
+    @classmethod
+    def reset(cls, student, unit_id):
+        ent = StudentPropertyEntity.get(student,
+                cls.info_tmpl % unit_id)
+        if ent:
+            ent.delete()
