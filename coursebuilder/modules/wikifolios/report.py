@@ -85,6 +85,9 @@ class PartReport(db.Model):
         self.slug = config['slug']
         student_scores = course.get_all_scores(self.student)
         scores_to_save = []
+        for ur in self.unit_reports:
+            if ur.is_saved():
+                ur._run()
 
         for exam_id in config['assessments']:
             for maybe_exam in student_scores:

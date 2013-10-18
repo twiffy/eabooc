@@ -76,23 +76,27 @@ class BulkIssueMapper(LoggingMapper):
     KIND = Student
     FILTERS = [('is_participant', True)]
 
-    def __init__(self, really, course, part):
+    def __init__(self, really, course, part, host_url, re_run):
         super(BulkIssueMapper, self).__init__()
         self.really = really
         self.course = course
         self.part = part
+        self.host_url = host_url
+        self.re_run = re_run
         self.num_issued = 0
 
     def map(self, student):
         self.log.append('########## Student %s ##########' % student.key().name())
         report = PartReport.on(student, course=self.course, part=self.part)
+        if self.re_run:
+            report._run(self.course)
         if self.really:
             # not waiting for the batch because we need its key id.
             report.put_all()
 
         self.log.append(' Passed? %s.' % report.is_complete)
 
-        badge = report.badge
+        badge = Badge.get_by_key_name(part_config[self.part]['slug'])
         if not badge:
             self.log.append(' There is no badge with key_name %s (so I cannot issue a badge)' % report.slug)
 
@@ -100,8 +104,10 @@ class BulkIssueMapper(LoggingMapper):
             self.num_issued += 1
             if self.really and badge:
                 b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
-                b.evidence = self.request.host_url + '/badges/evidence?id=%d' % report.key().id()
-                self.log.append(' Issued badge, assertion id=%d' % b.key().id())
+                b.evidence = self.host_url + '/badges/evidence?id=%d' % report.key().id()
+                b.put()
+                self.log.append(' Issued badge, name=%s, assertion id=%d' % (
+                    badge.key().name(), b.key().id()))
                 return ([b], [])
             else:
                 self.log.append(' WOULD issue badge.')
@@ -120,11 +126,13 @@ class BulkLeaderIssueMapper(LoggingMapper):
     KIND = Student
     FILTERS = [('is_participant', True)]
 
-    def __init__(self, really, course, part):
+    def __init__(self, really, course, part, host_url, re_run):
         super(BulkLeaderIssueMapper, self).__init__()
         self.really = really
         self.course = course
         self.part = part
+        self.host_url = host_url
+        self.re_run = re_run
         self.best_by_group = defaultdict(default_dict_entry)
         self.leader_badge_key = part_config[part]['slug'] + '.leader'
 
@@ -139,6 +147,8 @@ class BulkLeaderIssueMapper(LoggingMapper):
         self.log.append('######### Student %s ##########' % student.key().name())
 
         part_report = PartReport.on(student, course=self.course, part=self.part)
+        if self.re_run:
+            part_report._run(self.course)
         if not part_report.is_complete:
             self.log.append(' Skipping, since not complete.')
             return ([], [])
@@ -176,10 +186,14 @@ class BulkLeaderIssueMapper(LoggingMapper):
                 continue
             if self.really:
                 for email in emails:
-                    # TODO need to get the evidence connected up here.
-                    a = Badge.issue(leader_badge,
-                            db.Key.from_path(Student.kind(), email))
-                    self.log.append('... ISSUED leader badge to %s, id=%d' % (email, a.key().id()))
+                    b = Badge.issue(leader_badge,
+                            db.Key.from_path(Student.kind(), email), put=False)
+                    report = PartReport.on(
+                            db.Key.from_path(Student.kind(), email),
+                            course=self.course, part=self.part)
+                    b.evidence = self.host_url + '/badges/evidence?id=%d' % report.key().id()
+                    b.put()
+                    self.log.append('... ISSUED leader badge to %s, id=%d' % (email, b.key().id()))
             else:
                 self.log.append('... WOULD ISSUE leader badge to %s' % ' '.join(emails))
         self._batch_write()
@@ -203,6 +217,7 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
         really_save = wtf.BooleanField('Really issue the badges and freeze the scores?', default=False)
         leader_or_completion = wtf.RadioField('Do you want to issue completion badges, or leader badges?',
                 choices=[(k, k) for k in issuer_mappers.keys()])
+        force_re_run_reports = wtf.BooleanField('Re-run all unit and part reports? Will delete old ones if you also choose Really freeze above.', default=False)
 
     def _action_url(self, action, **kwargs):
         params = dict(kwargs)
@@ -240,7 +255,7 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
 
         issuer = issuer_mappers[form.leader_or_completion.data]
 
-        job = issuer(REALLY, self.get_course(), part_num)
+        job = issuer(REALLY, self.get_course(), part_num, self.request.host_url, form.force_re_run_reports.data)
         job_id = job.job_id
         deferred.defer(job.run, batch_size=50)
         self.redirect(self._action_url('watch', job_id=job_id))
