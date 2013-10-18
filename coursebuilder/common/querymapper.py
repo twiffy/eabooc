@@ -1,5 +1,6 @@
 from google.appengine.ext import deferred, db
 from google.appengine.runtime import DeadlineExceededError
+from google.appengine.api.datastore.datastore_errors import Timeout
 import uuid
 import logging
 
@@ -65,7 +66,7 @@ class Mapper(object):
                 # Record the last entity we processed.
                 start_key = entity.key()
             self._batch_write()
-        except DeadlineExceededError:
+        except DeadlineExceededError, Timeout:
             # Write any unfinished updates to the datastore.
             # There is not enough time for this.
             #self._batch_write()
