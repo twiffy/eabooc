@@ -93,6 +93,7 @@ class StudentQuizScoresQuery(object):
     fields = [
             'email',
             'assessment',
+            'score',
             ] + ['q%d' % n for n in range(1, 100)]
 
     def run(self):
@@ -101,9 +102,11 @@ class StudentQuizScoresQuery(object):
             ans_dict = transforms.loads(ans_ent.data)
             for assessment, answers in ans_dict.iteritems():
                 student = Student.all().filter('user_id', ans_ent.key().name()).get()
+                s_scores = transforms.loads(student.scores)
                 d = {
                         'email': student.key().name(),
                         'assessment': assessment,
+                        'score': s_scores.get(assessment, '?????? wtf'),
                         }
 
                 for answer in answers:
