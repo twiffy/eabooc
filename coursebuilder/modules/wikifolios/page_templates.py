@@ -110,6 +110,21 @@ class UnitSixPageForm(wtf.Form):
 forms[6] = UnitSixPageForm
 templates[6] = 'wf_temp_u6.html'
 
+class UnitSevenPageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    define_formative = BleachedTextAreaField()
+    learning_progression = BleachedTextAreaField()
+    obstacles = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+    implementing = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[7] = UnitSevenPageForm
+templates[7] = 'wf_temp_u7.html'
+
+
 def viewable_model(model):
     # TODO maybe default values?
     d = db.to_dict(model)
