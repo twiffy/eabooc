@@ -1041,3 +1041,16 @@ div.assessment {
 .share-button.email input {
   width: 100%;
 }
+
+div.accordion-badge-faq {
+  margin: 10px;
+  border: solid thick darken($content-bg-color, 10%);
+  > div {
+    margin: 10px;
+  }
+  .badge-faq-heading {
+    font-size: 130%;
+    font-weight: bold;
+    cursor: pointer;
+  }
+}

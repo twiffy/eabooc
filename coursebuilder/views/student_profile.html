@@ -26,6 +26,21 @@
         {% for part in part_reports %}
         {{ part_report.profile_view(part, assertion_link) }}
         {% endfor %}
+        <div class="accordion-badge-faq">
+          <div class="badge-faq-heading">Questions about badges?  Click here.</div>
+          <div>
+            <h3>Who can see my badges?</h3>
+
+            <p>Nobody can see your badges unless you decide to share them.
+            Your privacy is important to us.</p>
+
+            <h3>If I share a badge, what will others see?</h3>
+
+            <p>They will see the Evidence page, which is linked above.  <b>This
+              includes your course work and your name.</b></p>
+
+          </div>
+        </div>
 
         <form action='student/editstudent' method='post'>
           <input type="hidden" name="xsrf_token" value="{{ student_edit_xsrf_token|escape }}">
@@ -65,5 +80,15 @@
 </div>
 
 <script src="https://beta.openbadges.org/issuer.js"></script>
+<script src="/assets/lib/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.accordion-badge-faq').accordion({
+      collapsible: true,
+      active: false,
+      heightStyle: 'content',
+    });
+  });
+</script>
 {% endblock %}
 

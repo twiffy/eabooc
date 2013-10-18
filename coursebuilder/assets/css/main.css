@@ -861,3 +861,13 @@ div.assessment {
 
 .share-button.email input {
   width: 100%; }
+
+div.accordion-badge-faq {
+  margin: 10px;
+  border: solid thick #e3dbbb; }
+  div.accordion-badge-faq > div {
+    margin: 10px; }
+  div.accordion-badge-faq .badge-faq-heading {
+    font-size: 130%;
+    font-weight: bold;
+    cursor: pointer; }
