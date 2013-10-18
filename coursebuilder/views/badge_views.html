@@ -4,18 +4,23 @@
   <div class="profile-badge-info">
     <img src="{{ badge.image }}" {% if not assertion %}class="not-issued"{% endif %}>
   </div>
-</div>
-<div class="badge-share-links">
-  {% if assertion %}
-  <div class="issue-link share-button">
-    <a href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">Click here to claim your badge!</a>
-  </div>
   {% if assertion.evidence %}
   <div class="share-button">
     <a href="{{ assertion.evidence }}">View badge evidence</a>
   </div>
+  {% endif %}
+</div>
+<div class="badge-share-links">
+  {% if assertion %}
+  <div class="issue-link share-button">
+    <img src="/assets/img/share/mozillaopenbadges.png" alt="Mozilla Open Badges" title="Mozilla Open Badges">
+    <a href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">Claim on Mozilla Badge Backpack</a>
+  </div>
+  {% if assertion.evidence %}
+  {{ share_buttons.email(assertion.evidence) }}
   {{ share_buttons.facebook(assertion.evidence) }}
   {{ share_buttons.twitter(assertion.evidence) }}
+  {{ share_buttons.gplus(assertion.evidence) }}
   {% endif %}
   {% else %}
   <div class="not-earned">(You have not earned this badge yet)</div>

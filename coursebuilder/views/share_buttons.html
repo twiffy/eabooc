@@ -7,15 +7,36 @@
     'facebook-share-dialog', 
     'width=626,height=436'); 
     return false;">
-    <img src="/assets/img/share/fb.jpg" alt="Facebook"> Share on Facebook
+    <img src="/assets/img/share/facebook.png" alt="Facebook"> Share on Facebook
   </a>
 </div>
 {% endmacro %}
 
 {% macro twitter(url) %}
 <div class="share-button twitter">
-  <a href="https://twitter.com/share?url={{ url|urlencode }}">
+  <a href="https://twitter.com/share?url={{ url|urlencode }}&amp;text={{
+    'Just earned a #digitalbadge on #booc'|urlencode
+    }}">
     <img src="/assets/img/share/twitter_icon.png" alt="Twitter"> Tweet on Twitter
   </a>
+</div>
+{% endmacro %}
+
+{% macro email(url) %}
+<div class="share-button email">
+  Here's the URL of the badge evidence, you can send it in e-mail, etc.<br>
+  <input type="text" value="{{ url }}" readonly="readonly"
+  onclick="this.select();">
+</div>
+{% endmacro %}
+
+{% macro gplus(url) %}
+<div class="share-button gplus">
+  <a href="https://plus.google.com/share?url={{ url|urlencode }}"
+    onclick="javascript:window.open(this.href, '',
+    'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return
+    false;">
+    <img src="/assets/img/share/GooglePlus.png" alt="Share on
+    Google+"> Share on Google+</a>
 </div>
 {% endmacro %}
