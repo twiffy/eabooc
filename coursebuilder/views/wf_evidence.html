@@ -28,10 +28,6 @@
         {% endif %}
       </div>
       <div>
-        {% if is_draft %}
-        <abbr class="wiki-draft-sign"
-          title="This page is not 'done' according to the author.">DRAFT</abbr>
-        {% endif %}
         by {{ author.name }}</div>
         {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
         {% block wiki_content %}
