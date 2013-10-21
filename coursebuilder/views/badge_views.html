@@ -25,6 +25,9 @@
   {% else %}
   <div class="not-earned">(You have not earned this badge yet)</div>
   {% endif %}
+  <div class="criteria-link share-button">
+    <a href="/badges/badge?name={{ badge.key().name()|urlencode }}&amp;action=criteria">Badge Criteria</a>
+  </div>
 </div>
 {%- endmacro %}
 {% macro evidence(badge, assertion) -%}
