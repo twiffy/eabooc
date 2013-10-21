@@ -26,7 +26,9 @@
   <div class="not-earned">(You have not earned this badge yet)</div>
   {% endif %}
   <div class="criteria-link share-button">
-    <a href="/badges/badge?name={{ badge.key().name()|urlencode }}&amp;action=criteria">Badge Criteria</a>
+    <a href="/badges/badge?name={{ badge.key().name()|urlencode }}&amp;action=criteria">
+      <img src="/assets/img/share/criteria.png">
+      Badge Criteria</a>
   </div>
 </div>
 {%- endmacro %}
