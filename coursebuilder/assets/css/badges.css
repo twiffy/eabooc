@@ -20,3 +20,10 @@ div#navbar {
     padding-left: 8px;
     padding-right: 8px;
     font-size: 125%; }
+
+textarea {
+  width: 30em;
+  height: 10em; }
+
+input[type="text"] {
+  width: 30em; }
