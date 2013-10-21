@@ -16,6 +16,13 @@ _parts = {
             'slug': 'practices',
             'deadline': datetime.datetime(year=2013, month=10, day=20, hour=0, minute=0, second=0),
             },
+        2: {
+            'assessments': ['Principles'],
+            'units': [5,6,7],
+            'name': 'Assessment Principles',
+            'slug': 'principles',
+            'deadline': datetime.datetime(year=2013, month=11, day=6, hour=0, minute=0, second=0),
+            },
         }
 
 ASSESSMENT_PASSING_SCORE = 80
