@@ -1,4 +1,5 @@
 from models import custom_modules
+import urlparse
 from google.appengine.ext import deferred
 from models.models import Student
 from models.roles import Roles
@@ -165,6 +166,7 @@ class BadgeHandler(BadgeItemHandler):
     def to_dict(self, obj):
         d = super(BadgeHandler, self).to_dict(obj)
         d['criteria'] = self.request.host_url + self._action_url(action='criteria')
+        d['image'] = urlparse.urljoin(self.request.host_url, d['image'])
         return d
 
     def get_criteria(self):
