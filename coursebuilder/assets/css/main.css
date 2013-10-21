@@ -871,3 +871,11 @@ div.accordion-badge-faq {
     font-size: 130%;
     font-weight: bold;
     cursor: pointer; }
+
+div.badge-faq-contents > div {
+  margin-bottom: 1em; }
+div.badge-faq-contents .literal {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  background-color: #f9f8f1;
+  font-family: monospace; }

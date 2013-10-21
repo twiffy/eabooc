@@ -1054,3 +1054,14 @@ div.accordion-badge-faq {
     cursor: pointer;
   }
 }
+div.badge-faq-contents {
+  > div {
+    margin-bottom: 1em;
+  }
+  .literal {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    background-color: lighten($content-bg-color, 5%);
+    font-family: monospace;
+  }
+}
