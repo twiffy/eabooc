@@ -32,3 +32,15 @@ deploy: no-sandbox
 	appcfg update . --email booc.class -V stats
 	git checkout -- app.yaml appengine_config.py
 	git push . -f HEAD:deployed
+
+badge-dep:
+	git diff --quiet --exit-code
+	git diff --cached --quiet --exit-code
+	git diff badge-dep --stat
+	@echo
+	@echo "Going to deploy to BADGE-ish PRODUCTION-ish: https://badges-dot-booc-iu.appspot.com/"
+	@echo
+	sleep 5
+	appcfg update . --email booc.class -V badges
+	git push . -f HEAD:badge-dep
+
