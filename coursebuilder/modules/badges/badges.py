@@ -85,7 +85,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         self.response.content_type = 'application/json'
         json_encoder = util.BadgeJSONEncoder(self.request.host_url, indent=4)
 
-        if hasattr(obj, 'revoked') and obj.revoked:
+        if getattr(obj, 'revoked', False):
             self.error(410)
             self.response.write(json_encoder.encode(
                 { 'revoked': True } ))
@@ -95,10 +95,13 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
 
     def head_json(self):
         obj = self._get_object_or_abort()
+
         if not obj:
             self.error(404)
-        elif hasattr(obj, 'revoked') and obj.revoked:
+        elif getattr(obj, 'revoked', False):
             self.error(410)
+
+        self.response.content_type = 'application/json'
         return
 
     def get_view(self):
