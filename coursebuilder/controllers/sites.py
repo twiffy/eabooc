@@ -1079,6 +1079,21 @@ class ApplicationRequestHandler(webapp2.RequestHandler):
             count_stats(self)
             unset_path_info()
 
+    def head(self, path):
+        try:
+            set_path_info(path)
+            handler = self.get_handler()
+            if not handler:
+                self.error(404)
+            elif not hasattr(handler, 'head'):
+                self.error(405)
+            else:
+                set_default_response_headers(handler)
+                handler.head()
+        finally:
+            count_stats(self)
+            unset_path_info()
+
     def post(self, path):
         try:
             set_path_info(path)

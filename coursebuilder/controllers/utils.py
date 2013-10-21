@@ -131,6 +131,25 @@ class ReflectiveRequestHandler(object):
 
         return handler()
 
+    def head(self):
+        """Handles HEAD."""
+        action = self.request.get('action')
+        if not action:
+            action = self.default_action
+
+        if not hasattr(self, 'head_actions') or action not in self.head_actions:
+            logging.warning('Action %s is not in allowed HEAD actions', action)
+            self.error(405)
+            return
+
+        handler = getattr(self, 'head_%s' % action)
+        if not handler:
+            logging.warning('Handler for head_%s not present', action)
+            self.error(404)
+            return
+
+        return handler()
+
     def post(self):
         """Handles POST."""
         action = self.request.get('action')

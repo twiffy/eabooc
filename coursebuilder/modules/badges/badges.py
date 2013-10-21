@@ -32,6 +32,7 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
     # JSON is the only public view from this handler.
     default_action = 'list'
     get_actions = ['view', 'json', 'edit', 'list']
+    head_actions = ['json']
     post_actions = ['save', 'delete']
 
     def _action_url(self, action, name=not_specified):
@@ -84,6 +85,12 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
         self.response.content_type = 'application/json'
         json_encoder = util.BadgeJSONEncoder(self.request.host_url, indent=4)
         self.response.write(json_encoder.encode(self.to_dict(obj)))
+
+    def head_json(self):
+        obj = self._get_object_or_abort()
+        if not obj:
+            self.error(404)
+        return
 
     def get_view(self):
         if not users.is_current_user_admin():
