@@ -30,6 +30,7 @@ def find_badge_and_assertion(student, part):
 
     assertions = [Badge.is_issued_to(bk, student) for bk in badge_keys]
 
+    # if they have actually received a badge, this will find it.
     for badge, assertion in zip(badge_ents, assertions):
         if assertion:
             if badge:
@@ -38,8 +39,11 @@ def find_badge_and_assertion(student, part):
                 logging.warning('Found assertion %s for nonexistant badge :(',
                         assertion.key())
 
-    logging.warning('No badges found with key_name %s (or .leader)', config['slug'])
-    return (None, None)
+    # otherwise, we show the default badge.
+    if not badge_ents[1]:
+        logging.warning('No badges found with key_name %s (or .leader)', config['slug'])
+
+    return (badge_ents[1], None)
 
 
 class PartReport(db.Model):
