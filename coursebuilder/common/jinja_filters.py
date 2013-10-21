@@ -95,12 +95,10 @@ def do_urlencode(value):
         except TypeError:
             pass
     if itemiter is None:
-        logging.debug('value is  %s, type %s', value, type(value))
         if not isinstance(value, string_types):
             value = unicode(value)
         if isinstance(value, unicode):
             value = value.encode('utf-8')
-        logging.debug('value now %s, type %s', value, type(value))
         return unicode(urllib.quote(value))
     return u'&'.join(unicode_urlencode(k) + '=' +
                      unicode_urlencode(v) for k, v in itemiter)
