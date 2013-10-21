@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block subtitle %}Badge Criteria{% endblock %}
+
+{% block main_content %}
+<div class="gcb-article gcb-aside badge-criteria-page clearfix">
+  <img class="gcb-pull-right" src="{{ badge.image }}">
+  <h2>{{ badge.name }}</h2>
+  <div class="description">{{ badge.description }}</div>
+  <h3>Criteria:</h3>
+  <div class="criteria">
+    {{ badge.criteria|safe }}
+  </div>
+</div>
+{% endblock %}

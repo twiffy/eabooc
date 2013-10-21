@@ -171,10 +171,8 @@ class BadgeHandler(BadgeItemHandler):
         self.personalize_page_and_get_user()
         # it's ok if there's no user, so we don't save the return val
         self.template_value['navbar'] = {}
-        self.template_value['content'] = Markup(
-                '<div class="gcb-article gcb-aside">%s</div>'
-                ) % Markup(obj.criteria)
-        self.render('bare.html')
+        self.template_value['badge'] = obj
+        self.render('badge_criteria.html')
 
 
 class AssertionHandler(BadgeItemHandler):
