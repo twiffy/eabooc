@@ -84,12 +84,21 @@ class BadgeItemHandler(BaseHandler, ReflectiveRequestHandler):
 
         self.response.content_type = 'application/json'
         json_encoder = util.BadgeJSONEncoder(self.request.host_url, indent=4)
+
+        if hasattr(obj, 'revoked') and obj.revoked:
+            self.error(410)
+            self.response.write(json_encoder.encode(
+                { 'revoked': True } ))
+            return
+
         self.response.write(json_encoder.encode(self.to_dict(obj)))
 
     def head_json(self):
         obj = self._get_object_or_abort()
         if not obj:
             self.error(404)
+        elif hasattr(obj, 'revoked') and obj.revoked:
+            self.error(410)
         return
 
     def get_view(self):

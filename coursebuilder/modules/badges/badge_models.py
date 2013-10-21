@@ -62,7 +62,7 @@ class BadgeAssertion(BaseEntity):
     expires = db.DateProperty(indexed=False)
     badge = db.ReferenceProperty(Badge, collection_name='assertions')
     recipient = db.ReferenceProperty(Student, collection_name='badge_assertions')
-    # maybe add .revoked.
+    revoked = db.BooleanProperty(default=False)
 
     evidence = db.StringProperty() # URL of evidence
 
