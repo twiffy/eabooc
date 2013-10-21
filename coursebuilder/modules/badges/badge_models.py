@@ -23,6 +23,7 @@ class Badge(BaseEntity):
     description = db.StringProperty(indexed=False)
     image = db.StringProperty(indexed=False)
     criteria = db.TextProperty() # Served from a separate link...
+    evidence_page_criteria = db.TextProperty()
     issuer = db.ReferenceProperty(Issuer)
     tags = db.StringListProperty(indexed=False)
     # Don't know how to do this well yet...

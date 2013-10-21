@@ -159,6 +159,7 @@ class BadgeHandler(BadgeItemHandler):
         fields['criteria'] = Markup('<a href="%(url)s">criteria page</a>') % {
                 'url': fields['criteria'],
                 }
+        fields['evidence_page_criteria'] = Markup(fields['evidence_page_criteria'])
         return super(BadgeHandler, self).htmlize_fields(fields)
 
     def to_dict(self, obj):

@@ -35,12 +35,8 @@
     href="https://booc-iu.appspot.com/">Educational Assessment BOOC</a>.
 </div>
 <h2>Criteria for issuance</h2>
-<div>{{ part.badge.criteria|safe }}</div>
+<div>{{ part.badge.evidence_page_criteria|safe }}</div>
 <h2>Evidence</h2>
-<div>
-  To see their work, follow the links below.  The discussions are
-  not included in this view, for peer privacy.
-</div>
 <div class="part-report clearfix">
   <div class="scores">
     <div class="timestamp">As of {{ part.timestamp.strftime('%Y-%m-%d at %H:%M UTC:') }}</div>
