@@ -171,8 +171,6 @@ class BadgeHandler(BadgeItemHandler):
 
     def get_criteria(self):
         obj = self._get_object_or_abort()
-        self.personalize_page_and_get_user()
-        # it's ok if there's no user, so we don't save the return val
         self.template_value['navbar'] = {}
         self.template_value['badge'] = obj
         self.render('badge_criteria.html')
