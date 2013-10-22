@@ -826,8 +826,6 @@ div.assessment {
   .part-report .unit-stats, .part-report .assessment-stats {
     font-style: italic;
     font-size: 95%; }
-  .part-report .incomplete-reasons {
-    color: #500; }
   .part-report .scores {
     float: left;
     width: 35%;
