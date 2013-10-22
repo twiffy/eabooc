@@ -463,7 +463,7 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
     default_action = "view"
     get_actions = ["view", "edit"]
-    post_actions = ["save", "comment", "endorse", "flag", "exemplary"]
+    post_actions = ["save", "comment", "endorse", "flag", "exemplary", 'incomplete']
 
     class _NavForm(wtf.Form):
         unit = wtf.IntegerField('Unit number', [
@@ -575,6 +575,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             #comments = page.comments.run(limit=1000)
             endorsements = Annotation.endorsements(page).run(limit=50)
             exemplaries = Annotation.exemplaries(page).run(limit=50)
+            self.template_value['incompletes'] = Annotation.incompletes(page).run(limit=50)
 
             comments = WikiComment.comments_on_page(page)
 
@@ -583,6 +584,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.template_value['ckeditor_comment_content'] = (
                         ckeditor.allowed_content(COMMENT_TAGS,
                             COMMENT_ATTRIBUTES, COMMENT_STYLES))
+
+            if Roles.is_course_admin(self.app_context):
+                self.template_value['can_mark_incomplete'] = True
 
             endorsements = prefetcher.prefetch(endorsements,
                     Annotation.who)
@@ -620,6 +624,41 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 self.template_value['alert'] = "This user has not created this wikifolio page yet!"
             self.error(200)
             self.render(page_templates.templates[query['unit']])
+
+    def post_incomplete(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+        if not Roles.is_course_admin(self.app_context):
+            self.abort(403)
+        query = self._get_query(user)
+        if not query:
+            logging.warning("Query was broken")
+            self.abort(404)
+
+        page = self._find_page(query)
+        if not page:
+            self.abort(404)
+
+        if 'mark' in self.request.POST:
+            Annotation.incomplete(
+                    page, user, self.request.POST['reason'])
+            EventEntity.record(
+                    'admin-mark-incomplete', users.get_current_user(), transforms.dumps({
+                        'page-author': page.author.key().name(),
+                        'page': str(page.key()),
+                        'reason': self.request.POST['reason'],
+                        }))
+        elif 'undo' in self.request.POST:
+            EventEntity.record(
+                    'admin-undo-mark-incomplete', users.get_current_user(), transforms.dumps({
+                        'page-author': page.author.key().name(),
+                        'page': str(page.key()),
+                        'reason': self.request.POST.get('reason', '(none)'),
+                        }))
+            db.delete(Annotation.incompletes(page).fetch(limit=100))
+        self.redirect(self._create_action_url(query, 'view'))
+
 
     def post_exemplary(self):
         user = self.personalize_page_and_get_wiki_user()

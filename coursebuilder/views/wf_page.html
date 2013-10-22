@@ -128,6 +128,25 @@
         {% endfor %}
       </div>
       <div class="gcb-col-11">
+        {% if can_mark_incomplete %}
+        <form action="{{ action_url('incomplete') }}" method="POST">
+          <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('incomplete') }}">
+          {% endif %}
+          {% for inc in incompletes %}
+          {% if loop.first %}<p>This wikifolio has been marked as INCOMPLETE by the instructors.
+          {% if can_mark_incomplete %}
+          <input type="submit" name="undo" value="undo">
+          {% endif %}</p>
+          {% endif %}
+          <p>{{ inc.reason }}</p>
+          {% endfor %}
+
+          {% if can_mark_incomplete %}
+          <label>As an admin, you can mark this assignment as INCOMPLETE.  E.g. for plagiarism.
+            <input type="text" name="reason" style="width: 80%"></label>
+          <input type="submit" name="mark" value="mark">
+        </form><br>
+        {% endif %}
         <small>Warning: If you are in the middle of writing a comment, finish and post it before using the Endorse and Exemplary buttons.</small>
       </div>
     </div>
