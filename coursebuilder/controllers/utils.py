@@ -563,6 +563,22 @@ class StudentProfileHandler(BaseHandler):
         self.render('student_profile.html')
 
 
+class StudentEditBadgeNameHandler(BaseHandler):
+    """Handles edits to student records by students."""
+
+    def post(self):
+        """Handles POST requests."""
+        student = self.personalize_page_and_get_enrolled()
+        if not student:
+            return
+
+        if not self.assert_xsrf_token_or_fail(self.request, 'student-edit'):
+            return
+
+        Student.set_badge_name_for_current(self.request.get('badgename'))
+
+        self.redirect('/student/home')
+
 class StudentEditStudentHandler(BaseHandler):
     """Handles edits to student records by students."""
 

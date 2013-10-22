@@ -228,12 +228,17 @@ class Student(BaseEntity):
     is_teaching_assistant = db.BooleanProperty(default=False)
     group_id = db.StringProperty(indexed=True)
 
+    # The name that appears on their certificates and badges
+    badge_name = db.StringProperty(indexed=False)
+
     wikis_posted = MoreDifferentIntListProperty()
 
     _memcache_ids = set(('email', 'wiki_id'))
 
     def __init__(self, *args, **kwargs):
         super(Student, self).__init__(*args, **kwargs)
+        if not self.badge_name:
+            self.badge_name = self.name
 
     def ensure_wiki_id(self):
         if not self.wiki_id:
@@ -318,6 +323,20 @@ class Student(BaseEntity):
             .filter("wiki_id =", wiki_id)
             .get())
         return student
+
+    @classmethod
+    def set_badge_name_for_current(cls, new_name):
+        """Gives student a new badge name."""
+        user = users.get_current_user()
+        if not user:
+            raise Exception('No current user.')
+        if new_name:
+            student = Student.get_by_email(user.email())
+            if not student:
+                raise Exception('Student instance corresponding to user %s not '
+                                'found.' % user.email())
+            student.badge_name = new_name
+            student.put()
 
     @classmethod
     def rename_current(cls, new_name):

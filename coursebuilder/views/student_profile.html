@@ -115,15 +115,26 @@
               and follow the directions there.  It will give you a snippet of HTML
               that you can add to a web site.
             </div>
+
+            <h3>Can I change the name displayed on my badges?</h3>
+
+            <div>Yes!  You can enter a different name into the "Name for Badges
+              and Certificates" field below.  This might be useful if, for
+              example, you'd like a more formal version of your name to appear
+              on your badge.</div>
+
+
           </div>
         </div>
 
         <form action='student/editstudent' method='post'>
           <input type="hidden" name="xsrf_token" value="{{ student_edit_xsrf_token|escape }}">
           <h2><label for="name">
-            {# I18N: Label for the input field that allows the student to change the name on his/her certificate. #}
-            {{ gettext('New Name') }}
+            {# I18N: Label for the input field that allows the student to change
+            the name displayed to other students. #}
+            {{ gettext('New Display Name') }}
           </label></h2>
+          <p>This is the name that other participants see on the web site.</p>
           <fieldset style="border: none;">
             <p><input name="name" id="name" type="text" size="40">
               <input type="hidden" name="email" value="{{ student.key().name() }}"></p>
@@ -131,8 +142,28 @@
 
           <p>
             <button class="gcb-button" type="submit">
-              {# I18N: Text for a button that allows the student to save changes to his/her name for the certificate. #}
+              {# I18N: Text for a button that allows the student to save changes
+              to his/her name as displayed to other students. #}
               {{ gettext('Change Name') }}
+            </button>
+          </p>
+        </form>
+
+        <form action='student/editbadgename' method='post'>
+          <input type="hidden" name="xsrf_token" value="{{ student_edit_xsrf_token|escape }}">
+          <h2><label for="badgename">
+            {# I18N: Label for the input field that allows the student to change the name on his/her certificate. #}
+            {{ gettext("New Name for Badges and Certificates") }}
+          </label></h2>
+          <fieldset style="border: none;">
+            <p><input name="badgename" id="badgename" type="text" size="40">
+              <input type="hidden" name="email" value="{{ student.key().name() }}"></p>
+          </fieldset>
+
+          <p>
+            <button class="gcb-button" type="submit">
+              {# I18N: Text for a button that allows the student to save changes to his/her name for the certificate. #}
+              {{ gettext('Change Badge Name') }}
             </button>
           </p>
         </form>
