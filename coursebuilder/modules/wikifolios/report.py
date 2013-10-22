@@ -94,6 +94,7 @@ class PartReport(db.Model):
     def _run(self, course):
         config = _parts[self.part]
         self.slug = config['slug']
+        self.timestamp = datetime.datetime.now()
         student_scores = course.get_all_scores(self.student)
         scores_to_save = []
         for ur in self.unit_reports:
@@ -188,6 +189,7 @@ class UnitReport(db.Model):
         self.promotions = Annotation.exemplaries(page).count(limit=COUNT_LIMIT)
         self.incomplete_reasons = [inc.reason for inc in Annotation.incompletes(page).run(limit=10)]
         self.wiki_fields = transforms.dumps({k: getattr(page, k) for k in page.dynamic_properties()})
+        self.timestamp = datetime.datetime.now()
 
     @property
     def is_complete(self):
