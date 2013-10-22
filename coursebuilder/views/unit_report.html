@@ -13,7 +13,7 @@
   </div>
   <div class="incomplete-reasons">
     {% for reason in report.incomplete_reasons %}
-    <p>{{ reason|safe }}</p>
+    Incomplete: {{ reason|safe }}<br>
     {% endfor %}
   </div>
 </div>
