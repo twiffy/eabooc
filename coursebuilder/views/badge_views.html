@@ -2,7 +2,13 @@
 {% macro profile(badge, assertion, assertion_link) -%}
 <div class="part-badge-image">
   <div class="profile-badge-info">
-    <img src="{{ badge.image }}" {% if not assertion %}class="not-issued"{% endif %}>
+    {% if assertion.evidence %}
+    <a href="{{ assertion.evidence }}">
+      {% endif %}
+      <img src="{{ badge.image }}" {% if not assertion %}class="not-issued"{% endif %}>
+      {% if assertion.evidence %}
+    </a>
+    {% endif %}
   </div>
   {% if assertion.evidence %}
   <div class="share-button">
@@ -25,11 +31,6 @@
   {% else %}
   <div class="not-earned">(You have not earned this badge yet)</div>
   {% endif %}
-  <div class="criteria-link share-button">
-    <a href="/badges/badge?name={{ badge.key().name()|urlencode }}&amp;action=criteria">
-      <img src="/assets/img/share/criteria.png">
-      Badge Criteria</a>
-  </div>
 </div>
 {%- endmacro %}
 {% macro evidence(badge, assertion) -%}
