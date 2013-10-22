@@ -805,3 +805,6 @@ div.assessment {
   line-height: 1.54; }
   div.assessment br {
     line-height: 1.8; }
+
+.incomplete-reasons {
+  color: #500; }

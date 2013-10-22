@@ -132,14 +132,18 @@
         <form action="{{ action_url('incomplete') }}" method="POST">
           <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('incomplete') }}">
           {% endif %}
+          {% if can_mark_incomplete or editor_role %}
           {% for inc in incompletes %}
-          {% if loop.first %}<p>This wikifolio has been marked as INCOMPLETE by the instructors.
+          {% if loop.first %}<p class="incomplete-reasons">This wikifolio has been marked as INCOMPLETE by the instructors.
+          Please fix the problems listed below, and then contact the instructors.  You will not receive credit for
+          this work until then.
           {% if can_mark_incomplete %}
           <input type="submit" name="undo" value="undo">
           {% endif %}</p>
           {% endif %}
-          <p>{{ inc.reason }}</p>
+          <p class="incomplete-reasons">{{ inc.reason }}</p>
           {% endfor %}
+          {% endif %}
 
           {% if can_mark_incomplete %}
           <label>As an admin, you can mark this assignment as INCOMPLETE.  E.g. for plagiarism.
