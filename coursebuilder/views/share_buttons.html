@@ -1,6 +1,6 @@
 {% macro facebook(url) %}
 <div class="share-button facebook">
-  <a href="https://www.facebook.com/sharer/sharer.php?u={{ url|urlencode }}"
+  <a id="facebook" href="https://www.facebook.com/sharer/sharer.php?u={{ url|urlencode }}"
     target="_blank">
     <img src="/assets/img/share/facebook.png" alt="Facebook"> Share on Facebook
   </a>
@@ -9,7 +9,7 @@
 
 {% macro twitter(url) %}
 <div class="share-button twitter">
-  <a href="https://twitter.com/share?url={{ url|urlencode }}&amp;text={{
+  <a id="twitter" href="https://twitter.com/share?url={{ url|urlencode }}&amp;text={{
     'Just earned a #digitalbadge on #booc'|urlencode
     }}" target="_blank">
     <img src="/assets/img/share/twitter_icon.png" alt="Twitter"> Tweet on Twitter
@@ -19,7 +19,7 @@
 
 {% macro email(url) %}
 <div class="share-button email">
-  <a href="mailto:?subject={{ 'I just earned a digital badge!'|urlencode
+  <a id="email" href="mailto:?subject={{ 'I just earned a digital badge!'|urlencode
     }}&amp;body={{ ('I just earned a digital badge in the Educational Assessment BOOC!\n'
     + 'You can see my work here:\n' + url)|urlencode }}" target="_blank">
     <img src="/assets/img/share/email.png" alt="E-mail"> Share via e-mail</a>
@@ -28,7 +28,7 @@
 
 {% macro gplus(url) %}
 <div class="share-button gplus">
-  <a href="https://plus.google.com/share?url={{ url|urlencode }}" target="_blank">
+  <a id="gplus" href="https://plus.google.com/share?url={{ url|urlencode }}" target="_blank">
     <img src="/assets/img/share/GooglePlus.png" alt="Share on
     Google+"> Share on Google+</a>
 </div>

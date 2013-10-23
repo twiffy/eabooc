@@ -12,15 +12,16 @@
   </div>
   {% if assertion.evidence %}
   <div class="share-button">
-    See your <a href="{{ assertion.evidence }}">Evidence page</a> for this badge.
+    See your <a id="view-evidence" href="{{ assertion.evidence }}">Evidence page</a> for this badge.
   </div>
   {% endif %}
 </div>
 <div class="badge-share-links">
   {% if assertion %}
   <div class="issue-link share-button">
+    <a id="obi-issue" href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">
     <img src="/assets/img/share/mozillaopenbadges.png" alt="Mozilla Open Badges" title="Mozilla Open Badges">
-    <a href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">Claim on Mozilla Badge Backpack</a>
+      Claim on Mozilla Badge Backpack</a>
   </div>
   {% if assertion.evidence %}
   {{ share_buttons.email(assertion.evidence) }}

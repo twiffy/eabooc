@@ -10,6 +10,16 @@
 {% endblock %}
 
 {% block main_content %}
+{% if ga_analytics_key %}
+<script>
+  $(document).ready(function() {
+    // track clicking on share buttons
+    $('div.share-button a').on('click', function() {
+      ga('send', 'event', 'share-button', 'click', $(this).attr('id'));
+    });
+  });
+</script>
+{% endif %}
 <div id="gcb-main">
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
