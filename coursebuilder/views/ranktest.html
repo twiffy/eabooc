@@ -43,13 +43,14 @@
         $('.integer-ranking > ol').sortable({
           placeholder: 'ui-state-highlight',
           update: function(event, ui) {
-            var order = $(this).sortable("toArray", {attribute: 'value'});
-            $('.integer-ranking textarea').text(order.join("\n"));
+            $this = $(this);
+            var order = $this.sortable("toArray", {attribute: 'value'});
+            $('textarea#' + $this.attr('for')).text(order.join("\n"));
           }
         });
         $('.integer-ranking > ol').disableSelection();
         $('.integer-ranking li').addClass('ui-state-default');
-        $('.integer-ranking textarea').hide();
+        //$('.integer-ranking textarea').hide();
       });
 
     </script>

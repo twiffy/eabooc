@@ -27,7 +27,7 @@ class IntegerRankingWidget(object):
 
         html = [Markup('<div class="%s">') % class_]
                 
-        html.append('<ol %s>' % html_params(**kwargs))
+        html.append('<ol %s>' % html_params(for_=field.id))
         for index, choice in field.iter_choices():
             html.append(Markup('<li value="%d">%s</li>') % (index, choice))
         html.append('</ol>')
@@ -59,7 +59,6 @@ class IntegerRankingField(IntegerListPropertyField):
             return enumerate(self.choices, start=1)
 
     def process_formdata(self, valuelist):
-        # this is broken : it should happen after super() and iterate on .data....
         super(IntegerRankingField, self).process_formdata(valuelist)
         if self.data:
             index_list = self.data
@@ -90,13 +89,19 @@ class IntegerRankingFieldTest(TestCase):
     def test_with_data(self):
         form = self.F(DummyPostData(a=['1\n2']))
         self.assertEqual(form.a.data, ['cheese', 'ham'])
-        self.assertEqual(form.a(), '''<div class="integer-ranking"><ol ><li value="1">cheese</li><li value="2">ham</li></ol><textarea id="a" name="a">1\n2</textarea></div>''')
+        rendered = form.a()
+        self.assertTrue('integer-ranking' in rendered)
+        self.assertTrue('textarea' in rendered)
+        self.assertLess(rendered.index('cheese'), rendered.index('ham'))
 
     def test_re_ordering(self):
         form = self.F(DummyPostData(a='2\n1'))
         self.assertEqual(form.a.data, ['ham', 'cheese'])
         rendered = form.a()
+        # since we have the post in opposite order, it must be rendered in opposite order
         self.assertLess(rendered.index('ham'), rendered.index('cheese'))
+        # the field value must also be 2,1.
+        self.assertLess(rendered.rindex('2'), rendered.rindex('1'))
 
     def test_bad_data(self):
         form = self.F(DummyPostData(a=['3']))
