@@ -121,6 +121,23 @@ class StudentQuizScoresQuery(object):
 
                 yield d
 
+class AllWikifolioQuery(object):
+    def __init__(self, request):
+        pass
+
+    fields = ('email', 'unit', 'endorsements')
+
+    def run(self):
+        query = WikiPage.all().run(keys_only=True)
+        for page_key in query:
+            if page_key.name() == 'profile':
+                continue
+            yield {
+                    'email': page_key.parent().name(),
+                    'unit': page_key.name()[5:],
+                    'endorsements':  Annotation.endorsements(what=page_key).count()
+                    }
+
 class CurrentGroupIDQuery(object):
     def __init__(self, request):
         pass
@@ -299,6 +316,7 @@ analytics_queries = {
         'student_edit_history': StudentEditHistoryQuery,
         'student_csv': StudentCsvQuery,
         'student_quiz_answers': StudentQuizScoresQuery,
+        'all_wikifolios_endorsements': AllWikifolioQuery,
         }
 
 
