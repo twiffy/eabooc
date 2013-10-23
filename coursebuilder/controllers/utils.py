@@ -211,6 +211,7 @@ class ApplicationHandler(webapp2.RequestHandler):
             'is_read_write_course'] = self.app_context.fs.is_read_write()
         self.template_value['is_super_admin'] = Roles.is_super_admin()
         self.template_value['ga_analytics_key'] = GOOGLE_ANALYTICS_KEY.value
+        self.template_value['ga_analytics_site'] = self.request.host
         self.template_value[COURSE_BASE_KEY] = self.get_base_href(self)
         environ = self.app_context.get_template_environ(
             self.template_value[COURSE_INFO_KEY]['course']['locale'],
