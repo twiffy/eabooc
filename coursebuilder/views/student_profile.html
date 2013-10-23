@@ -17,6 +17,10 @@
     $('div.share-button a').on('click', function() {
       ga('send', 'event', 'share-button', 'click', $(this).attr('id'));
     });
+
+    $('div.badge-faq-heading').on('click', function() {
+      ga('send', 'event', 'badge-faq', 'click');
+    });
   });
 </script>
 {% endif %}
