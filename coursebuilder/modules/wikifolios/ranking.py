@@ -28,8 +28,8 @@ class IntegerRankingWidget(object):
         html = [Markup('<div class="%s">') % class_]
                 
         html.append('<ol %s>' % html_params(**kwargs))
-        for choice in field.iter_choices():
-            html.append(Markup('<li>%s</li>') % choice)
+        for index, choice in field.iter_choices():
+            html.append(Markup('<li value="%d">%s</li>') % (index, choice))
         html.append('</ol>')
         html.append(TextArea()(field, **kwargs))
         html.append('</div>')
@@ -40,11 +40,23 @@ class IntegerRankingWidget(object):
 class IntegerRankingField(IntegerListPropertyField):
     widget = IntegerRankingWidget()
     def __init__(self, label=None, validators=None, choices=None, **kwargs):
+        kwargs.setdefault('default', choices)
         super(IntegerRankingField, self).__init__(label, validators, **kwargs)
         self.choices = choices
 
+    def _value(self):
+        if self.data:
+            return '\n'.join([str(self.choices.index(v) + 1) for v in self.data])
+        else:
+            return '\n'.join([str(i) for i in range(1, len(self.choices) + 1)])
+
     def iter_choices(self):
-        return iter(self.choices)
+        if self.data:
+            # TODO: handle ranking e.g. the top 3 of 5 things.
+            assert len(self.data) == len(self.choices)
+            return [(self.choices.index(v) + 1, v) for v in self.data]
+        else:
+            return enumerate(self.choices, start=1)
 
     def process_formdata(self, valuelist):
         # this is broken : it should happen after super() and iterate on .data....
@@ -76,9 +88,15 @@ class IntegerRankingFieldTest(TestCase):
         a = IntegerRankingField(choices=['cheese', 'ham'])
 
     def test_with_data(self):
-        form = self.F(DummyPostData(a=['2\n1']))
+        form = self.F(DummyPostData(a=['1\n2']))
+        self.assertEqual(form.a.data, ['cheese', 'ham'])
+        self.assertEqual(form.a(), '''<div class="integer-ranking"><ol ><li value="1">cheese</li><li value="2">ham</li></ol><textarea id="a" name="a">1\n2</textarea></div>''')
+
+    def test_re_ordering(self):
+        form = self.F(DummyPostData(a='2\n1'))
         self.assertEqual(form.a.data, ['ham', 'cheese'])
-        self.assertEqual(form.a(), '''<div class="integer-ranking"><ol ><li>cheese</li><li>ham</li></ol><textarea id="a" name="a">2\n1</textarea></div>''')
+        rendered = form.a()
+        self.assertLess(rendered.index('ham'), rendered.index('cheese'))
 
     def test_bad_data(self):
         form = self.F(DummyPostData(a=['3']))
