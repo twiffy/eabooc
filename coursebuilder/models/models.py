@@ -383,6 +383,10 @@ class Student(BaseEntity):
         return key == self.get_key()
 
     @webapp2.cached_property
+    def has_posted_four_wikis(self):
+        return len(self.wikis_posted or []) > 3
+
+    @webapp2.cached_property
     def has_posted_any_wikis(self):
         return bool(self.wikis_posted)
 
