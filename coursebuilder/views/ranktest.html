@@ -32,8 +32,10 @@
     </div>
     <div class="wiki-grey-theme">
       <form action="/ranktest" method="POST">
+        {{ form.errors }}
         {% for f in form %}
         <div class="wiki-area">
+          {{ f.label }}<br>
           {{ f }}
         </div>
         {% endfor %}
