@@ -320,6 +320,36 @@ analytics_queries = {
         }
 
 
+class ListIncompletesQuery(object):
+    fields = [
+            'student',
+            'unit',
+            'marked_by',
+            'timestamp',
+            'reason',
+            ]
+
+    def __init__(self, request):
+        pass
+
+    def run(self):
+        incs = Annotation.incompletes().run()
+        for inc in incs:
+            d = {
+                    'timestamp': inc.timestamp,
+                    'reason': inc.reason,
+                    }
+            what_key = Annotation.what.get_value_for_datastore(inc)
+            d['unit'] = what_key.name()
+            d['student'] = what_key.parent().name()
+
+            marked_by_key = Annotation.who.get_value_for_datastore(inc)
+            d['marked_by'] = marked_by_key.name()
+            yield d
+
+analytics_queries['list_incompletes'] = ListIncompletesQuery
+
+
 class AnalyticsHandler(BaseHandler):
     class NavForm(wtf.Form):
         query = wtf.RadioField('Analytics query',
