@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="{{course_info.course.locale}}">
+  <head>
+    <base href="{{ gcb_course_base }}" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>HI</title>
+
+    <link href="assets/css/main.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&amp;subset=latin" rel="stylesheet">
+
+    <!-- jQuery should be imported first -->
+    <script src="assets/lib/jquery-1.7.2.min.js"></script>
+    <script src="assets/lib/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <link rel="stylesheet" href="assets/lib/jquery-ui-1.10.3.custom/css/booc-theme/jquery-ui-1.10.3.custom.min.css">
+    <style>
+      li.ui-state-default, li.ui-state-highlight {
+        list-style-type: none;
+        height: 1.5em;
+        line-height: 1.2em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>HI THERE</h1>
+    <div style="border: solid thin blue">Got data:<br>
+      {{ got_data.__repr__() }}
+    </div>
+    <div class="wiki-grey-theme">
+      <form action="/ranktest" method="POST">
+        {% for f in form %}
+        <div class="wiki-area">
+          {{ f }}
+        </div>
+        {% endfor %}
+        <input type="submit">
+      </form>
+    </div>
+    <div id="wut"></div>
+
+    <script>
+      $(document).ready(function() {
+        $('.integer-ranking > ol').sortable({
+          placeholder: 'ui-state-highlight',
+          update: function(event, ui) {
+            var order = $(this).sortable("toArray", {attribute: 'value'});
+            $('.integer-ranking textarea').text(order.join("\n"));
+          }
+        });
+        $('.integer-ranking > ol').disableSelection();
+        $('.integer-ranking li').addClass('ui-state-default');
+        $('.integer-ranking textarea').hide();
+      });
+
+    </script>
+  </body>
+</html>

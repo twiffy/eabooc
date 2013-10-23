@@ -1315,6 +1315,25 @@ class WarmupHandler(WikiBaseHandler):
         self.render('wf_profile.html')
 
 
+from ranking import IntegerRankingField
+class RankTestHandler(BaseHandler):
+    class Form(wtf.Form):
+        rank = IntegerRankingField(label='My Label',
+                choices=['Batman', 'Robin', 'An Actual Bat'])
+
+    def get(self):
+        self.template_value['form'] = self.Form()
+        self.render('ranktest.html')
+
+    def post(self):
+        form = self.Form(self.request.POST)
+        self.template_value['got_data'] = form.data
+        self.template_value['form'] = form
+        self.render('ranktest.html')
+
+
+
+
 module = None
 
 def register_module():
@@ -1322,6 +1341,7 @@ def register_module():
 
     from report_handlers import EvidenceHandler, BulkIssuanceHandler
     handlers = [
+            ('/ranktest', RankTestHandler),
             ('/wiki', WikiPageHandler),
             ('/wikicomment', WikiCommentHandler),
             ('/wikiprofile', WikiProfileHandler),
