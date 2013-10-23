@@ -109,4 +109,6 @@ class IntegerRankingFieldTest(TestCase):
 
     def test_negative(self):
         form = self.F(DummyPostData(a='-1'))
+        form.validate()
         self.assertEqual(form.a.data, None)
+        self.assertGreater(len(form.errors), 0)

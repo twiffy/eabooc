@@ -1329,6 +1329,7 @@ class RankTestHandler(BaseHandler):
 
     def post(self):
         form = self.Form(self.request.POST)
+        form.validate()
         self.template_value['got_data'] = form.data
         self.template_value['form'] = form
         self.render('ranktest.html')
