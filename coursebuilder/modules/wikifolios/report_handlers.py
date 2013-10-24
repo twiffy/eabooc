@@ -111,6 +111,8 @@ class BulkIssueMapper(LoggingMapper):
                 return ([b], [])
             else:
                 self.log.append(' WOULD issue badge.')
+        else:
+            Badge.ensure_not_issued(badge, student)
         return ([], [])
 
     def finish(self):

@@ -3,6 +3,7 @@ from models.models import BaseEntity, Student
 from webapp2 import cached_property
 from jinja2 import Markup
 import datetime
+import logging
 
 class Issuer(BaseEntity):
     # Fields from the OBI specification
@@ -37,15 +38,40 @@ class Badge(BaseEntity):
 
     @classmethod
     def issue(cls, badge_or_key, recipient, expires=None, put=True):
-        # maybe also create an EventEntity.
-        assertion = BadgeAssertion(
-                issuedOn=datetime.date.today(),
-                expires=expires,
-                badge=badge_or_key,
-                recipient=recipient)
+        existing = BadgeAssertion.all().filter('recipient', recipient).filter('badge', badge_or_key).filter('revoked', False).fetch()
+        if len(existing) > 0:
+            assertion = existing.pop()
+            if len(existing) > 0:
+                logging.warning('There is more than one assertion tying %s to %s, revoking extras.', recipient, badge_or_key)
+                to_put = []
+                for e in existing:
+                    e.revoked = True
+                    to_put.append(e)
+                db.put(to_put)
+        else:
+            assertion = BadgeAssertion(
+                    badge=badge_or_key,
+                    recipient=recipient)
+
+        assertion.issuedOn = datetime.date.today()
+        assertion.expires = expires
+        assertion.badge = badge_or_key
+        assertion.recipient = recipient
+        assertion.revoked = False
+
         if put:
             assertion.put()
         return assertion
+
+    @classmethod
+    def ensure_not_issued(cls, badge_or_key, recipient):
+        existing = BadgeAssertion.all().filter('recipient', recipient).filter('badge', badge_or_key).filter('revoked', False).run()
+        to_put = []
+        for e in existing:
+            e.revoked = True
+            to_put.append(e)
+
+        db.put(to_put)
 
     @classmethod
     def is_issued_to(cls, badge_or_key, recipient):
@@ -53,6 +79,7 @@ class Badge(BaseEntity):
         q = BadgeAssertion.all()
         q.filter('badge', badge_or_key)
         q.filter('recipient', recipient)
+        q.filter('revoked', False)
         return q.get()
 
 
