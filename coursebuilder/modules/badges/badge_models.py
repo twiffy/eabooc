@@ -38,7 +38,7 @@ class Badge(BaseEntity):
 
     @classmethod
     def issue(cls, badge_or_key, recipient, expires=None, put=True):
-        existing = BadgeAssertion.all().filter('recipient', recipient).filter('badge', badge_or_key).filter('revoked', False).fetch()
+        existing = BadgeAssertion.all().filter('recipient', recipient).filter('badge', badge_or_key).filter('revoked', False).fetch(30)
         if len(existing) > 0:
             assertion = existing.pop()
             if len(existing) > 0:
