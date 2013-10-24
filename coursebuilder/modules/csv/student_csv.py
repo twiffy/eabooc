@@ -361,13 +361,16 @@ class BadgeAssertionQuery(object):
             'evidence',
             'id',
             ]
+    exclude_revoked = True
 
     def __init__(self, request):
         pass
 
     def run(self):
-        asserts = badge_models.BadgeAssertion.all().run()
-        for ass in asserts:
+        asserts = badge_models.BadgeAssertion.all()
+        if self.exclude_revoked:
+            asserts.filter('revoked', False)
+        for ass in asserts.run():
             d = {}
             for f in ['issuedOn', 'expires', 'revoked', 'evidence']:
                 d[f] = getattr(ass, f)
@@ -378,7 +381,12 @@ class BadgeAssertionQuery(object):
 
             yield d
 
+class BadgeAssertionQueryWithRevoked(BadgeAssertionQuery):
+    def __init__(self, request):
+        self.exclude_revoked = False
+
 analytics_queries['badge_assertions'] = BadgeAssertionQuery
+analytics_queries['badge_assertions_with_revoked'] = BadgeAssertionQueryWithRevoked
 
 
 class AnalyticsHandler(BaseHandler):
