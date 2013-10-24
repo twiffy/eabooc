@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block subtitle %}Unit {{unit}} Resources{% endblock %}
+
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <h2>Unit {{ unit }} Resources
+      From {{ group_id }}</h2>
+
+      {% for author, res_list in resources %}
+      <div>
+        {{ student_link(author) }} writes:<br>
+        {% for res in res_list %}
+        <div>{{ res|safe }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

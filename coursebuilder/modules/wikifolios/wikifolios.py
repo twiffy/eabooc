@@ -814,6 +814,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         for k,v in form.data.items():
             setattr(page, k, db.Text(v))
         page.unit = query['unit']
+
+        if page.author_email == user.key().name():
+            page.group_id = user.group_id
+        else:
+            page.group_id = page.author.group_id
+
         is_draft = bool(self.request.POST.get('Draft', False))
         page.is_draft = is_draft
         page.put()
@@ -1301,6 +1307,51 @@ class NotificationListHandler(WikiBaseHandler):
         self.render('wf_all_notifications.html')
 
 
+class ClassWikiHandler(WikiBaseHandler):
+    resource_field_name = {
+            8: ['resources']
+            }
+
+    def get(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+
+        try:
+            unit = int(self.request.GET.get('unit', ''))
+        except ValueError:
+            pass
+        if not unit:
+            self.redirect('/')
+            return
+
+        field_names = self.resource_field_name.get(unit, None)
+        if not field_names:
+            self.template_value['content'] = Markup(
+                    'Sorry, there are no public resources for unit %d'
+                    ) % unit
+            self.render('bare.html')
+            return
+
+        # if we do "all groups" we probably still want to group by group...
+        all_groups = self.request.GET.get('all', False)
+
+        query = WikiPage.all().filter('unit', unit)
+        if not all_groups:
+            query.filter('group_id', user.group_id)
+
+        def author_and_fields(pages):
+            for p in pages:
+                yield (p.author,
+                        [ getattr(p, field) for field in field_names ])
+
+
+        self.template_value['resources'] = author_and_fields(query.run())
+        self.template_value['group_id'] = 'All Groups' if all_groups else user.group_id
+        self.template_value['unit'] = unit
+        self.render('wf_class_wiki.html')
+
+
 class WarmupHandler(WikiBaseHandler):
     def get(self):
         # warm up the caches for jinja templates
@@ -1346,6 +1397,7 @@ def register_module():
     handlers = [
             ('/ranktest', RankTestHandler),
             ('/wiki', WikiPageHandler),
+            ('/classwiki', ClassWikiHandler),
             ('/wikicomment', WikiCommentHandler),
             ('/wikiprofile', WikiProfileHandler),
             ('/notification', NotificationHandler),

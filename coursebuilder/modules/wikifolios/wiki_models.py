@@ -10,7 +10,7 @@ class WikiPage(db.Expando):
     unit = db.IntegerProperty()
     edited_timestamp = db.DateTimeProperty(auto_now=True)
     is_draft = db.BooleanProperty(default=False)
-    # keep update time?  keep history????
+    group_id = db.StringProperty(default='')
 
     @cached_property
     def author(self):
