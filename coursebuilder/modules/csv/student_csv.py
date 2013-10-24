@@ -355,6 +355,7 @@ class BadgeAssertionQuery(object):
     fields = [
             'badge_name',
             'recipient',
+            'email',
             'issuedOn',
             'expires',
             'revoked',
@@ -376,7 +377,9 @@ class BadgeAssertionQuery(object):
                 d[f] = getattr(ass, f)
 
             d['badge_name'] = badge_models.BadgeAssertion.badge.get_value_for_datastore(ass).name()
-            d['recipient'] = badge_models.BadgeAssertion.recipient.get_value_for_datastore(ass).name()
+            student = ass.recipient
+            d['recipient'] = student.badge_name
+            d['email'] = student.key().name()
             d['id'] = ass.key().id()
 
             yield d
