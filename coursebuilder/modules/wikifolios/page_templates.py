@@ -4,6 +4,7 @@ import bleach
 from jinja2 import Markup
 from google.appengine.ext import db
 from wiki_bleach import BleachedTextAreaField
+from ranking import IntegerRankingField
 
 templates = {}
 forms = {}
@@ -124,6 +125,12 @@ class UnitSevenPageForm(wtf.Form):
 forms[7] = UnitSevenPageForm
 templates[7] = 'wf_temp_u7.html'
 
+class UnitEightPageForm(wtf.Form):
+    resources = BleachedTextAreaField()
+    #batman = IntegerRankingField(choices=['Batman', 'Robin', 'An Actual Bat'])
+
+forms[8] = UnitEightPageForm
+templates[8] = 'wf_temp_u8.html'
 
 def viewable_model(model):
     # TODO maybe default values?
