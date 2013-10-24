@@ -1321,7 +1321,7 @@ class RankTestHandler(BaseHandler):
         rank = IntegerRankingField(label='My Label',
                 choices=['Batman', 'Robin', 'An Actual Bat'])
         rank2 = IntegerRankingField(label='My Label 2',
-                choices=['Teemo', 'LeBlanc', 'Karma', 'Zed'])
+                choices=['Eating', 'Sleeping', 'Dancing', 'Reading'])
 
     def get(self):
         self.template_value['form'] = self.Form()
