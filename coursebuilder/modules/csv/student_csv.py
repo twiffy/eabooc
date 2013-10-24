@@ -6,6 +6,7 @@ from models.models import StudentAnswersEntity
 from models import transforms
 from models.roles import Roles
 from modules.regconf.regconf import FormSubmission
+from modules.badges import badge_models
 from controllers.utils import BaseHandler
 from google.appengine.ext import db
 import logging
@@ -348,6 +349,36 @@ class ListIncompletesQuery(object):
             yield d
 
 analytics_queries['list_incompletes'] = ListIncompletesQuery
+
+
+class BadgeAssertionQuery(object):
+    fields = [
+            'badge_name',
+            'recipient',
+            'issuedOn',
+            'expires',
+            'revoked',
+            'evidence',
+            'id',
+            ]
+
+    def __init__(self, request):
+        pass
+
+    def run(self):
+        asserts = badge_models.BadgeAssertion.all().run()
+        for ass in asserts:
+            d = {}
+            for f in ['issuedOn', 'expires', 'revoked', 'evidence']:
+                d[f] = getattr(ass, f)
+
+            d['badge_name'] = badge_models.BadgeAssertion.badge.get_value_for_datastore(ass).name()
+            d['recipient'] = badge_models.BadgeAssertion.recipient.get_value_for_datastore(ass).name()
+            d['id'] = ass.key().id()
+
+            yield d
+
+analytics_queries['badge_assertions'] = BadgeAssertionQuery
 
 
 class AnalyticsHandler(BaseHandler):
