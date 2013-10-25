@@ -894,3 +894,10 @@ div.badge-faq-contents .literal {
 
 .wiki-grey-theme .ui-accordion-content.ui-widget-content a {
   color: #99bbf6; }
+
+.class-wiki div.contribution {
+  background: #f9f8f1;
+  border: thin solid #e3dbbb;
+  padding: 4px;
+  margin: 1px;
+  list-style: none; }

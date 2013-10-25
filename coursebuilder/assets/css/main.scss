@@ -1082,3 +1082,12 @@ div.badge-faq-contents {
 .wiki-grey-theme .ui-accordion-content.ui-widget-content a {
   color: #99bbf6;
 }
+
+.class-wiki div.contribution {
+
+  background: lighten($content-bg-color, 5%);
+  border: thin solid darken($content-bg-color, 10%);
+  padding: 4px;
+  margin: 1px;
+  list-style: none;
+}

@@ -2,7 +2,7 @@
 {% block subtitle %}Unit {{unit}} Resources{% endblock %}
 
 {% block main_content %}
-<div class="gcb-aux">
+<div class="gcb-aux class-wiki">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
       <h2>Unit {{ unit }} Resources
@@ -16,8 +16,9 @@
       </table>
 
       {% for author, res_list in resources %}
-      <div>
-        {{ student_link(author) }} ({{ author.group_id }}) writes:<br>
+      <div class="contribution">
+        {{ student_link(author) }} ({{ author.group_id }}) 
+        <a href="/wiki?unit={{ unit }}&student={{ author.wiki_id }}&action=view">writes</a>:<br>
         {% for res in res_list %}
         <div>{{ res|safe }}</div>
         {% endfor %}
