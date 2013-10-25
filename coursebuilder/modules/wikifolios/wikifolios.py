@@ -1320,6 +1320,7 @@ class ClassWikiHandler(WikiBaseHandler):
         if not user:
             return
 
+        unit = None
         try:
             unit = int(self.request.GET.get('unit', ''))
         except ValueError:
@@ -1340,6 +1341,7 @@ class ClassWikiHandler(WikiBaseHandler):
         all_groups = self.request.GET.get('all', False)
 
         query = WikiPage.all().filter('unit', unit)
+        query.filter('is_draft', False)
         if not all_groups:
             query.filter('group_id', user.group_id)
 
