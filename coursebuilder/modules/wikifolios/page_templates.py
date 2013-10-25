@@ -128,6 +128,7 @@ templates[7] = 'wf_temp_u7.html'
 class UnitEightPageForm(wtf.Form):
     resources = BleachedTextAreaField()
     batman = IntegerRankingField(choices=['Batman', 'Robin', 'An Actual Bat'])
+    batman_justification = BleachedTextAreaField()
 
 forms[8] = UnitEightPageForm
 templates[8] = 'wf_temp_u8.html'

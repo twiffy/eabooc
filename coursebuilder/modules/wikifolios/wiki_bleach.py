@@ -80,4 +80,4 @@ class BleachedTextAreaField(wtf.TextAreaField):
             self.data = ''
 
     def read_only_view(self):
-        return self.data
+        return self.data or ''

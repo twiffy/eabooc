@@ -888,3 +888,6 @@ div.badge-faq-contents .literal {
 .wiki-area li.ui-state-highlight {
   list-style-type: none;
   height: 3.2em; }
+
+.wiki-grey-theme .ui-accordion-content.ui-widget-content a {
+  color: #99bbf6; }
