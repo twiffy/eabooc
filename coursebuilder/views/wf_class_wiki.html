@@ -6,11 +6,18 @@
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
       <h2>Unit {{ unit }} Resources
-      From {{ group_id }}</h2>
+        From {{ group_id }}</h2>
+
+      <table>
+        <tr>
+          <td><a href="/classwiki?unit={{ unit }}">Your Group's Resources</a>
+          <td><a href="/classwiki?unit={{ unit }}&all=True">Everyone's Resources</a></td>
+        </tr>
+      </table>
 
       {% for author, res_list in resources %}
       <div>
-        {{ student_link(author) }} writes:<br>
+        {{ student_link(author) }} ({{ author.group_id }}) writes:<br>
         {% for res in res_list %}
         <div>{{ res|safe }}</div>
         {% endfor %}
