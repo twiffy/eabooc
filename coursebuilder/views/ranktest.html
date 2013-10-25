@@ -52,12 +52,12 @@
           update: function(event, ui) {
             $this = $(this);
             var order = $this.sortable("toArray", {attribute: 'value'});
-            $('textarea#' + $this.attr('for')).text(order.join("\n"));
+            $('input#' + $this.attr('for')).val(order.join(","));
           }
         });
         $('.integer-ranking > ol').disableSelection();
         $('.integer-ranking li').addClass('ui-state-default');
-        $('.integer-ranking textarea').hide();
+        $('.integer-ranking input').hide();
       });
 
     </script>

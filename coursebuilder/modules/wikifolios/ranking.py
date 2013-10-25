@@ -1,7 +1,7 @@
 import wtforms as wtf
 from wtforms.ext.appengine.fields import StringListPropertyField, IntegerListPropertyField
 from jinja2 import Markup
-from wtforms.widgets.core import html_params, HTMLString, TextArea
+from wtforms.widgets.core import html_params, HTMLString, TextInput
 from unittest import TestCase
 
 class StringRankingField(StringListPropertyField):
@@ -37,7 +37,7 @@ class IntegerRankingWidget(object):
                 unicode(x) for x in html)
 
 
-class IntegerRankingField(IntegerListPropertyField):
+class IntegerRankingField(wtf.Field):
     widget = IntegerRankingWidget()
     def __init__(self, label=None, validators=None, choices=None, **kwargs):
         kwargs.setdefault('default', choices)
@@ -46,9 +46,9 @@ class IntegerRankingField(IntegerListPropertyField):
 
     def _value(self):
         if self.data:
-            return '\n'.join([str(self.choices.index(v) + 1) for v in self.data])
+            return ', '.join([str(self.choices.index(v) + 1) for v in self.data])
         else:
-            return '\n'.join([str(i) for i in range(1, len(self.choices) + 1)])
+            return ', '.join([str(i) for i in range(1, len(self.choices) + 1)])
 
     def iter_choices(self):
         if self.data:
@@ -58,10 +58,16 @@ class IntegerRankingField(IntegerListPropertyField):
         else:
             return enumerate(self.choices, start=1)
 
+    def parse_int_list(self, raw):
+        if raw:
+            try:
+                return [int(value) for value in raw.split(',')]
+            except ValueError:
+                raise ValueError('Not a valid list of integers, separated by commas')
+
     def process_formdata(self, valuelist):
-        super(IntegerRankingField, self).process_formdata(valuelist)
-        if self.data:
-            index_list = self.data
+        if valuelist:
+            index_list = self.parse_int_list(valuelist[0])
             self.data = []
             try:
                 for i in index_list:
@@ -87,15 +93,15 @@ class IntegerRankingFieldTest(TestCase):
         a = IntegerRankingField(choices=['cheese', 'ham'])
 
     def test_with_data(self):
-        form = self.F(DummyPostData(a=['1\n2']))
+        form = self.F(DummyPostData(a=['1, 2']))
         self.assertEqual(form.a.data, ['cheese', 'ham'])
         rendered = form.a()
         self.assertTrue('integer-ranking' in rendered)
-        self.assertTrue('textarea' in rendered)
+        self.assertTrue('input' in rendered)
         self.assertLess(rendered.index('cheese'), rendered.index('ham'))
 
     def test_re_ordering(self):
-        form = self.F(DummyPostData(a='2\n1'))
+        form = self.F(DummyPostData(a='2,1'))
         self.assertEqual(form.a.data, ['ham', 'cheese'])
         rendered = form.a()
         # since we have the post in opposite order, it must be rendered in opposite order
