@@ -24,6 +24,7 @@ class StringRankingField(StringListPropertyField):
 class IntegerRankingWidget(object):
     def __call__(self, field, **kwargs):
         class_ = kwargs.get('class', 'integer-ranking')
+        class_ += ' editable'
 
         html = [Markup('<div class="%s">') % class_]
                 
@@ -31,7 +32,27 @@ class IntegerRankingWidget(object):
         for index, choice in field.iter_choices():
             html.append(Markup('<li value="%d">%s</li>') % (index, choice))
         html.append('</ol>')
-        html.append(TextArea()(field, **kwargs))
+        html.append(wtf.widgets.TextInput()(field, **kwargs))
+        html.append('</div>')
+        return u''.join(
+                unicode(x) for x in html)
+
+class ReadOnlyRankingWidget(object):
+    def __call__(self, field, **kwargs):
+        class_ = kwargs.get('class', 'integer-ranking')
+
+        html = [Markup('<div class="%s">') % class_]
+
+        html.append('<ol>')
+
+        if not field.data:
+            html.append(Markup('<li>%s have not been ranked yet.</li>') % (
+                ', '.join([choice for i, choice in field.iter_choices()])))
+        else:
+            for _, choice in field.iter_choices():
+                html.append(Markup('<li>%s</li>') % (choice))
+
+        html.append('</ol>')
         html.append('</div>')
         return u''.join(
                 unicode(x) for x in html)
@@ -40,7 +61,6 @@ class IntegerRankingWidget(object):
 class IntegerRankingField(wtf.Field):
     widget = IntegerRankingWidget()
     def __init__(self, label=None, validators=None, choices=None, **kwargs):
-        kwargs.setdefault('default', choices)
         super(IntegerRankingField, self).__init__(label, validators, **kwargs)
         self.choices = choices
 
@@ -77,6 +97,9 @@ class IntegerRankingField(wtf.Field):
             except (ValueError, IndexError):
                 self.data = None
                 raise ValueError('Not a valid item number')
+
+    def read_only_view(self):
+        return ReadOnlyRankingWidget()(self)
 
 
 # --------- tests ----------
@@ -118,3 +141,33 @@ class IntegerRankingFieldTest(TestCase):
         form.validate()
         self.assertEqual(form.a.data, None)
         self.assertGreater(len(form.errors), 0)
+
+    def test_read_only_view(self):
+        form = self.F(DummyPostData(a='2, \n\n1'))
+        self.assertEqual(form.a.data, ['ham', 'cheese'])
+        rend = form.a.read_only_view()
+        self.assertLess(rend.index('ham'), rend.index('cheese'))
+        self.assertTrue('input' not in rend)
+        self.assertTrue('textarea' not in rend)
+        self.assertTrue('li' in rend)
+        self.assertTrue('not been ranked yet' not in rend)
+
+    def test_no_data_ro_view(self):
+        form = self.F(DummyPostData())
+        rend = form.a.read_only_view()
+        self.assertTrue('input' not in rend)
+        self.assertTrue('textarea' not in rend)
+        self.assertTrue('ham' in rend)
+        self.assertTrue('cheese' in rend)
+        self.assertTrue('not been ranked yet' in rend)
+
+    def test_creation_from_model(self):
+        class FakeModel(object):
+            def __init__(self, **kwargs):
+                for k, v in kwargs.iteritems():
+                    setattr(self, k, v)
+        o = FakeModel(a=['ham', 'cheese'])
+        form = self.F(None, o)
+        rendered = form.a()
+        self.assertLess(rendered.index('ham'), rendered.index('cheese'))
+        self.assertLess(rendered.rindex('2'), rendered.rindex('1'))

@@ -812,7 +812,10 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         # TODO fix
         del old_page['edited_timestamp']
         for k,v in form.data.items():
-            setattr(page, k, db.Text(v))
+            if isinstance(v, basestring):
+                setattr(page, k, db.Text(v))
+            else:
+                setattr(page, k, v)
         page.unit = query['unit']
 
         if page.author_email == user.key().name():

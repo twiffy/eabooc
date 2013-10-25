@@ -127,14 +127,18 @@ templates[7] = 'wf_temp_u7.html'
 
 class UnitEightPageForm(wtf.Form):
     resources = BleachedTextAreaField()
-    #batman = IntegerRankingField(choices=['Batman', 'Robin', 'An Actual Bat'])
+    batman = IntegerRankingField(choices=['Batman', 'Robin', 'An Actual Bat'])
 
 forms[8] = UnitEightPageForm
 templates[8] = 'wf_temp_u8.html'
 
 def viewable_model(model):
-    # TODO maybe default values?
-    d = db.to_dict(model)
-    return { k: Markup(v) for k,v in d.items() }
+    import logging
+    logging.warning('viewable_model called')
+    unit = model.unit
+    if not unit:
+        unit = 'profile'
+    form = forms[unit](None, model)
+    return { f.id: Markup(f.read_only_view()) for f in form }
 
 
