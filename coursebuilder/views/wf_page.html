@@ -178,6 +178,7 @@
 </div>
 <script src="/assets/lib/Placeholders.min.js"></script>
 {% if editing %}
+<script src="assets/js/jquery.ui.touch-punch.min.js"></script>
 <script src="/assets/ckeditor/ckeditor.js"></script>
 <script src="/assets/ckeditor/adapters/jquery.js"></script>
 <script>
@@ -188,4 +189,19 @@
   });
 </script>
 {% endif %}
+<script>
+  $(document).ready( function() {
+    $('.integer-ranking.editable > ol').sortable({
+      placeholder: 'ui-state-highlight',
+      update: function(event, ui) {
+        $this = $(this);
+        var order = $this.sortable("toArray", {attribute: 'value'});
+        $('input#' + $this.attr('for')).val(order.join(","));
+      }
+    });
+    $('.integer-ranking > ol').disableSelection();
+    $('.integer-ranking li').addClass('ui-state-default');
+    $('.integer-ranking input').hide();
+  });
+</script>
 {% endblock %}

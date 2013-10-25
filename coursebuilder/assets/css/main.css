@@ -879,3 +879,12 @@ div.badge-faq-contents .literal {
   padding-right: 0.5em;
   background-color: #f9f8f1;
   font-family: monospace; }
+
+.wiki-area li.ui-state-default {
+  list-style-type: none;
+  padding: 1em;
+  line-height: 1.2em; }
+
+.wiki-area li.ui-state-highlight {
+  list-style-type: none;
+  height: 3.2em; }
