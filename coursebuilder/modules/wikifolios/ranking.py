@@ -51,7 +51,8 @@ class IntegerRankingField(wtf.Field):
         if self.data:
             return ', '.join([str(self.choices.index(v) + 1) for v in self.data])
         else:
-            return ', '.join([str(i) for i in range(1, len(self.choices) + 1)])
+            #return ', '.join([str(i) for i in range(1, len(self.choices) + 1)])
+            return ''
 
     def iter_choices(self):
         if self.data:
@@ -69,8 +70,11 @@ class IntegerRankingField(wtf.Field):
                 raise ValueError('Not a valid list of integers, separated by commas')
 
     def process_formdata(self, valuelist):
+        index_list = None
         if valuelist:
             index_list = self.parse_int_list(valuelist[0])
+
+        if index_list:
             self.data = []
             try:
                 for i in index_list:
@@ -134,6 +138,14 @@ class IntegerRankingFieldTest(TestCase):
         self.assertNotIn('textarea', rend)
         self.assertIn('li', rend)
         self.assertNotIn('not been ranked yet', rend)
+
+    def test_no_data_view(self):
+        form = self.F(DummyPostData())
+        rend = form.a()
+        self.assertIn('input', rend)
+        self.assertIn('ham', rend)
+        self.assertIn('cheese', rend)
+        self.assertNotIn(',', rend)
 
     def test_no_data_ro_view(self):
         # TODO: this doesn't ever show up, we always submit the ranking our first time.
