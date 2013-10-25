@@ -130,19 +130,20 @@ class IntegerRankingFieldTest(TestCase):
         self.assertEqual(form.a.data, ['ham', 'cheese'])
         rend = form.a.read_only_view()
         self.assertLess(rend.index('ham'), rend.index('cheese'))
-        self.assertTrue('input' not in rend)
-        self.assertTrue('textarea' not in rend)
-        self.assertTrue('li' in rend)
-        self.assertTrue('not been ranked yet' not in rend)
+        self.assertNotIn('input', rend)
+        self.assertNotIn('textarea', rend)
+        self.assertIn('li', rend)
+        self.assertNotIn('not been ranked yet', rend)
 
     def test_no_data_ro_view(self):
+        # TODO: this doesn't ever show up, we always submit the ranking our first time.
         form = self.F(DummyPostData())
         rend = form.a.read_only_view()
-        self.assertTrue('input' not in rend)
-        self.assertTrue('textarea' not in rend)
-        self.assertTrue('ham' in rend)
-        self.assertTrue('cheese' in rend)
-        self.assertTrue('not been ranked yet' in rend)
+        self.assertNotIn('input', rend)
+        self.assertNotIn('textarea', rend)
+        self.assertIn('ham', rend)
+        self.assertIn('cheese', rend)
+        self.assertIn('not been ranked yet', rend)
 
     def test_creation_from_model(self):
         class FakeModel(object):
