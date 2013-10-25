@@ -126,10 +126,22 @@ forms[7] = UnitSevenPageForm
 templates[7] = 'wf_temp_u7.html'
 
 class UnitEightPageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    interpreting = BleachedTextAreaField()
     resources = BleachedTextAreaField()
-    batman = IntegerRankingField(choices=['Batman', 'Robin', 'An Actual Bat'],
+    intended_uses = BleachedTextAreaField()
+    actual_uses = BleachedTextAreaField()
+    ranking = IntegerRankingField(
+            choices=['Percentiles', 'Grade Equivalent Scores', 'Scale Scores'],
             validators=[wtf.validators.Optional()])
-    batman_justification = BleachedTextAreaField()
+    ranking_justification = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+
+    explaining_scores = BleachedTextAreaField()
+    race_to_top = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
 
 forms[8] = UnitEightPageForm
 templates[8] = 'wf_temp_u8.html'
