@@ -1127,6 +1127,7 @@ class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
         return whose + what
 
 class WikiCommentStreamHandler(WikiBaseHandler):
+    '''A list, for admins, of all comments.'''
     def get(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
@@ -1142,6 +1143,24 @@ class WikiCommentStreamHandler(WikiBaseHandler):
         self.template_value['comments'] = latest_comments
 
         self.render('wf_admin_comment_list.html')
+
+
+class CommentListHandler(WikiBaseHandler):
+    '''A list of your own comments.'''
+    def get(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+
+        latest_comments = WikiComment.all()
+        latest_comments.filter('author', user)
+        latest_comments.order('-added_time')
+        latest_comments = prefetch.prefetch_refprops(latest_comments,
+                WikiComment.author)
+
+        self.template_value['comments'] = latest_comments
+
+        self.render('wf_comment_list.html')
 
 
 class WikiUpdateListHandler(WikiBaseHandler):
@@ -1415,6 +1434,7 @@ def register_module():
             ('/exam_reset', ExamResetHandler),
             ('/badges/evidence', EvidenceHandler),
             ('/badges/bulk_issue', BulkIssuanceHandler),
+            ('/student/comments', CommentListHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",

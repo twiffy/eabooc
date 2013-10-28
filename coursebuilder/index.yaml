@@ -178,6 +178,12 @@ indexes:
 
 - kind: WikiComment
   properties:
+  - name: author
+  - name: added_time
+    direction: desc
+
+- kind: WikiComment
+  properties:
   - name: topic
   - name: added_time
 

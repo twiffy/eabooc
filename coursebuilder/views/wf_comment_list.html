@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block subtitle %}
+Your Comments
+{% endblock %}
+{% block main_content %}
+<div id="admin-comment-list" class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside" id="comment-area">
+      <div>This is a list of all your comments.  To get back to the page
+        where you made the comment, click on the 'permalink' at the bottom
+        of a comment.</div>
+      {% include "comment_area.html" %}
+    </div>
+  </div>
+</div>
+{% endblock %}
