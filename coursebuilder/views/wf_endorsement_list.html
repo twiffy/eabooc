@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block subtitle %}
+Your Endorsements
+{% endblock %}
+{% block main_content %}
+<div id="endorsement-list" class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <div>This is a list of all your endorsements.  To get back to the page
+        you endorsed, click on the unit number.</div>
+
+      {% for en in endorsements %}
+      <div class="endorsement clearfix">
+        {% if en.why == 'exemplary' %}<span class="exemplary-star">&#9733;</span>{% endif %}
+        <a href="/wiki?unit={{ en.unit }}&student={{ en.whose.wiki_id }}&action=view">
+          Unit {{ en.unit }}</a>
+        by {{ student_link(en.whose) }}
+        <div class="timestamp">{{ humanize.naturaltime(en.timestamp) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

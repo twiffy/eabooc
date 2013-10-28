@@ -901,3 +901,13 @@ div.badge-faq-contents .literal {
   padding: 4px;
   margin: 1px;
   list-style: none; }
+
+#endorsement-list div.endorsement {
+  background: #f9f8f1;
+  border: thin solid #e3dbbb;
+  padding: 6px;
+  margin: 2px; }
+  #endorsement-list div.endorsement div.timestamp {
+    float: right; }
+  #endorsement-list div.endorsement span.exemplary-star {
+    color: #fc0; }

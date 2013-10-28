@@ -1084,10 +1084,23 @@ div.badge-faq-contents {
 }
 
 .class-wiki div.contribution {
-
   background: lighten($content-bg-color, 5%);
   border: thin solid darken($content-bg-color, 10%);
   padding: 4px;
   margin: 1px;
   list-style: none;
+}
+
+#endorsement-list div.endorsement {
+  background: lighten($content-bg-color, 5%);
+  border: thin solid darken($content-bg-color, 10%);
+  padding: 6px;
+  margin: 2px;
+
+  div.timestamp {
+    float:right;
+  }
+  span.exemplary-star {
+    color: #fc0;
+  }
 }

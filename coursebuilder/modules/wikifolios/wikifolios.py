@@ -1163,6 +1163,25 @@ class CommentListHandler(WikiBaseHandler):
         self.render('wf_comment_list.html')
 
 
+class EndorsementListHandler(WikiBaseHandler):
+    '''A list of all your endorsements & exemplaries'''
+    def get(self):
+        user = self.personalize_page_and_get_wiki_user()
+        if not user:
+            return
+
+        endorsements = Annotation.all()
+        endorsements.filter('why IN', ['exemplary', 'endorse'])
+        endorsements.filter('who', user)
+        endorsements.order('-timestamp')
+
+        endorsements = prefetch.prefetch_refprops(endorsements,
+                Annotation.whose)
+
+        self.template_value['endorsements'] = endorsements
+        self.render('wf_endorsement_list.html')
+
+
 class WikiUpdateListHandler(WikiBaseHandler):
     def get(self):
         user = self.personalize_page_and_get_wiki_user()
@@ -1435,6 +1454,7 @@ def register_module():
             ('/badges/evidence', EvidenceHandler),
             ('/badges/bulk_issue', BulkIssuanceHandler),
             ('/student/comments', CommentListHandler),
+            ('/student/endorsements', EndorsementListHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Wikifolios", "Wikifolio pages",
