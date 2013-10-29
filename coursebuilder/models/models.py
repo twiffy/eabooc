@@ -231,6 +231,7 @@ class Student(BaseEntity):
     # The name that appears on their certificates and badges
     badge_name = db.StringProperty(indexed=False)
 
+    # a list of ints.. not necessarily in order!
     wikis_posted = MoreDifferentIntListProperty()
 
     _memcache_ids = set(('email', 'wiki_id'))
