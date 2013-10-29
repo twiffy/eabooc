@@ -4,14 +4,14 @@ id,type,unit_id,title,release_date,now_available
 3,U,2,Selected-Response Formats (ch. 6),opens September 16,True
 4,U,3,Constructed-Response Formats (ch. 7),opens September 23,True
 5,U,4,"Performance and Portfolio Assessment (ch. 8, 9)",opens September 30,True
-6,O,,<b>Part Two - Assessment Principles</b>,,False
-7,U,5,"Reliability and Bias (ch. 3, 5)",opens October 7,True
-8,A,Practices,<i>Assessment Practices Exam (open October 9 through 19)</i>,,True
+6,A,Practices,<i>Assessment Practices Exam (open October 9 through 19)</i>,,True
+7,O,,<b>Part Two - Assessment Principles</b>,,False
+8,U,5,"Reliability and Bias (ch. 3, 5)",opens October 7,True
 9,U,6,Validity (ch. 4),opens October 14,True
 10,U,7,Formative Assessment (ch. 12),opens October 21,True
-11,O,,<b>Part Three - Assessment Policies</b>,,False
-12,U,8,Standardized Testing (ch. 13),opens October 28,True
-13,A,Principles,<i>Assessment Principles Exam (open October 30 through November 6)</i>,,False
+11,A,Principles,<i>Assessment Principles Exam (open October 30 through November 6)</i>,,False
+12,O,,<b>Part Three - Assessment Policies</b>,,False
+13,U,8,Standardized Testing (ch. 13),opens October 28,True
 14,U,9,Test Preparation (ch. 14),opens November 4,False
 15,U,10,Evaluation of Instruction and Teaching (ch. 15),opens November 11,False
 16,U,11,Assessment-Based Grading (ch. 16),opens November 18,False
