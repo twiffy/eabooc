@@ -1104,3 +1104,31 @@ div.badge-faq-contents {
     color: #fc0;
   }
 }
+
+form#unenroll-form {
+  span.required-mark {
+    font-size: 110%;
+    color: #a00;
+  }
+  li {
+    list-style-type: none;
+  }
+  table {
+    border-collapse: collapse;
+    margin-bottom: 2em;
+    th {
+      width: 50%;
+      text-align: left;
+    }
+    td input[type=text] {
+      width: 90%;
+    }
+    td textarea {
+      width: 90%;
+      height: 4em;
+    }
+  }
+  span.error {
+    color: #a00;
+  }
+}

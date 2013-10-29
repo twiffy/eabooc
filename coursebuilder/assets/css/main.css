@@ -911,3 +911,22 @@ div.badge-faq-contents .literal {
     float: right; }
   #endorsement-list div.endorsement span.exemplary-star {
     color: #fc0; }
+
+form#unenroll-form span.required-mark {
+  font-size: 110%;
+  color: #a00; }
+form#unenroll-form li {
+  list-style-type: none; }
+form#unenroll-form table {
+  border-collapse: collapse;
+  margin-bottom: 2em; }
+  form#unenroll-form table th {
+    width: 50%;
+    text-align: left; }
+  form#unenroll-form table td input[type=text] {
+    width: 90%; }
+  form#unenroll-form table td textarea {
+    width: 90%;
+    height: 4em; }
+form#unenroll-form span.error {
+  color: #a00; }

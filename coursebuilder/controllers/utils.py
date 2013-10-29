@@ -29,14 +29,17 @@ from models.config import ConfigProperty
 from models.config import ConfigPropertyEntity
 from models.courses import Course
 from models.models import Student
+from models.models import EventEntity
 from models.roles import Roles
 import webapp2
 from google.appengine.api import namespace_manager
 from google.appengine.api import users
+from google.appengine.api import mail
 from google.appengine.ext.db import BadValueError
 from common import mailchimp
 import modules.badges.util
 from modules.wikifolios.report import PartReport
+import wtforms as wtf
 
 # The name of the template dict key that stores a course's base location.
 COURSE_BASE_KEY = 'gcb_course_base'
@@ -600,13 +603,47 @@ class StudentEditStudentHandler(BaseHandler):
 class StudentUnenrollHandler(BaseHandler):
     """Handler for students to unenroll themselves."""
 
+    class SurveyForm(wtf.Form):
+        how_found_out = wtf.RadioField(
+                'How did you initially find out about the Assessment BOOC?',
+                choices=[
+                    ('facebook', 'Facebook'),
+                    ('twitter', 'Twitter'),
+                    ('google-ads', 'Google Ads'),
+                    ('assess-blog', 'Remediating Assessment Blog'),
+                    ('word-of-mouth', 'Word of Mouth (please elaborate below...'),
+                    ('print', 'Print Advertisements'),
+                    ('other', 'Other (please elaborate below...)'),
+                    ],
+                validators=[wtf.validators.Required()])
+        how_found_out_other = wtf.TextField(
+                '''If you selected "Word of Mouth," whom did you hear from?<br>
+                If you selected "Other," how did you hear about the course?''',
+                validators=[wtf.validators.Optional()])
+        difficulty = wtf.TextAreaField(
+                'Did the course meet your expectations in terms of the difficulty of the tasks?',
+                validators=[wtf.validators.Required('Please give us at least a word...')])
+        communication = wtf.TextAreaField(
+                'Did you feel that course expectations were well-communicated?',
+                validators=[wtf.validators.Required('Please give us at least a word...')])
+        better_communication = wtf.TextAreaField(
+                'What might we have done differently to communicate the course expectations?',
+                validators=[wtf.validators.Required('Please give us at least a word...')])
+        other_comments = wtf.TextAreaField(
+                'Do you have any other comments or suggestions?',
+                validators=[wtf.validators.Optional()])
+
     def get(self):
         """Handles GET requests."""
         student = self.personalize_page_and_get_enrolled()
         if not student:
             return
 
+        self.render_form(student, self.SurveyForm())
+
+    def render_form(self, student, form):
         self.template_value['student'] = student
+        self.template_value['form'] = form
         self.template_value['navbar'] = {'registration': True}
         self.template_value['student_unenroll_xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('student-unenroll'))
@@ -620,6 +657,27 @@ class StudentUnenrollHandler(BaseHandler):
 
         if not self.assert_xsrf_token_or_fail(self.request, 'student-unenroll'):
             return
+
+        form = self.SurveyForm(self.request.POST)
+        if not form.validate():
+            self.render_form(student, form)
+            return
+
+        info = {
+                'email': student.key().name(),
+                'wikis_posted': student.wikis_posted,
+                }
+        info.update(form.data)
+
+        # form is good
+        EventEntity.record(
+                'unenrolled',
+                users.get_current_user(),
+                transforms.dumps(info))
+
+        mail.send_mail('booc.class@gmail.com', 'booc.class@gmail.com',
+                'User %s unenrolled' % info['email'],
+                'Their data:\n%s' % transforms.dumps(info, indent=2))
 
         Student.set_enrollment_status_for_current(False)
         mailchimp.unsubscribe('pre-reg', student.key().name())
