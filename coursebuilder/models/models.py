@@ -524,6 +524,15 @@ class AssessmentTracker(object):
                         % (EXAM_DEADLINE_HOURS.value, info['start_time'].strftime(cls.timestamp_format)))
 
     @classmethod
+    def reason_if_cant_take(cls, student, unit_id):
+        info = cls.get_info(student, unit_id)
+        try:
+            cls._check(info)
+        except ValueError as e:
+            return e.message
+        return None
+
+    @classmethod
     def can_take_again(cls, student, unit_id):
         info = cls.get_info(student, unit_id)
         try:

@@ -350,12 +350,19 @@ class AssessmentHandler(BaseHandler, ReflectiveRequestHandler):
             self.error(404)
             return
 
+        self.template_value['navbar'] = {'course': True}
+        self.template_value['assessment_title'] = unit.title
+
+        reason = AssessmentTracker.reason_if_cant_take(student, unit_id)
+        if reason:
+            self.template_value['error'] = reason
+            self.render('assessment_denied.html')
+            return
+
         params = dict(self.request.params)
         params['action'] = 'prep'
         self.template_value['form_action'] = self.request.path_url + "?" + urllib.urlencode(params)
-        self.template_value['assessment_title'] = unit.title
         self.template_value['xsrf_token'] = self.create_xsrf_token('prep')
-        self.template_value['navbar'] = {'course': True}
         self.render('assessment_prep.html')
 
     def post_prep(self):
