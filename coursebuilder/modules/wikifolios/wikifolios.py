@@ -774,7 +774,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.template_value['fields'] = form_init(None, page)
 
         self.template_value['author'] = page.author
-        self.template_value['is_draft'] = page.is_draft
+        self.template_value['is_draft'] = page.is_draft if page.is_saved() else True
         self.template_value['editing'] = True
         self.render(page_templates.templates[query['unit']])
 
