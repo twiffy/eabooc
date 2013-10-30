@@ -407,6 +407,35 @@ analytics_queries['badge_assertions'] = BadgeAssertionQuery
 analytics_queries['badge_assertions_with_revoked'] = BadgeAssertionQueryWithRevoked
 
 
+class ExitSurveyQuery(object):
+    fields = [
+            # from us
+            'email',
+            'wikis_posted',
+
+            # from the form
+            'how_found_out',
+            'how_found_out_other',
+            'difficulty',
+            'communication',
+            'better_communication',
+            'other_comments',
+            ]
+
+    def __init__(self, handler):
+        pass
+
+    def run(self):
+        query = EventEntity.all()
+        query.filter('source', 'unenrolled')
+        query.order('-recorded_on')
+
+        for survey in query.run():
+            yield transforms.loads(survey.data)
+
+analytics_queries['exit_survey'] = ExitSurveyQuery
+
+
 class AnalyticsHandler(BaseHandler):
     class NavForm(wtf.Form):
         query = wtf.RadioField('Analytics query',

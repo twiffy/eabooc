@@ -23,6 +23,12 @@ indexes:
 - kind: EventEntity
   properties:
   - name: source
+  - name: recorded_on
+    direction: desc
+
+- kind: EventEntity
+  properties:
+  - name: source
   - name: user_id
   - name: recorded_on
     direction: desc
