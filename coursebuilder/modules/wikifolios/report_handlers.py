@@ -18,6 +18,16 @@ import logging
 
 
 class EvidenceHandler(BaseHandler):
+    def head(self):
+        try:
+            report = PartReport.get_by_id(int(self.request.GET.get('id', -1)))
+        except ValueError:
+            report = None
+        if not report:
+            self.abort(404)
+
+        self.abort(200)
+
     def get(self):
         try:
             report = PartReport.get_by_id(int(self.request.GET.get('id', -1)))
