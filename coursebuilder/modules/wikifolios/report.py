@@ -25,6 +25,14 @@ _parts = {
             },
         }
 
+
+def get_part_num_by_badge_name(badge_name):
+    badge_root = badge_name.split('.')[0]
+    part = next((k for k,v in _parts.items() if v['slug'] == badge_root), None)
+    if part is not None:
+        return part
+    raise KeyError('There is no part with the slug %s (%s)' % (badge_root, bage_name))
+
 ASSESSMENT_PASSING_SCORE = 80
 
 def find_badge_and_assertion(student, part):

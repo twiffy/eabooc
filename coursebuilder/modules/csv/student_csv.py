@@ -15,8 +15,9 @@ import wtforms as wtf
 from markupsafe import Markup
 from modules.wikifolios.wiki_models import *
 import modules.wikifolios.wikifolios as wf
+from modules.wikifolios.report import PartReport, get_part_num_by_badge_name
 from modules.wikifolios.page_templates import forms, viewable_model
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from operator import itemgetter
 import urllib
 import re
@@ -32,7 +33,7 @@ def find_can_use_location(student):
 
 
 class StudentCsvQuery(object):
-    def __init__(self, request):
+    def __init__(self, handler):
         self.fields = sorted(Student.properties().keys() + ['email', 'can_use_location'])
 
     def run(self):
@@ -48,7 +49,7 @@ class StudentCsvQuery(object):
             yield d
 
 class CurricularAimQuery(object):
-    def __init__(self, request):
+    def __init__(self, handler):
         pass
 
     fields = ('email', 'curricular_aim')
@@ -62,8 +63,8 @@ class CurricularAimQuery(object):
                     }
 
 class UnitTextSimilarityQuery(object):
-    def __init__(self, request):
-        unit_str = request.GET['unit']
+    def __init__(self, handler):
+        unit_str = handler.request.GET['unit']
         if not unit_str:
             raise ValueError('"unit" parameter is required for this query')
         # value error may bubble up
@@ -88,7 +89,7 @@ class UnitTextSimilarityQuery(object):
         return sorted(results, key=itemgetter('10_word_phrases_in_common'), reverse=True)
 
 class StudentQuizScoresQuery(object):
-    def __init__(self, request):
+    def __init__(self, handler):
         pass
 
     fields = [
@@ -123,7 +124,7 @@ class StudentQuizScoresQuery(object):
                 yield d
 
 class AllWikifolioQuery(object):
-    def __init__(self, request):
+    def __init__(self, handler):
         pass
 
     fields = ('email', 'unit', 'endorsements')
@@ -140,7 +141,7 @@ class AllWikifolioQuery(object):
                     }
 
 class CurrentGroupIDQuery(object):
-    def __init__(self, request):
+    def __init__(self, handler):
         pass
 
     fields = ('email', 'group_id')
@@ -167,7 +168,8 @@ class UnitCommentQuery(object):
             'text',
             ]
 
-    def __init__(self, request):
+    def __init__(self, handler):
+        request = handler.request
         self.request = request
         unit_str = request.GET['unit']
         if not unit_str:
@@ -202,7 +204,8 @@ class UnitCommentQuery(object):
 
 
 class UnitCompletionQuery(object):
-    def __init__(self, request):
+    def __init__(self, handler):
+        request = handler.request
         self.request = request
         unit_str = request.GET['unit']
         if not unit_str:
@@ -278,7 +281,8 @@ class StudentEditHistoryQuery(object):
             'is_draft',
             ]
 
-    def __init__(self, request):
+    def __init__(self, handler):
+        request = handler.request
         if 'student' not in request.GET:
             raise ValueError('Parameter required: which student? (Give their e-mail address)')
         self.student_email = request.GET['student']
@@ -308,17 +312,16 @@ class StudentEditHistoryQuery(object):
         return fields
 
 
-analytics_queries = {
-        'initial_curricular_aim': CurricularAimQuery,
-        'unit_completion': UnitCompletionQuery,
-        'unit_comments': UnitCommentQuery,
-        'current_group_ids': CurrentGroupIDQuery,
-        'unit_text_similarity': UnitTextSimilarityQuery,
-        'student_edit_history': StudentEditHistoryQuery,
-        'student_csv': StudentCsvQuery,
-        'student_quiz_answers': StudentQuizScoresQuery,
-        'all_wikifolios_endorsements': AllWikifolioQuery,
-        }
+analytics_queries = OrderedDict()
+analytics_queries['student_csv'] = StudentCsvQuery
+analytics_queries['student_quiz_answers'] = StudentQuizScoresQuery
+analytics_queries['current_group_ids'] = CurrentGroupIDQuery
+analytics_queries['initial_curricular_aim'] = CurricularAimQuery
+analytics_queries['unit_completion_and_full_text'] = UnitCompletionQuery
+analytics_queries['unit_all_comments'] = UnitCommentQuery
+analytics_queries['unit_plagiarism_detector'] = UnitTextSimilarityQuery
+analytics_queries['one_student_wiki_edit_history'] = StudentEditHistoryQuery
+analytics_queries['endorsements_per_wiki_page'] = AllWikifolioQuery
 
 
 class ListIncompletesQuery(object):
@@ -330,7 +333,7 @@ class ListIncompletesQuery(object):
             'reason',
             ]
 
-    def __init__(self, request):
+    def __init__(self, handler):
         pass
 
     def run(self):
@@ -348,7 +351,7 @@ class ListIncompletesQuery(object):
             d['marked_by'] = marked_by_key.name()
             yield d
 
-analytics_queries['list_incompletes'] = ListIncompletesQuery
+analytics_queries['pages_marked_incomplete_by_admins'] = ListIncompletesQuery
 
 
 class BadgeAssertionQuery(object):
@@ -356,7 +359,11 @@ class BadgeAssertionQuery(object):
             'badge_name',
             'recipient',
             'email',
+            'group_id',
             'issuedOn',
+            'endorsements',
+            'promotions',
+            'comments',
             'expires',
             'revoked',
             'evidence',
@@ -364,8 +371,8 @@ class BadgeAssertionQuery(object):
             ]
     exclude_revoked = True
 
-    def __init__(self, request):
-        pass
+    def __init__(self, handler):
+        self.handler = handler
 
     def run(self):
         asserts = badge_models.BadgeAssertion.all()
@@ -376,16 +383,24 @@ class BadgeAssertionQuery(object):
             for f in ['issuedOn', 'expires', 'revoked', 'evidence']:
                 d[f] = getattr(ass, f)
 
-            d['badge_name'] = badge_models.BadgeAssertion.badge.get_value_for_datastore(ass).name()
+            d['badge_name'] = ass.badge_name
             student = ass.recipient
             d['recipient'] = student.badge_name
             d['email'] = student.key().name()
+            d['group_id'] = student.group_id
             d['id'] = ass.key().id()
+
+            part_num = get_part_num_by_badge_name(ass.badge_name)
+            report = PartReport.on(student, self.handler.get_course(), part_num)
+            unit_reps = report.unit_reports
+            for attr in ['endorsements', 'promotions', 'comments']:
+                d[attr] = sum(getattr(u, attr) for u in unit_reps)
 
             yield d
 
 class BadgeAssertionQueryWithRevoked(BadgeAssertionQuery):
-    def __init__(self, request):
+    def __init__(self, handler):
+        super(BadgeAssertionQueryWithRevoked, self).__init__(handler)
         self.exclude_revoked = False
 
 analytics_queries['badge_assertions'] = BadgeAssertionQuery
@@ -395,9 +410,9 @@ analytics_queries['badge_assertions_with_revoked'] = BadgeAssertionQueryWithRevo
 class AnalyticsHandler(BaseHandler):
     class NavForm(wtf.Form):
         query = wtf.RadioField('Analytics query',
-                choices=[(k, k) for k in sorted(analytics_queries.keys())])
+                choices=[(k, k) for k in analytics_queries.keys()])
         view = wtf.RadioField('View',
-                choices=[('csv', 'csv'), ('table', 'table')],
+                choices=[('csv', 'csv'), ('table', 'table'), ('debug', 'debug')],
                 default='table')
         unit = wtf.IntegerField('Unit Number (for unit queries)',
                 [wtf.validators.Optional()])
@@ -427,13 +442,17 @@ class AnalyticsHandler(BaseHandler):
             self.abort(404, "I couldn't find the query that you requested.")
 
         try:
-            query = query_class(self.request)
+            query = query_class(self)
         except ValueError as e:
             self.render_choices_page(error=e.message)
             return
 
         if nav['view'] == 'csv':
             self.render_as_csv(query.fields, query.run())
+        elif nav['view'] == 'debug':
+            i = query.run()
+            for x in i:
+                pass
         else:
             iterator = query.run()
             if hasattr(query_class, 'htmlize_row'):

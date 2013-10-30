@@ -94,6 +94,10 @@ class BadgeAssertion(BaseEntity):
     evidence = db.StringProperty() # URL of evidence
 
     @cached_property
+    def badge_name(self):
+        return BadgeAssertion.badge.get_value_for_datastore(self).name()
+
+    @cached_property
     def recipient_email(self):
         return BadgeAssertion.recipient.get_value_for_datastore(self).name()
 
