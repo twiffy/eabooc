@@ -88,7 +88,7 @@ class UnitRankingQuery(object):
                 continue
             for r in page.ranking:
                 values.add(r)
-            ranks = dict((item, n) for n, item in enumerate(page.ranking))
+            ranks = dict((item, n) for n, item in enumerate(page.ranking, start=1))
             ranks.update({'group_id': author.group_id})
             ct.add(**ranks)
 
