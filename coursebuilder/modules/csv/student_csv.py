@@ -24,6 +24,7 @@ import re
 import itertools
 from common import prefetch
 import plag
+from common.crosstab import CrossTab
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -61,6 +62,40 @@ class CurricularAimQuery(object):
                     'email': FormSubmission.user.get_value_for_datastore(submission).name(),
                     'curricular_aim': Markup(submission.curricular_aim),
                     }
+
+class UnitRankingQuery(object):
+    fields = ['c%d' % n for n in xrange(30)]
+
+    def __init__(self, handler):
+        unit_str = handler.request.GET['unit']
+        if not unit_str:
+            raise ValueError('"unit" parameter is required for this query')
+        # value error may bubble up
+        self.unit = int(unit_str)
+
+    def run(self):
+        pages = WikiPage.all()
+        pages.filter('unit', self.unit)
+        ct = CrossTab()
+
+        values = set()
+        for page in pages.run():
+            author = page.author
+            # want to tabulate: 
+            #   ranks of each item: dogs=1, cats=2, bunnies=3
+            #   networking group of the student
+            if not page.ranking:
+                continue
+            for r in page.ranking:
+                values.add(r)
+            ranks = dict((item, n) for n, item in enumerate(page.ranking))
+            ranks.update({'group_id': author.group_id})
+            ct.add(**ranks)
+
+        for v in values:
+            for row in ct.table(v, 'group_id'):
+                yield dict(zip(self.fields, row))
+
 
 class UnitTextSimilarityQuery(object):
     def __init__(self, handler):
@@ -318,6 +353,7 @@ analytics_queries['student_quiz_answers'] = StudentQuizScoresQuery
 analytics_queries['current_group_ids'] = CurrentGroupIDQuery
 analytics_queries['initial_curricular_aim'] = CurricularAimQuery
 analytics_queries['unit_completion_and_full_text'] = UnitCompletionQuery
+analytics_queries['unit_ranking'] = UnitRankingQuery
 analytics_queries['unit_all_comments'] = UnitCommentQuery
 analytics_queries['unit_plagiarism_detector'] = UnitTextSimilarityQuery
 analytics_queries['one_student_wiki_edit_history'] = StudentEditHistoryQuery
