@@ -28,6 +28,11 @@
   {{ share_buttons.facebook(assertion.evidence) }}
   {{ share_buttons.twitter(assertion.evidence) }}
   {{ share_buttons.gplus(assertion.evidence) }}
+  <div class="settings share-button">
+    <a id="settings" href="{{ assertion.evidence }}&amp;action=settings">
+      <img src="/assets/img/share/settings.png" alt="Edit Settings">
+      Badge Settings</a>
+  </div>
   {% endif %}
   {% else %}
   <div class="not-earned">(You have not earned this badge yet)</div>

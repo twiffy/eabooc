@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block subtitle %}
+Badge Evidence Settings
+{% endblock subtitle %}
+
+{% block top_content %}
+{% endblock %}
+
+{% block main_content %}
+<div id="gcb-main">
+  <div class="gcb-article tab-content">
+    <div class="gcb-aside">
+      <h2>
+        Badge Evidence Settings for {{ report._config.name }}
+      </h2>
+      <form action="/badges/evidence?action=save_settings" method="POST">
+        <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+        {{ form.report_id }}
+        {{ form.units_are_public }} {{ form.units_are_public.label }}
+        <br>
+        <input type="submit" value="Save">
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

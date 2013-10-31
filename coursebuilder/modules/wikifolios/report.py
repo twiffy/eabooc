@@ -126,6 +126,10 @@ class PartReport(db.Model):
         return transforms.loads(self.assessment_scores_json)
 
     @cached_property
+    def student_email(self):
+        return type(self).student.get_value_for_datastore(self).name()
+
+    @cached_property
     def unit_reports(self):
         return [UnitReport.on(self.student, u) for u in self._config['units']]
 

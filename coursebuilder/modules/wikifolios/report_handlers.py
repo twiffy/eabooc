@@ -1,4 +1,5 @@
-from controllers.utils import BaseHandler, ReflectiveRequestHandler
+from controllers.utils import BaseHandler, ReflectiveRequestHandler, XsrfTokenManager
+from models.roles import Roles
 import re
 from collections import defaultdict
 from models import transforms
@@ -16,8 +17,72 @@ import page_templates
 from common.querymapper import LoggingMapper
 import logging
 
+import wtforms as wtf
 
-class EvidenceHandler(BaseHandler):
+class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
+    get_actions = ['view', 'settings']
+    default_action = 'view'
+    post_actions = ['save_settings']
+
+    class SettingsForm(wtf.Form):
+        report_id = wtf.HiddenField()
+        units_are_public = wtf.BooleanField(
+                "Allow anyone who can see the evidence page to see the text of the wikifolio entries?")
+
+    def get_settings(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+
+        try:
+            report = PartReport.get_by_id(int(self.request.GET.get('id', -1)))
+        except ValueError:
+            report = None
+        if not report:
+            self.abort(404, "That evidence report was not found.")
+
+        if not self.can_edit(user, report):
+            self.abort(403)
+
+        form = self.SettingsForm(
+                report_id=report.key().id(),
+                units_are_public=report.units_are_public)
+        self.template_value['report'] = report
+        self.template_value['form'] = form
+        self.template_value['xsrf_token'] = XsrfTokenManager.create_xsrf_token('save_settings')
+        self.template_value['navbar'] = {}
+        self.render('wf_evidence_settings.html')
+
+    def can_edit(self, user, report):
+        #Roles.is_course_admin(self.app_context)
+        return report.student_email == user.key().name()
+
+    def post_save_settings(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+
+        form = self.SettingsForm(self.request.POST)
+        if not form.validate():
+            self.redirect('/')
+            return
+
+        try:
+            report = PartReport.get_by_id(int(form.report_id.data))
+        except ValueError:
+            report = None
+        if not report:
+            self.abort(404, "That evidence report was not found.")
+
+        if not self.can_edit(user, report):
+            self.abort(403, "You can't edit that user's report.")
+
+        report.units_are_public = form.units_are_public.data
+        report.put()
+        self.template_value['navbar'] = {}
+        self.template_value['content'] = '<div class="gcb-aside">OK, saved settings.</div>'
+        self.render('bare.html')
+
     def head(self):
         try:
             report = PartReport.get_by_id(int(self.request.GET.get('id', -1)))
@@ -28,7 +93,7 @@ class EvidenceHandler(BaseHandler):
 
         self.abort(200)
 
-    def get(self):
+    def get_view(self):
         try:
             report = PartReport.get_by_id(int(self.request.GET.get('id', -1)))
         except ValueError:
