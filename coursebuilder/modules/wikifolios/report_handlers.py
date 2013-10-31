@@ -7,6 +7,7 @@ from modules.badges.badge_models import Badge, BadgeAssertion
 from report import UnitReport, PartReport
 from report import _parts as part_config
 from models.models import Student
+from models.models import EventEntity
 from jinja2 import Markup
 import urllib
 import wtforms as wtf
@@ -79,6 +80,17 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
 
         report.units_are_public = form.units_are_public.data
         report.put()
+
+        EventEntity.record(
+                'set-evidence-publicity',
+                users.get_current_user(),
+                transforms.dumps({
+                    'part': report.part,
+                    'slug': report.slug,
+                    'public': report.units_are_public,
+                    'email': user.key().name()
+                    }))
+
         self.template_value['navbar'] = {}
         self.template_value['content'] = '<div class="gcb-aside">OK, saved settings.</div>'
         self.render('bare.html')
