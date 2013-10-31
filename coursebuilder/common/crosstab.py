@@ -60,28 +60,28 @@ class CrossTabTest(unittest.TestCase):
         ct.add(dogs='walk', bunnies='hold')
         self.assertEqual(ct.values('dogs'), set(('walk',)))
 
-    def test_asdf(self):
+    def test_sums(self):
+        animals = ['cat', 'dog', 'bunny']
+        who = ['jane', 'kate', 'montmorency', 'elwood']
         ct = CrossTab()
-        ct.add(cats='milk', dogs='walk')
-        ct.add(cats='milk', dogs='run')
-        ct.add(cats='milk', dogs='walk')
-        ct.add(cats='milk', dogs='walk')
-        ct.add(cats='milk', dogs='walk')
-        ct.add(cats='cuddle', dogs='walk')
-        print '\n'.join((str(row) for row in ct.table('cats', 'dogs')))
+        for w in who:
+            animals = rotate(animals)
+            rankings = dict(zip(animals, range(len(animals))))
+            rankings['who'] = w
+            ct.add(**rankings)
+        for animal in animals:
+            # Assert that each person's vote is reflected in the counts
+            self.assertEqual(len(who), sum(
+                ct.count(**{animal: r}) for r in range(len(animals))))
 
+            # Assert that the sum of all the rankings for one animal
+            # is equal to the number of voters
+            self.assertEqual(len(who), sum(
+                ct.count(**{animal: r, 'who': p})
+                    for r in range(len(animals)) for p in who))
 
-if __name__ == '__main__':
-    animals = ['cat', 'dog', 'bunny']
-    who = ['jane', 'kate', 'montmorency', 'elwood']
-    ct = CrossTab()
-    for w in who:
-        animals = rotate(animals)
-        rankings = dict(zip(animals, range(len(animals))))
-        rankings['who'] = w
-        ct.add(**rankings)
-    print '\n'.join(str(r) for r in ct._counter.iteritems())
-    print ct._seen_values
-    print '\n'.join((str(row) for row in ct.table('cat', 'who')))
-    print '\n'.join((str(row) for row in ct.table('dog', 'who')))
-    print '\n'.join((str(row) for row in ct.table('bunny', 'who')))
+        #print '\n'.join(str(r) for r in ct._counter.iteritems())
+        #print ct._seen_values
+        #print '\n'.join((str(row) for row in ct.table('cat', 'who')))
+        #print '\n'.join((str(row) for row in ct.table('dog', 'who')))
+        #print '\n'.join((str(row) for row in ct.table('bunny', 'who')))
