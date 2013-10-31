@@ -8,12 +8,18 @@ class CrossTab(object):
 
     def add(self, **kwargs):
         # TODO: maybe notice any kwargs not expressed, and set them to None or Any or something.
-        self._counter.update(chain.from_iterable(
-                combinations(kwargs.items(), r) for r in xrange(len(kwargs) + 1)))
+        self._counter.update(self._all_key_combos(kwargs.items()))
         for k, v in kwargs.iteritems():
             self._seen_values[k].add(v)
 
+    def _all_key_combos(self, keys):
+        for r in xrange(len(keys) + 1):
+            for combo in combinations(keys, r):
+                yield tuple(sorted(combo))
+
     def count(self, **kwargs):
+        key = tuple(sorted(kwargs.items()))
+        print 'Looking for %s' % repr(key)
         return self._counter[tuple(sorted(kwargs.items()))]
 
     def values(self, attr):
@@ -30,6 +36,8 @@ class CrossTab(object):
                         row: r}) for c in col_values)
 
 import unittest
+def rotate(lst):
+    return lst[1:] + [lst[0]]
 
 class CrossTabTest(unittest.TestCase):
     def test_single(self):
@@ -62,3 +70,18 @@ class CrossTabTest(unittest.TestCase):
         ct.add(cats='cuddle', dogs='walk')
         print '\n'.join((str(row) for row in ct.table('cats', 'dogs')))
 
+
+if __name__ == '__main__':
+    animals = ['cat', 'dog', 'bunny']
+    who = ['jane', 'kate', 'montmorency', 'elwood']
+    ct = CrossTab()
+    for w in who:
+        animals = rotate(animals)
+        rankings = dict(zip(animals, range(len(animals))))
+        rankings['who'] = w
+        ct.add(**rankings)
+    print '\n'.join(str(r) for r in ct._counter.iteritems())
+    print ct._seen_values
+    print '\n'.join((str(row) for row in ct.table('cat', 'who')))
+    print '\n'.join((str(row) for row in ct.table('dog', 'who')))
+    print '\n'.join((str(row) for row in ct.table('bunny', 'who')))
