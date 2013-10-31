@@ -18,11 +18,35 @@
   </div>
 </div>
 {%- endmacro %}
+{% macro no_link_evidence_unit_report(report, unit_title) %}
+<div class="profile-unit-report">
+  <div class="unit-title">
+    Unit {{ report.unit }} - {{ unit_title(report.unit) }}
+    <span class="status">
+      {% if report.is_complete %}
+      <br><span class="complete">Complete!</span>
+      {% elif report.submitted %}Submitted
+      {% else %}Not submitted
+      {% endif %}
+  </span></div>
+  <div class="unit-stats">
+    Promotions: {{ report.promotions }} -
+    Endorsements: {{ report.endorsements }} -
+    Comments: {{ report.comments }}
+  </div>
+  <div class="incomplete-reasons">
+    {% for reason in report.incomplete_reasons %}
+    <p>{{ reason|safe }}</p>
+    {% endfor %}
+  </div>
+</div>
+{% endmacro %}
 {% macro evidence_unit_report(report, evidence_link, unit_title) %}
 <div class="profile-unit-report">
   <div class="unit-title">
     <a href="{{ evidence_link(report.unit) }}">
-      Unit {{ report.unit }} - {{ unit_title(report.unit) }}</a>
+      Unit {{ report.unit }} - {{ unit_title(report.unit) }}
+      </a>
     <span class="status">
       {% if report.is_complete %}
       <br><span class="complete">Complete!</span>

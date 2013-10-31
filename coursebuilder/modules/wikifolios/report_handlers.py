@@ -39,11 +39,17 @@ class EvidenceHandler(BaseHandler):
         self.report = report
         self.template_value['navbar'] = {}
         self.template_value['author'] = self.report.student
-        self.template_value['unit_link'] = self._unit_link
+        if report.units_are_public:
+            self.template_value['unit_link'] = self._unit_link
+        else:
+            self.template_value['unit_link'] = lambda x: self.request.url
+            self.template_value['no_unit_links'] = True
         self.template_value['unit_title'] = self._unit_title
 
+        self.unit_num = None
         try:
-            self.unit_num = int(self.request.GET.get('unit', ''))
+            if report.units_are_public:
+                self.unit_num = int(self.request.GET.get('unit', ''))
         except ValueError:
             self.unit_num = None
 

@@ -5,7 +5,11 @@
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
+      {% if no_unit_links %}
+      {{ part_report.no_links_evidence_view(part, author, unit_title) }}
+      {% else %}
       {{ part_report.evidence_view(part, author, unit_link, unit_title) }}
+      {% endif %}
     </div>
   </div>
 </div>
