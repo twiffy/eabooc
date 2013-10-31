@@ -24,15 +24,20 @@ class CrossTab(object):
     def values(self, attr):
         return self._seen_values[attr]
 
-    def table(self, row, col):
+    def table(self, row, col=None):
         col_values = sorted(self.values(col))
         row_values = sorted(self.values(row))
-        yield ('',) + tuple(':'.join((col, c)) for c in col_values)
+        yield ('',) + tuple(':'.join((col, c)) for c in col_values) + ('Total',)
         for r in row_values:
-            yield (':'.join((row, str(r))),) + tuple(
+            label = ':'.join((row, str(r)))
+            yield (label,) + tuple(
                     self.count(**{
                         col: c,
-                        row: r}) for c in col_values)
+                        row: r}) for c in col_values
+                    ) + (self.count(**{row: r}),)
+        if col:
+            yield ('Total',) + tuple(
+                    self.count(**{col: c}) for c in col_values) + ('',)
 
 import unittest
 def rotate(lst):
@@ -52,6 +57,18 @@ class CrossTabTest(unittest.TestCase):
         self.assertEqual(ct.count(dogs='walk'), 2)
         self.assertEqual(ct.count(bunnies='hold'), 1)
         self.assertEqual(ct.count(cats='milk'), 1)
+
+    def test_table_totals(self):
+        ct = CrossTab()
+        ct.add(cats=1, dogs=2, lemurs=1)
+        ct.add(cats=1, dogs=2, lemurs=2)
+        ct.add(cats=2, dogs=1, lemurs=3)
+        ct.add(cats=2, dogs=1, lemurs=4)
+        ct.add(cats=2, dogs=1, lemurs=5)
+        tab = list(ct.table('cats', None))
+        self.assertEqual(len(tab), 3)
+        self.assertEqual(tab[1][1], 2)
+        self.assertEqual(tab[2][1], 3)
 
     def test_sorta_query(self):
         ct = CrossTab()
