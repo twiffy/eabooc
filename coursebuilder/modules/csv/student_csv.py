@@ -95,6 +95,7 @@ class UnitRankingQuery(object):
         for v in values:
             for row in ct.table(v, 'group_id'):
                 yield dict(zip(self.fields, row))
+            yield {}
 
 
 class UnitTextSimilarityQuery(object):
