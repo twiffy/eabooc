@@ -19,7 +19,6 @@ class CrossTab(object):
 
     def count(self, **kwargs):
         key = tuple(sorted(kwargs.items()))
-        print 'Looking for %s' % repr(key)
         return self._counter[tuple(sorted(kwargs.items()))]
 
     def values(self, attr):
