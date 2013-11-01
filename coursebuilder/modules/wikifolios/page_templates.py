@@ -147,8 +147,6 @@ forms[8] = UnitEightPageForm
 templates[8] = 'wf_temp_u8.html'
 
 def viewable_model(model):
-    import logging
-    logging.warning('viewable_model called')
     unit = model.unit
     if not unit:
         unit = 'profile'
