@@ -86,6 +86,13 @@ extensions_tag_resource_routes = [(
 webapp2_i18n_config = {'translations_path': os.path.join(
     appengine_config.BUNDLE_ROOT, 'modules/i18n/resources/locale')}
 
+# Enable better jinja2 error backtraces
+import sys
+if not appengine_config.PRODUCTION_MODE:
+    from google.appengine.tools.devappserver2.python import sandbox
+    sandbox._WHITE_LIST_C_MODULES += ['_ctypes', 'gestalt']
+    #print '\n'.join([str(type(mp)) for mp in sys.meta_path])
+
 # init application
 app = webapp2.WSGIApplication(
     global_routes + extensions_tag_resource_routes + app_routes,
