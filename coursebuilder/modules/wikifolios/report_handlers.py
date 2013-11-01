@@ -28,7 +28,7 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
     class SettingsForm(wtf.Form):
         report_id = wtf.HiddenField()
         units_are_public = wtf.BooleanField(
-                "Allow anyone who can see the evidence page to see the text of the wikifolio entries?")
+                "Show my Wikifolio entries for this badge on the evidence page?")
 
     def get_settings(self):
         user = self.personalize_page_and_get_enrolled()
