@@ -146,6 +146,35 @@ class UnitEightPageForm(wtf.Form):
 forms[8] = UnitEightPageForm
 templates[8] = 'wf_temp_u8.html'
 
+class UnitNinePageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    guidelines = BleachedTextAreaField()
+    selected_scenario = BleachedTextAreaField()
+    constructed_scenario = BleachedTextAreaField()
+
+    rank_good_practices = IntegerRankingField(
+            choices=['Varied format preparation', 'Generalized test taking preparation'],
+            validators=[wtf.validators.Optional()])
+    justify_good_practices = BleachedTextAreaField()
+
+    rank_bad_practices = IntegerRankingField(
+            choices=['Previous-form preparation',
+                'Current-form preparation',
+                'Same format preparation',
+                ],
+            validators=[wtf.validators.Optional()])
+    justify_bad_practices = BleachedTextAreaField()
+
+    big_ideas = BleachedTextAreaField()
+    perf_port_scenario = BleachedTextAreaField()
+
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[9] = UnitNinePageForm
+templates[9] = 'wf_temp_u9.html'
+
 def viewable_model(model):
     unit = model.unit
     if not unit:

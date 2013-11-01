@@ -10,7 +10,7 @@ curl 'https://docs.google.com/document/d/1teeNy73qm7kDjSIdB8csrTXgopgQW2S11RIB1r
 curl 'https://docs.google.com/document/d/18_Pd_2i89vryHS-C6DOQm3OKL90WtFtyAxf4hBKtYdo/pub?embedded=true' > assets/content/u6l1.html
 curl 'https://docs.google.com/document/d/1PCPmcJS-P2hOpaBFggqoYU06sZL3a_QaopWDNcE2R7s/pub?embedded=true' > assets/content/u7l1.html
 curl 'https://docs.google.com/document/d/118I4eHLcjgrdyj06vYDTzp2frKnR9wMIf9-Ydw10hpA/pub?embedded=true' > assets/content/u8l1.html
-# 9
+curl 'https://docs.google.com/document/d/13a2I8GrShkisROqet-dNBUsiDtzSQD_h02ZCHt4-wUY/pub?embedded=true' > assets/content/u8l1.html
 # 10
 # 11
 
