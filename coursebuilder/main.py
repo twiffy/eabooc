@@ -71,6 +71,11 @@ import modules.forum.main
 from webapp2_extras.routes import PathPrefixRoute
 global_routes += [
         PathPrefixRoute('/forum', modules.forum.main.routes),
+        # I don't understand why this gets requested, ever.
+        # The url is absolute in the HTML.  This is so weird.
+        webapp2.Route('/www.remediatingassessment.blogspot.com',
+            webapp2.RedirectHandler,
+            defaults={'_uri': 'http://remediatingassessment.blogspot.com/'})
         ]
 
 
