@@ -175,6 +175,11 @@
         {% endblock %}
       </span>
 
+      {% if editing %}
+      <div>
+        You need to finish editing, and save your wikifolio, before you can comment (or post a question).
+      </div>
+      {% endif %}
       {% include "comment_area.html" %}
     </div>
   </div>
