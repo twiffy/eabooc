@@ -152,7 +152,7 @@ class StudentQuizScoresQuery(object):
                     if answer['correct']:
                         d[k] = 'correct'
                     else:
-                        if answer['value']:
+                        if isinstance(answer['value'], int):
                             d[k] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[answer['value']]
                         else:
                             d[k] = ''
