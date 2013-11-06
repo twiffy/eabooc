@@ -180,12 +180,8 @@ class BulkIssueMapper(LoggingMapper):
 
     def map(self, student):
         self.log.append('########## Student %s ##########' % student.key().name())
-        report = PartReport.on(student, course=self.course, part=self.part)
-        if self.re_run:
-            report._run(self.course)
-        if self.really:
-            # not waiting for the batch because we need its key id.
-            report.put_all()
+        report = PartReport.on(student, course=self.course, part=self.part,
+                force_re_run=self.re_run, put=self.really)
 
         self.log.append(' Passed? %s.' % report.is_complete)
 
@@ -242,9 +238,8 @@ class BulkLeaderIssueMapper(LoggingMapper):
     def map(self, student):
         self.log.append('######### Student %s ##########' % student.key().name())
 
-        part_report = PartReport.on(student, course=self.course, part=self.part)
-        if self.re_run:
-            part_report._run(self.course)
+        part_report = PartReport.on(student, course=self.course, part=self.part,
+                force_re_run=self.re_run)
         if not part_report.is_complete:
             self.log.append(' Skipping, since not complete.')
             return ([], [])
@@ -286,7 +281,8 @@ class BulkLeaderIssueMapper(LoggingMapper):
                             db.Key.from_path(Student.kind(), email), put=False)
                     report = PartReport.on(
                             db.Key.from_path(Student.kind(), email),
-                            course=self.course, part=self.part)
+                            course=self.course, part=self.part,
+                            force_re_run=self.re_run)
                     b.evidence = self.host_url + '/badges/evidence?id=%d' % report.key().id()
                     b.put()
                     self.log.append('... ISSUED leader badge to %s, id=%d' % (email, b.key().id()))

@@ -80,7 +80,7 @@ class PartReport(db.Model):
     units_are_public = db.BooleanProperty(default=True)
 
     @classmethod
-    def on(cls, student, course, part):
+    def on(cls, student, course, part, force_re_run=False, put=False):
         q = cls.all()
         q.filter('student', student)
         q.filter('part', part)
@@ -92,6 +92,11 @@ class PartReport(db.Model):
             report = reports[0]
         else:
             report = cls(None, course=course, student=student, part=part)
+
+        if force_re_run and report.is_saved():
+            report._run(course)
+        if put:
+            report.put_all()
         return report
 
     def __init__(self, *args, **kwargs):
