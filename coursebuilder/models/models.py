@@ -230,6 +230,7 @@ class Student(BaseEntity):
 
     # The name that appears on their certificates and badges
     badge_name = db.StringProperty(indexed=False)
+    badge_email = db.StringProperty(indexed=False)
 
     # a list of ints.. not necessarily in order!
     wikis_posted = MoreDifferentIntListProperty()
@@ -240,6 +241,8 @@ class Student(BaseEntity):
         super(Student, self).__init__(*args, **kwargs)
         if not self.badge_name:
             self.badge_name = self.name
+        if not self.badge_email:
+            self.badge_email = self.key().name()
 
     def ensure_wiki_id(self):
         if not self.wiki_id:

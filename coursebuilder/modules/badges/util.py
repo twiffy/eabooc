@@ -67,7 +67,9 @@ class BadgeJSONEncoder(json.JSONEncoder):
             if url:
                 ret = self.baseurl + url
             if obj.kind() == 'Student':
-                ret = recipient_section(obj.name())
+                student = db.get(obj)
+                email = student.badge_email
+                ret = recipient_section(email)
 
         elif hasattr(obj, 'strftime'):
             ret = obj.strftime('%Y-%m-%d')
