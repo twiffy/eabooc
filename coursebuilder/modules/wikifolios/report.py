@@ -17,11 +17,21 @@ _parts = {
             'deadline': datetime.datetime(year=2013, month=10, day=20, hour=0, minute=0, second=0),
             },
         2: {
-            'assessments': ['Principles'],
+            # The test was too hard and is being thrown out
+            #'assessments': ['Principles'],
+            'assessments': [],
             'units': [5,6,7],
             'name': 'Assessment Principles',
             'slug': 'principles',
             'deadline': datetime.datetime(year=2013, month=11, day=6, hour=0, minute=0, second=0),
+            },
+
+        3: {
+            'assessments': ['Policies'],
+            'units': [8,9,10,11],
+            'name': 'Assessment Policies',
+            'slug': 'policies',
+            'deadline': datetime.datetime(year=2013, month=12, day=4, hour=0, minute=0, second=0),
             },
         }
 
