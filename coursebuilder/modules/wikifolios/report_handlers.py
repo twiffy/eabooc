@@ -92,7 +92,8 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
                     }))
 
         self.template_value['navbar'] = {}
-        self.template_value['content'] = '<div class="gcb-aside">OK, saved settings.</div>'
+        self.template_value['content'] = '''<div class="gcb-aside">OK, saved settings.<br>
+        <a href="/student/home">Back to your account page...</a></div>'''
         self.render('bare.html')
 
     def head(self):
@@ -163,6 +164,53 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
     def render_top(self):
         self.template_value['part'] = self.report
         self.render('wf_evidence_top.html')
+
+
+class SingleIssueHandler(BaseHandler):
+    class Form(wtf.Form):
+        part = wtf.IntegerField('Which part of the course to issue a badge for? (1,2,3)')
+        really_save = wtf.BooleanField('Really issue the badge and freeze the scores?', default=False)
+        re_run = wtf.BooleanField('Re-run all unit and part reports? Will delete old ones if you also choose Really freeze above.', default=False)
+        email = wtf.StringField('The email of the student to reconsider')
+
+    def get(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+        form = self.Form()
+        self.template_value['form'] = form
+        self.template_value['xsrf_token'] = XsrfTokenManager.create_xsrf_token('post')
+        self.template_value['action_url'] = self.request.url
+        self.template_value['title'] = 'Reconsider a single participant'
+        self.render('badge_bulk_issue.html')
+
+    def post(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+        if not XsrfTokenManager.is_xsrf_token_valid(self.request.POST.get('xsrf_token', ''), 'post'):
+            self.abort(403, 'XSRF token failed.')
+        form = self.Form(self.request.POST)
+        if not form.validate():
+            self.response.write('<br>'.join(form.errors))
+            return
+
+        student = Student.get_by_key_name(form.email.data)
+        report = PartReport.on(student, course=self.get_course(),
+                part=form.part.data,
+                force_re_run=form.re_run.data,
+                put=form.really_save.data)
+
+        badge = Badge.get_by_key_name(part_config[form.part.data]['slug'])
+        if not badge:
+            self.response.write(' There is no badge with key_name %s (so I cannot issue a badge)' % report.slug)
+
+        if report.is_complete:
+            if form.really_save.data and badge:
+                b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
+                b.evidence = self.request.host_url + '/badges/evidence?id=%d' % report.key().id()
+                b.put()
+                self.response.write('Issued the badge!')
+            else:
+                self.response.write('Would have issued the badge!')
 
 
 class BulkIssueMapper(LoggingMapper):
