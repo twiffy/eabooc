@@ -9,16 +9,23 @@ line_regex = re.compile(
     )
 
 from collections import defaultdict
-response_times = defaultdict(list)
 
-for line in sys.stdin:
-    match = line_regex.match(line)
-    if match:
-        fields = {k:v for k,v in (
-            part.split('=') for part in (
-                match.group('extra').split()))}
-        fields.update(match.groupdict())
 
+def parse_lines(lines):
+    for line in lines:
+        match = line_regex.match(line)
+        if match:
+            fields = {k:v for k,v in (
+                part.split('=') for part in (
+                    match.group('extra').split()))}
+            fields.update(match.groupdict())
+            yield fields
+        else:
+            print >> sys.stderr, "NOT HAPPY:", line
+
+def response_times_by_stuff(lines):
+    response_times = defaultdict(list)
+    for fields in parse_lines(lines):
         if 'instance' not in fields:
             continue
         
@@ -32,9 +39,9 @@ for line in sys.stdin:
         else:
             ident = fields['path']
         response_times[ident].append(int(fields['ms']))
-    else:
-        print >> sys.stderr, "NOT HAPPY:", line
 
-for path, times in response_times.iteritems():
-    print path, 'median of', len(times), 'times is', np.median(times)
+    for path, times in response_times.iteritems():
+        print path, 'median of', len(times), 'times is', np.median(times)
+
+response_times_by_stuff(sys.stdin)
 
