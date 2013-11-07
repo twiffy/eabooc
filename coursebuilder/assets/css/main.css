@@ -201,6 +201,12 @@ ul#front-nav {
   background: #f2eedf;
   border-color: #333;
   border-width: 2px; }
+  .wiki-area div.resources-page-link {
+    margin: 10px;
+    font-size: 120%;
+    border: solid thin #e3dbbb;
+    background: #f9f8f1;
+    text-align: center; }
   .wiki-area h2, .wiki-area h3, .wiki-area h4, .wiki-area h5, .wiki-area h6, .wiki-area > div {
     margin-left: 10px;
     margin-right: 10px; }

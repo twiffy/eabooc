@@ -247,6 +247,13 @@ ul#front-nav {
   background: $content-bg-color;
   border-color: #333;
   border-width: 2px;
+  div.resources-page-link {
+    margin: 10px;
+    font-size: 120%;
+    border: solid thin darken($content-bg-color, 10%);
+    background: lighten($content-bg-color, 5%);
+    text-align: center;
+  }
   h2, h3, h4, h5, h6, > div {
     margin-left: 10px;
     margin-right: 10px;
