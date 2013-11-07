@@ -168,6 +168,19 @@ class PartReport(db.Model):
             e['did_pass'] for e in self.assessment_scores))
         return units_done and assessments_done
 
+    @property
+    def incomplete_reasons(self):
+        units = [ u.is_complete for u in self.unit_reports ]
+        tests = [ e['did_pass'] for e in self.assessment_scores ]
+        inc_reasons = []
+
+        if not all(units):
+            inc_reasons.append('Did not complete unit(s) %s.' % (
+                ', '.join(str(n + 1) for n, v in enumerate(units) if not v)))
+        if not all(tests):
+            inc_reasons.append('Did not pass test(s).')
+
+        return inc_reasons
 
 class UnitReport(db.Model):
     student = db.ReferenceProperty(Student, indexed=True)
