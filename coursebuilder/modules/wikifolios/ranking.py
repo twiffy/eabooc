@@ -41,7 +41,10 @@ class ReadOnlyRankingWidget(object):
                 unicode(x) for x in html)
 
 
-class IntegerRankingField(wtf.Field):
+class BaseRankingField(object):
+    pass
+
+class IntegerRankingField(wtf.Field, BaseRankingField):
     widget = IntegerRankingWidget()
     def __init__(self, label=None, validators=None, choices=None, **kwargs):
         super(IntegerRankingField, self).__init__(label, validators, **kwargs)

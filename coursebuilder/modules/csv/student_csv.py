@@ -15,6 +15,7 @@ import wtforms as wtf
 from markupsafe import Markup
 from modules.wikifolios.wiki_models import *
 import modules.wikifolios.wikifolios as wf
+from modules.wikifolios.ranking import BaseRankingField
 from modules.wikifolios.report import PartReport, get_part_num_by_badge_name
 from modules.wikifolios.page_templates import forms, viewable_model
 from collections import defaultdict, OrderedDict
@@ -76,26 +77,33 @@ class UnitRankingQuery(object):
     def run(self):
         pages = WikiPage.all()
         pages.filter('unit', self.unit)
-        ct = CrossTab()
+        page_iter = pages.run()
 
-        values = set()
-        for page in pages.run():
+        ct = CrossTab()
+        vals_by_field = defaultdict(set)
+        fields = [field.name for field in forms[self.unit]() if isinstance(field, BaseRankingField)]
+
+        for page in page_iter:
             author = page.author
+            ranks = {'group_id': author.group_id}
             # want to tabulate: 
             #   ranks of each item: dogs=1, cats=2, bunnies=3
             #   networking group of the student
-            if not page.ranking:
-                continue
-            for r in page.ranking:
-                values.add(r)
-            ranks = dict((item, n) for n, item in enumerate(page.ranking, start=1))
-            ranks.update({'group_id': author.group_id})
+            for field in fields:
+                value = getattr(page, field)
+                if not value:
+                    continue
+                for r in value:
+                    vals_by_field[field].add(r)
+                ranks.update((item, n) for n, item in enumerate(value, start=1))
             ct.add(**ranks)
 
-        for v in values:
-            for row in ct.table(v, 'group_id'):
-                yield dict(zip(self.fields, row))
-            yield {}
+        for field, values in vals_by_field.iteritems():
+            yield dict(zip(self.fields, [field]))
+            for v in values:
+                for row in ct.table(v, 'group_id'):
+                    yield dict(zip(self.fields, row))
+                yield {}
 
 
 class UnitTextSimilarityQuery(object):
