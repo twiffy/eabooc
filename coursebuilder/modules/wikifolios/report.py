@@ -176,9 +176,9 @@ class PartReport(db.Model):
 
         for num, done in units:
             if not done:
-                inc_reasons.append('Did not complete unit %d' % num)
+                inc_reasons.append('Unit %d' % num)
         if not all(tests):
-            inc_reasons.append('Did not pass test(s).')
+            inc_reasons.append('Test')
 
         return inc_reasons
 

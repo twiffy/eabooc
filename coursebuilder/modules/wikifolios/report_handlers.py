@@ -249,8 +249,7 @@ class BulkIssueMapper(LoggingMapper):
             else:
                 self.log.append(' WOULD issue badge.')
         else:
-            self.log.append('Not issuing because:')
-            self.log.extend(report.incomplete_reasons)
+            self.log.append('Not issuing because: %s' % (', '.join(report.incomplete_reasons)))
 
             if self.really and badge:
                 Badge.ensure_not_issued(badge, student)
