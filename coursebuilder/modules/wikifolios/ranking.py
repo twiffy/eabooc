@@ -69,8 +69,7 @@ class ReadOnlyStringRankingWidget(object):
         html.append('<ol>')
 
         if not field.data:
-            html.append(Markup('<li>%s have not been ranked yet.</li>') % (
-                ', '.join([choice for i, choice in field.iter_choices()])))
+            html.append('<li>The choices have not been ranked yet.</li>')
         else:
             for _, label in field.iter_choices():
                 html.append(Markup('<li>%s</li>') % (label))
