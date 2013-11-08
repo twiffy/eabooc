@@ -209,17 +209,17 @@
 {% endif %}
 <script>
   $(document).ready( function() {
-    $('.integer-ranking.editable > ol').sortable({
+    $('.booc-ranking.editable > ol').sortable({
       placeholder: 'ui-state-highlight',
       update: function(event, ui) {
         $this = $(this);
-        var order = $this.sortable("toArray", {attribute: 'value'});
+        var order = $this.sortable("toArray", {attribute: 'rank-value'});
         $('input#' + $this.attr('for')).val(order.join(","));
       }
     });
-    $('.integer-ranking > ol').disableSelection();
-    $('.integer-ranking li').addClass('ui-state-default');
-    $('.integer-ranking input').hide();
+    $('.booc-ranking > ol').disableSelection();
+    $('.booc-ranking li').addClass('ui-state-default');
+    $('.booc-ranking input').hide();
   });
 </script>
 {% endblock %}

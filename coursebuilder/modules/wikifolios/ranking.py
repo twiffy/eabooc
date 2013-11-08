@@ -6,23 +6,23 @@ from unittest import TestCase
 
 class IntegerRankingWidget(object):
     def __call__(self, field, **kwargs):
-        class_ = kwargs.get('class', 'integer-ranking')
+        class_ = kwargs.get('class', 'booc-ranking')
         class_ += ' editable'
 
         html = [Markup('<div class="%s">') % class_]
                 
         html.append('<ol %s>' % html_params(for_=field.id))
         for index, choice, label in field.iter_choices_labels():
-            html.append(Markup('<li value="%d"><strong>%s</strong> %s</li>') % (index, choice, label))
+            html.append(Markup('<li value="%d" rank-value="%d"><strong>%s</strong> %s</li>') % (index, index, choice, label))
         html.append('</ol>')
         html.append(wtf.widgets.TextInput()(field, **kwargs))
         html.append('</div>')
         return u''.join(
                 unicode(x) for x in html)
 
-class ReadOnlyRankingWidget(object):
+class ReadOnlyIntegerRankingWidget(object):
     def __call__(self, field, **kwargs):
-        class_ = kwargs.get('class', 'integer-ranking')
+        class_ = kwargs.get('class', 'booc-ranking')
 
         html = [Markup('<div class="%s">') % class_]
 
@@ -46,7 +46,7 @@ class BaseRankingField(object):
 
 class StringRankingWidget(object):
     def __call__(self, field, **kwargs):
-        class_ = kwargs.get('class', 'string-ranking')
+        class_ = kwargs.get('class', 'booc-ranking')
         class_ += ' editable'
 
         html = [Markup('<div class="%s">') % class_]
@@ -62,7 +62,7 @@ class StringRankingWidget(object):
 
 class ReadOnlyStringRankingWidget(object):
     def __call__(self, field, **kwargs):
-        class_ = kwargs.get('class', 'string-ranking')
+        class_ = kwargs.get('class', 'booc-ranking')
 
         html = [Markup('<div class="%s">') % class_]
 
@@ -179,7 +179,7 @@ class IntegerRankingField(wtf.Field, BaseRankingField):
                 raise ValueError('Not a valid item number')
 
     def read_only_view(self):
-        return ReadOnlyRankingWidget()(self)
+        return ReadOnlyIntegerRankingWidget()(self)
 
 
 # --------- tests ----------
@@ -255,6 +255,7 @@ class StringRankingFieldTest(TestCase):
     def test_render_ordered(self):
         form = self.F(DummyPostData(a='ham, cheese'))
         rend = form.a()
+        self.assertTrue('rank-value' in rend)
         self.assertLess(rend.index('ham'), rend.index('cheese'))
 
     def test_render_readonly(self):
@@ -270,7 +271,8 @@ class IntegerRankingFieldTest(TestCase):
         form = self.F(DummyPostData(a=['1, 2']))
         self.assertEqual(form.a.data, ['cheese', 'ham'])
         rendered = form.a()
-        self.assertTrue('integer-ranking' in rendered)
+        self.assertTrue('booc-ranking' in rendered)
+        self.assertTrue('rank-value' in rendered)
         self.assertTrue('input' in rendered)
         self.assertLess(rendered.index('cheese'), rendered.index('ham'))
 
