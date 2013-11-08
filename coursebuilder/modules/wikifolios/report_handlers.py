@@ -312,7 +312,7 @@ class BulkLeaderIssueMapper(LoggingMapper):
         elif promotions == best_so_far:
             self.best_by_group[student.group_id][0].append(student.key().name())
 
-            self.log.append(Markup(' They ARE TIED FOR CURRENT BEST for group %s, with %d.') % (
+            self.log.append(' They ARE TIED FOR CURRENT BEST for group %s, with %d.' % (
                 student.group_id, promotions))
         return ([], [])
 
