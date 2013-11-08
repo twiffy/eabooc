@@ -217,7 +217,7 @@ class Unit10PageForm(wtf.Form):
                     effective but can be challenging to do.'''),
                 ]
             )
-    justify_classrom_evidence = BleachedTextAreaField()
+    justify_classroom_evidence = BleachedTextAreaField()
 
     rank_sensitivity = IntegerRankingField(
             validators=[wtf.validators.Optional()],
@@ -297,9 +297,7 @@ class Unit10PageForm(wtf.Form):
                     comprehensive websites out there. Very current and easy to
                     navigate.</span>''')),
                 ])
-
-
-
+    justify_evaluating_teaching = BleachedTextAreaField()
 
     big_ideas = BleachedTextAreaField()
     self_check = BleachedTextAreaField()
