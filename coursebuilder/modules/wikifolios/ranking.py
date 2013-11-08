@@ -12,8 +12,8 @@ class IntegerRankingWidget(object):
         html = [Markup('<div class="%s">') % class_]
                 
         html.append('<ol %s>' % html_params(for_=field.id))
-        for index, choice in field.iter_choices():
-            html.append(Markup('<li value="%d">%s</li>') % (index, choice))
+        for index, choice, label in field.iter_choices_labels():
+            html.append(Markup('<li value="%d"><strong>%s</strong> %s</li>') % (index, choice, label))
         html.append('</ol>')
         html.append(wtf.widgets.TextInput()(field, **kwargs))
         html.append('</div>')
@@ -32,8 +32,8 @@ class ReadOnlyRankingWidget(object):
             html.append(Markup('<li>%s have not been ranked yet.</li>') % (
                 ', '.join([choice for i, choice in field.iter_choices()])))
         else:
-            for _, choice in field.iter_choices():
-                html.append(Markup('<li>%s</li>') % (choice))
+            for _, choice, label in field.iter_choices_labels():
+                html.append(Markup('<li><strong>%s</strong> %s</li>') % (choice, label))
 
         html.append('</ol>')
         html.append('</div>')
@@ -46,15 +46,16 @@ class BaseRankingField(object):
 
 class IntegerRankingField(wtf.Field, BaseRankingField):
     widget = IntegerRankingWidget()
-    def __init__(self, label=None, validators=None, choices=None, **kwargs):
+    def __init__(self, label=None, validators=None, choices=None, labels=None, **kwargs):
         super(IntegerRankingField, self).__init__(label, validators, **kwargs)
+        self.labels = labels
         self.choices = choices
 
     def _value(self):
+        "Format the data for the most basic input field - a textinput with a list of comma separated integers"
         if self.data:
             return ', '.join([str(self.choices.index(v) + 1) for v in self.data])
         else:
-            #return ', '.join([str(i) for i in range(1, len(self.choices) + 1)])
             return ''
 
     def iter_choices(self):
@@ -64,6 +65,14 @@ class IntegerRankingField(wtf.Field, BaseRankingField):
             return [(self.choices.index(v) + 1, v) for v in self.data]
         else:
             return enumerate(self.choices, start=1)
+
+    def iter_choices_labels(self):
+        labels = [''] * len(self.choices)
+        if self.labels:
+            labels = self.labels
+
+        for (idx, choice), label in zip(self.iter_choices(), labels):
+            yield (idx, choice, label)
 
     def parse_int_list(self, raw):
         if raw:
