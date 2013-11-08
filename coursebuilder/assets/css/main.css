@@ -215,6 +215,9 @@ ul#front-nav {
       margin-right: 0;
       border-left: none;
       border-right: none; }
+  .wiki-area form p {
+    margin-top: 13px;
+    margin-bottom: 13px; }
 
 .gcb-aside {
   border: 1px solid;

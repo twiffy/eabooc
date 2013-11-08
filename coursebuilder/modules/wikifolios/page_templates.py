@@ -175,6 +175,102 @@ class UnitNinePageForm(wtf.Form):
 forms[9] = UnitNinePageForm
 templates[9] = 'wf_temp_u9.html'
 
+class Unit10PageForm(wtf.Form):
+    context = BleachedTextAreaField()
+
+    rank_evaluating_instruction = IntegerRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=['Evidence from classroom assessments.',
+                'Evidence from accountability tests.'],
+            labels=[Markup('''This is the evidence
+                    you can gather from classroom assessments, ideally when given
+                    before and after instruction. These assessments
+                    <i>should</i> be aligned
+                    to the curricular aim of the instruction. This is
+                    explained more on pages 378-383.'''),
+                Markup('''This is the
+                    evidence that comes from externally developed tests. &nbsp;As
+                    explained on pages 383-398, these may or may not be sensitive
+                    to the instruction provided to students before a particular
+                    test.''')],
+            )
+    justify_evaluating_instruction = BleachedTextAreaField()
+
+    rank_classroom_evidence = IntegerRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=['Pretests Versus Posttests.',
+                'Split-and-Switch Design.'],
+            labels=[
+                Markup('''This is where you give the same assessment before and
+                    after instruction. &nbsp;As explained in the book
+                    and <span class="c9 c2"><a class="c4" target="_blank"
+                    href=
+                    "http://www.bumc.bu.edu/fd/files/PDF/Pre-andPost-Tests.pdf">here</a></span>, this
+                    is easy but problematic.'''),
+                Markup('''
+                    This is sometimes called "split-half" and uses a
+                    technique called counter-balancing. &nbsp;As explained in the
+                    book and <span class="c9 c2"><a class="c4" target="_blank"
+                    href=
+                    "http://www.k12.hi.us/~bwoerner/ipcs/ip4studperf.html">here
+                    (scroll down)</a></span>, it is more
+                    effective but can be challenging to do.'''),
+                ]
+            )
+    justify_classrom_evidence = BleachedTextAreaField()
+
+    rank_sensitivity = IntegerRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=['Alignment Leniency:',
+                'Excessive Easiness:',
+                'Excessive Difficulty:',
+                'Item Flaws:',
+                'Socioeconomic Status Links:',
+                'Academic Aptitude Links:'],
+            labels=[
+                Markup('''When the test item is
+                    not aligned to (does not measure) the curricular aim thought to
+                    be measured. This means the item is measuring something other
+                    than the curricular aim.'''),
+                Markup('''The test item is so easy
+                    that students who were not even taught will answer the item
+                    correctly; so the test item does not measure student
+                    achievement on the curricular aim.'''),
+                Markup('''The test items are so
+                    difficult that even students who mastered the curricular aim
+                    will not answer it correctly; so the item does not distinguish
+                    between well-taught and poorly taught students.'''),
+                Markup('''Errors in the test item
+                    itself cause students to answer the item incorrectly; so the
+                    item does not distinguish between well-taught and poorly taught
+                    students.'''),
+                Markup('''When a test item unfairly
+                    advantages students from higher SES statuses and so the item
+                    measures the knowledge students bring to school rather than how
+                    they are taught within the classroom.'''),
+                Markup('''When
+                    a test item unfairly advantages students coming to the
+                    classroom with already higher quantitative, verbal, or spatial
+                    aptitudes and so the item measures the knowledge students bring
+                    to school rather than how they are taught within the
+                    classroom.'''),
+                ]
+            )
+    justify_sensitivity = BleachedTextAreaField()
+
+    #rank_evaluating_teaching = IntegerRankingField(
+            #validators=[wtf.validators.Optional()],
+            #choices=['Gates Foundation',
+                #'Guarino'
+
+    big_ideas = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[10] = Unit10PageForm
+templates[10] = 'wf_temp_u10.html'
+
 def viewable_model(model):
     unit = model.unit
     if not unit:
