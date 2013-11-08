@@ -4,7 +4,7 @@ import bleach
 from jinja2 import Markup
 from google.appengine.ext import db
 from wiki_bleach import BleachedTextAreaField
-from ranking import IntegerRankingField
+from ranking import IntegerRankingField, StringRankingField
 
 templates = {}
 forms = {}
@@ -258,10 +258,48 @@ class Unit10PageForm(wtf.Form):
             )
     justify_sensitivity = BleachedTextAreaField()
 
-    #rank_evaluating_teaching = IntegerRankingField(
-            #validators=[wtf.validators.Optional()],
-            #choices=['Gates Foundation',
-                #'Guarino'
+    rank_evaluating_teaching = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('gates', Markup('''<span class="c2">Gates
+                    Foundation</span><span class="c2"><a class="c4" target="_blank" href=
+                    "http://www.gatesfoundation.org/media-center/press-releases/2013/01/measures-of-effective-teaching-project-releases-final-research-report">&nbsp;</a></span><span class="c9 c2"><a class="c4"
+                    target="_blank" href=
+                    "http://www.gatesfoundation.org/media-center/press-releases/2013/01/measures-of-effective-teaching-project-releases-final-research-report">Measures
+                    of Effective Teaching Report</a></span><span class=
+                    "c2">&nbsp;and</span><span class="c2"><a class="c4" target="_blank" href=
+                    "http://www.metproject.org/index.php">&nbsp;</a></span><span class="c9 c2"><a class="c4"
+                    target="_blank" href="http://www.metproject.org/index.php">Website &amp;
+                    Videos</a></span><span class="c2">. &nbsp;The executive summary
+                    of the report is a very helpful overview of this influential
+                    report.</span>''')),
+                ('guarino', Markup('''<span class="c9 c2"><a class="c4" target="_blank" href=
+                    "/assets/content/guarino-policy-brief.pdf">Policy Brief: Highlights of
+                    Conference on Using Student Test Scores to Measure Teacher
+                    Performance</a></span><span class="c2">&nbsp;(pdf, Cassandra
+                    Guarino).</span>''')),
+                ('darling-hammond', Markup('''<span class=
+                    "c2">Video from the Aspen Institute on the</span><span class=
+                    "c9 c2"><a class="c4" href=
+                    "https://www.youtube.com/watch?v=7JUrYwcd68E">&nbsp;Role of
+                    Teacher Evaluation in Reforming Public</a></span><span class=
+                    "c9 c2">&nbsp;</span><span class="c2">Schools</span>''')),
+                ('tapsystem', Markup('''<span class="c9 c2"><a class="c4" href=
+                    "http://www.tapsystem.org/policyresearch/policyresearch.taf?page=valueadded">Understanding
+                    Value-Added Analysis of Student
+                    Achievement.</a></span><span class="c2">&nbsp; This is a bit
+                    outdated but there are some links to excellent resources at the
+                    bottom of the page.</span>''')),
+                ('rand', Markup('''<span class="c9 c2"><a class="c4" href=
+                    "http://www.rand.org/topics/value-added-modeling-in-education.html">Value
+                    Added Modeling in Education</a></span><span class=
+                    "c2">&nbsp;(RAND Corporation). &nbsp;Probably one of the most
+                    comprehensive websites out there. Very current and easy to
+                    navigate.</span>''')),
+                ])
+
+
+
 
     big_ideas = BleachedTextAreaField()
     self_check = BleachedTextAreaField()
