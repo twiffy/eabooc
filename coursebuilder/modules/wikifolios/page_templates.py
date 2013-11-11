@@ -280,17 +280,17 @@ class Unit10PageForm(wtf.Form):
                     Guarino).</span>''')),
                 ('darling-hammond', Markup('''<span class=
                     "c2">Video from the Aspen Institute on the</span><span class=
-                    "c9 c2"><a class="c4" href=
+                    "c9 c2"><a class="c4" target="_blank" href=
                     "https://www.youtube.com/watch?v=7JUrYwcd68E">&nbsp;Role of
                     Teacher Evaluation in Reforming Public</a></span><span class=
                     "c9 c2">&nbsp;</span><span class="c2">Schools</span>''')),
-                ('tapsystem', Markup('''<span class="c9 c2"><a class="c4" href=
+                ('tapsystem', Markup('''<span class="c9 c2"><a class="c4" target="_blank" href=
                     "http://www.tapsystem.org/policyresearch/policyresearch.taf?page=valueadded">Understanding
                     Value-Added Analysis of Student
                     Achievement.</a></span><span class="c2">&nbsp; This is a bit
                     outdated but there are some links to excellent resources at the
                     bottom of the page.</span>''')),
-                ('rand', Markup('''<span class="c9 c2"><a class="c4" href=
+                ('rand', Markup('''<span class="c9 c2"><a class="c4" target="_blank" href=
                     "http://www.rand.org/topics/value-added-modeling-in-education.html">Value
                     Added Modeling in Education</a></span><span class=
                     "c2">&nbsp;(RAND Corporation). &nbsp;Probably one of the most
