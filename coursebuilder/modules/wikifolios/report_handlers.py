@@ -154,8 +154,10 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         return title.strip()
 
     def render_unit(self):
-        self.template_value['fields'] = {
+        fields = {
                 k: Markup(v) for k,v in transforms.loads(self.unit.wiki_fields).iteritems()}
+        fields['reflection'] = Markup('<p><i>Removed from this view for peers\' privacy.<br>--BOOC Instructors and Tech Staff</i></p>')
+        self.template_value['fields'] = fields
         self.template_value['unit'] = self.find_unit_by_id(self.unit_num)
         self.template_value['report'] = self.unit
         self.template_value['layout_template'] = 'wf_evidence.html'
