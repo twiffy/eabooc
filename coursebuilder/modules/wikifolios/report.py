@@ -193,9 +193,6 @@ class UnitReport(db.Model):
     submitted = db.BooleanProperty(indexed=False)
     incomplete_reasons = db.StringListProperty(indexed=False)
 
-    # JSON encoded..
-    wiki_fields = db.TextProperty()
-
     @classmethod
     def on(cls, student, unit):
         q = cls.all()
@@ -217,7 +214,7 @@ class UnitReport(db.Model):
             self._run()
 
     def _run(self):
-        page = WikiPage.get_page(self.student, self.unit)
+        page = self._page
         self.submitted = bool(page)
         if not page:
             self.comments = 0
@@ -229,8 +226,16 @@ class UnitReport(db.Model):
         self.endorsements = Annotation.endorsements(page).count(limit=COUNT_LIMIT)
         self.promotions = Annotation.exemplaries(page).count(limit=COUNT_LIMIT)
         self.incomplete_reasons = [inc.reason for inc in Annotation.incompletes(page).run(limit=10)]
-        self.wiki_fields = transforms.dumps({k: getattr(page, k) for k in page.dynamic_properties()})
         self.timestamp = datetime.datetime.now()
+
+    @cached_property
+    def _page(self):
+        return WikiPage.get_page(self.student, self.unit)
+
+    @cached_property
+    def wiki_fields(self):
+        page = self._page
+        return {k: getattr(page, k) for k in page.dynamic_properties()}
 
     @property
     def is_complete(self):
