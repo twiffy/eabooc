@@ -120,7 +120,7 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         if report.units_are_public:
             self.template_value['unit_link'] = self._unit_link
         else:
-            self.template_value['unit_link'] = lambda x: self.request.url
+            self.template_value['unit_link'] = None
             self.template_value['no_unit_links'] = True
         self.template_value['unit_title'] = self._unit_title
 

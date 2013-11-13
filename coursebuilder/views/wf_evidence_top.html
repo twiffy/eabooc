@@ -5,11 +5,24 @@
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
+
+      <h1>{{ part.badge.name }}</h1>
+      <div>
+        {{ author.badge_name }} earned this badge by participating in the <a
+          href="https://booc-iu.appspot.com/">Educational Assessment BOOC</a>. {{ part.badge.description }}
+      </div>
+
+      <h2>Criteria for issuance</h2>
       {% if no_unit_links %}
-      {{ part_report.no_links_evidence_view(part, author, unit_title) }}
+      <div>{{ part.badge.criteria|safe }}</div>
       {% else %}
-      {{ part_report.evidence_view(part, author, unit_link, unit_title) }}
+      <div>{{ part.badge.evidence_page_criteria|safe }}</div>
       {% endif %}
+
+
+      <h2>Evidence</h2>
+
+      {{ part_report.evidence_view(part, unit_link, unit_title) }}
     </div>
   </div>
 </div>
