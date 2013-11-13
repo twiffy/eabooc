@@ -1,8 +1,9 @@
 {% import 'unit_report.html' as unit_report %}
 {% import 'badge_views.html' as badge_views %}
+{% import 'share_buttons.html' as share_buttons %}
 
 {% macro profile_view(part, assertion_link) %}
-<div class="part-report clearfix">
+<div id="{{ part.slug }}" class="part-report clearfix">
   <div class="scores">
     <div class="timestamp">As of {{ part.timestamp.strftime('%Y-%m-%d at %H:%M UTC:') }}</div>
     {% for report in part.unit_reports %}
@@ -20,11 +21,37 @@
     </div>
     {% endfor %}
   </div>
-  {% if part.badge %}
-  {{ badge_views.profile(part.badge, part.badge_assertion, assertion_link) }}
-  {% else %}
-  <!-- (There's no badge set up for this part yet - it should have key_name {{ part.slug }}) -->
-  {% endif %}
+
+  <div class="part-badge-image">
+    {% if part.badge %}
+    {{ badge_views.profile(part.badge, part.badge_assertion, assertion_link) }}
+    {% else %}
+    <!-- (There's no badge set up for this part yet - it should have key_name {{ part.slug }}) -->
+    {% endif %}
+  </div>
+  <div class="badge-share-links">
+    {% set assertion = part.badge_assertion %}
+    {% if assertion %}
+    <div class="issue-link share-button">
+      <a id="obi-issue" href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">
+        <img src="/assets/img/share/mozillaopenbadges.png" alt="Mozilla Open Badges" title="Mozilla Open Badges">
+        Claim on Mozilla Badge Backpack</a>
+    </div>
+    {% if assertion.evidence %}
+    {{ share_buttons.email(assertion.evidence) }}
+    {{ share_buttons.facebook(assertion.evidence) }}
+    {{ share_buttons.twitter(assertion.evidence) }}
+    {{ share_buttons.gplus(assertion.evidence) }}
+    <div class="settings share-button">
+      <a id="settings" href="{{ assertion.evidence }}&amp;action=settings">
+        <img src="/assets/img/share/settings.png" alt="Edit Settings">
+        Badge Settings</a>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="not-earned">(You have not earned this badge yet)</div>
+    {% endif %}
+  </div>
 </div>
 {% endmacro %}
 
