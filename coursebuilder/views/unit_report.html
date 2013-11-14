@@ -39,7 +39,9 @@
     Endorsements: {{ report.endorsements }} -
     Comments: {{ report.comments }}
     {% if report.promotions %}
-    <br><span style="color: #fc0;">★</span> Exemplary!
+    <br><span style="color: #fc0;">★</span>
+    {% if report.promotions > 1 %} &#10005; {{ report.promotions }}{% endif %}
+    Exemplary!
     {% endif %}
   </div>
   <div class="incomplete-reasons">
