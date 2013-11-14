@@ -247,11 +247,14 @@ ul#front-nav {
   background: $content-bg-color;
   border-color: #333;
   border-width: 2px;
-  div.resources-page-link {
+  div.highlight-box {
     margin: 10px;
-    font-size: 120%;
+    padding: 5px;
     border: solid thin darken($content-bg-color, 10%);
     background: lighten($content-bg-color, 5%);
+  }
+  div.big-note {
+    font-size: 120%;
     text-align: center;
   }
   h2, h3, h4, h5, h6, > div {

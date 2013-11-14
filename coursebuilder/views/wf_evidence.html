@@ -15,19 +15,34 @@ Unit {{ unit.unit_id }}
       </div>
       <div>
         by {{ author.badge_name }}</div>
-        {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
-        {% block wiki_content %}
-        {% endblock %}
+      <div>
+        {% for r in report.promotion_texts %}
+        {% if loop.first %}
+        <div class="highlight-box">
+        <p>
+        <div style="float:right; color: #fc0; font-size: 200%;">★</div>
+        <strong>{{ author.badge_name }}'s peers promoted this work as Exemplary!</strong> Here are the reasons they gave:</p>
+          <ul >
+            {% endif %}
+            <li>{{ r }}</li>
+            {% if loop.last %}
+          </ul>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
+      {% block wiki_content %}
+      {% endblock %}
     </div>
   </div>
   <div class="gcb-cols">
     <div id="assignment-completion" class="gcb-col-11 gcb-aside">
-      <p>At the badge issuance time, {{ report.timestamp.strftime('%Y-%m-%d at %H:%M UTC') }}:</p>
-      <p>This assignment was endorsed as complete by {{ report.endorsements }} participants.</p>
-      {% if report.promotions %}
-      <p>It was promoted as exemplary {{ report.promotions }} times.</p>
-      {% endif %}
-      <p>The discussion generated {{ report.comments }} comments.</p>
+      <div>
+        <p>At the badge issuance time, {{ report.timestamp.strftime('%Y-%m-%d') }},
+        this assignment was endorsed as complete by {{ report.endorsements }} participants.
+        The discussion generated {{ report.comments }} comments.</p>
+      </div>
     </div>
   </div>
 </div>

@@ -36,9 +36,11 @@
       {% endif %}
   </span></div>
   <div class="unit-stats">
-    Promotions: {{ report.promotions }} -
     Endorsements: {{ report.endorsements }} -
     Comments: {{ report.comments }}
+    {% if report.promotions %}
+    <br><span style="color: #fc0;">★</span> Exemplary!
+    {% endif %}
   </div>
   <div class="incomplete-reasons">
     {% for reason in report.incomplete_reasons %}

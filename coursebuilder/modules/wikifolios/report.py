@@ -193,6 +193,8 @@ class UnitReport(db.Model):
     submitted = db.BooleanProperty(indexed=False)
     incomplete_reasons = db.StringListProperty(indexed=False)
 
+    promotion_texts = db.StringListProperty(indexed=False)
+
     @classmethod
     def on(cls, student, unit):
         q = cls.all()
@@ -212,6 +214,8 @@ class UnitReport(db.Model):
         super(UnitReport, self).__init__(*args, **kwargs)
         if not self.is_saved():
             self._run()
+        elif not self.promotion_texts:
+            self._set_promotion_texts()
 
     def _run(self):
         page = self._page
@@ -224,9 +228,14 @@ class UnitReport(db.Model):
             return
         self.comments = page.comments.count(limit=COUNT_LIMIT)
         self.endorsements = Annotation.endorsements(page).count(limit=COUNT_LIMIT)
-        self.promotions = Annotation.exemplaries(page).count(limit=COUNT_LIMIT)
+        self._set_promotion_texts()
+        self.promotions = len(self.promotion_texts)
         self.incomplete_reasons = [inc.reason for inc in Annotation.incompletes(page).run(limit=10)]
         self.timestamp = datetime.datetime.now()
+
+    def _set_promotion_texts(self):
+        promos = Annotation.exemplaries(self._page).run(limit=COUNT_LIMIT)
+        self.promotion_texts = [p.reason for p in promos]
 
     @cached_property
     def _page(self):
