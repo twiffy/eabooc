@@ -307,6 +307,30 @@ class Unit10PageForm(wtf.Form):
 forms[10] = Unit10PageForm
 templates[10] = 'wf_temp_u10.html'
 
+class Unit11PageForm(wtf.Form):
+    context = BleachedTextAreaField()
+    evaluation_options = BleachedTextAreaField()
+    goal_scenario = BleachedTextAreaField()
+    rank_evaluation_options = IntegerRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                'Absolute Grading',
+                'Relative Grading',
+                'Aptitude-Based Grading',
+                'Standards-Based Grading',
+                'Goal-Attainment Grading'])
+    justify_evaluation_options = BleachedTextAreaField()
+    big_ideas = BleachedTextAreaField()
+
+    grading_specifics = BleachedTextAreaField()
+    self_check = BleachedTextAreaField()
+    pondertime = BleachedTextAreaField()
+    reflection = BleachedTextAreaField()
+
+forms[11] = Unit11PageForm
+templates[11] = 'wf_temp_u11.html'
+
+
 def viewable_model(model):
     unit = model.unit
     if not unit:
