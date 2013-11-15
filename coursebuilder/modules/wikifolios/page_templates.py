@@ -322,7 +322,23 @@ class Unit11PageForm(wtf.Form):
     justify_evaluation_options = BleachedTextAreaField()
     big_ideas = BleachedTextAreaField()
 
-    grading_specifics = BleachedTextAreaField()
+    rank_grading_specifics = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('different-approaches', '''Different approaches to
+                    grading (ex. achievement-level, standards-based
+                    report cards, descriptive feedback)'''),
+                ('evaluative', 'Evaluative options (listed above)'),
+                ('effort', '''Effort (Popham says you should never
+                    grade for 'effort' but many people disagree)'''),
+                ('intangible', '''Intangible Factors (also called Evaluative
+                    Factors, this includes things like study
+                    skills and social skills)'''),
+                ('record-keeping', 'Record keeping (i.e., handwritten versus electronic)'),
+                ('conferences', 'Grading conferences (who gets to be involved?)'),
+                ('imprecision', 'Imprecision (mistakes and bias)'),
+                ])
+    justify_grading_specifics = BleachedTextAreaField()
     self_check = BleachedTextAreaField()
     pondertime = BleachedTextAreaField()
     reflection = BleachedTextAreaField()
