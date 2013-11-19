@@ -151,7 +151,8 @@ class IntegerRankingField(wtf.Field, BaseRankingField):
         if self.labels:
             labels = self.labels
 
-        for (idx, choice), label in zip(self.iter_choices(), labels):
+        for idx, choice in self.iter_choices():
+            label = labels[idx - 1]
             yield (idx, choice, label)
 
     def parse_int_list(self, raw):
@@ -283,6 +284,16 @@ class IntegerRankingFieldTest(TestCase):
         self.assertLess(rendered.index('ham'), rendered.index('cheese'))
         # the field value must also be 2,1.
         self.assertLess(rendered.rindex('2'), rendered.rindex('1'))
+
+    def test_label_reordering(self):
+        class F2(wtf.Form):
+            a = IntegerRankingField(choices=['cheese', 'ham'],
+                    labels=['CheeseLabel', 'HamLabel'])
+        form = F2(DummyPostData(a=['2, 1']))
+        rendered = form.a()
+        self.assertLess(rendered.index('ham'), rendered.index('cheese'))
+        self.assertLess(rendered.index('HamLabel'), rendered.index('CheeseLabel'))
+
 
     def test_bad_data(self):
         form = self.F(DummyPostData(a=['3']))
