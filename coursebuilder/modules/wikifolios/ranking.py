@@ -86,6 +86,9 @@ class StringRankingField(wtf.Field, BaseRankingField):
         self.choices = choices
         self.choice_dict = dict(choices)
 
+    def choice_strings(self):
+        return [c[0] for c in self.choices]
+
     def _value(self):
         "Format the data for the underlying basic input field"
         if self.data:
@@ -130,6 +133,9 @@ class IntegerRankingField(wtf.Field, BaseRankingField):
         super(IntegerRankingField, self).__init__(label, validators, **kwargs)
         self.labels = labels
         self.choices = choices
+
+    def choice_strings(self):
+        return list(self.choices)
 
     def _value(self):
         "Format the data for the most basic input field - a textinput with a list of comma separated integers"

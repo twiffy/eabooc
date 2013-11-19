@@ -105,6 +105,41 @@ class UnitRankingQuery(object):
                     yield dict(zip(self.fields, row))
                 yield {}
 
+class UnitRawRankingQuery(object):
+    fields = ['email', 'group_id'] # extended by __init__
+
+    def __init__(self, handler):
+        unit_str = handler.request.GET['unit']
+        if not unit_str:
+            raise ValueError('"unit" parameter is required for this query')
+        # value error may bubble up
+        self.unit = int(unit_str)
+        self.form_fields = [field for field in forms[self.unit]() if isinstance(field, BaseRankingField)]
+        for field in self.form_fields:
+            self.fields.append(field.name)
+            self.fields.extend(field.choice_strings())
+
+    def run(self):
+        pages = WikiPage.all()
+        pages.filter('unit', self.unit)
+        page_iter = pages.run()
+
+        for page in page_iter:
+            author = page.author
+            ranks = {
+                    'email': author.key().name(),
+                    'group_id': author.group_id,
+                    }
+
+            for f_field in self.form_fields:
+                field = f_field.name
+                value = getattr(page, field)
+                if not value:
+                    continue
+                ranks.update((item, n) for n, item in enumerate(value, start=1))
+
+            yield ranks
+
 
 class UnitTextSimilarityQuery(object):
     def __init__(self, handler):
@@ -363,6 +398,7 @@ analytics_queries['current_group_ids'] = CurrentGroupIDQuery
 analytics_queries['initial_curricular_aim'] = CurricularAimQuery
 analytics_queries['unit_completion_and_full_text'] = UnitCompletionQuery
 analytics_queries['unit_ranking'] = UnitRankingQuery
+analytics_queries['unit_ranking_raw'] = UnitRawRankingQuery
 analytics_queries['unit_all_comments'] = UnitCommentQuery
 analytics_queries['unit_plagiarism_detector'] = UnitTextSimilarityQuery
 analytics_queries['one_student_wiki_edit_history'] = StudentEditHistoryQuery
