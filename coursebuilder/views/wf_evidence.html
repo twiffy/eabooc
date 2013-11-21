@@ -19,9 +19,9 @@ Unit {{ unit.unit_id }}
         {% for r in report.promotion_texts %}
         {% if loop.first %}
         <div class="highlight-box">
-        <p>
-        <div style="float:right; color: #fc0; font-size: 200%;">★</div>
-        <strong>{{ author.badge_name }}'s peers promoted this work as Exemplary!</strong> Here are the reasons they gave:</p>
+          <p>
+          <div style="float:right; color: #fc0; font-size: 200%;">★</div>
+          <strong>{{ author.badge_name }}'s peers promoted this work as Exemplary!</strong> Here are the reasons they gave:</p>
           <ul >
             {% endif %}
             <li>{{ r }}</li>
