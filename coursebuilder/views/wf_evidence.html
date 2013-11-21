@@ -27,6 +27,9 @@ Unit {{ unit.unit_id }}
             <li>{{ r }}</li>
             {% if loop.last %}
           </ul>
+          <p>{# At the badge issuance time, {{ report.timestamp.strftime('%Y-%m-%d') }}, #}
+          This assignment was endorsed as complete by {{ report.endorsements }} participants.
+          The discussion generated {{ report.comments }} comments.</p>
         </div>
         {% endif %}
         {% endfor %}
@@ -34,15 +37,6 @@ Unit {{ unit.unit_id }}
       {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
       {% block wiki_content %}
       {% endblock %}
-    </div>
-  </div>
-  <div class="gcb-cols">
-    <div id="assignment-completion" class="gcb-col-11 gcb-aside">
-      <div>
-        <p>At the badge issuance time, {{ report.timestamp.strftime('%Y-%m-%d') }},
-        this assignment was endorsed as complete by {{ report.endorsements }} participants.
-        The discussion generated {{ report.comments }} comments.</p>
-      </div>
     </div>
   </div>
 </div>
