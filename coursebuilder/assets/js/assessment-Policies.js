@@ -31,23 +31,202 @@ var assessment = {
   //   correctAnswerNumeric - freetext numeric match
   questionsList: [
 
-    {questionHTML: "A commercial testing company has developed a brand new test intended to measure the mathematics skills of students who possess limited English proficiency.  Because there are three different forms of the test at each of six grade levels, and teachers are encouraged to use all three forms during the year, the sales representatives of the company are demanding reliability evidence (from technical personnel) that will best help them market the new test. What kind of reliability evidence seems most useful in this situation?",
+    {
+	    questionHTML: "Parents who want their children to score high on standardized achievement tests would be most happy if their child earned which of the following percentiles?",
       choices: [
-        'Stability',
-      correct('Alternate-Forms'),
-      'Internal Consistency',
-      ],
+        '50th',
+        '2nd',
+        correct('99th'),
 
+      ],
     },
 
-    {questionHTML: "Of the following options, which one is—by far—the most integral to the implementation of formative assessment in a classroom?",
+    {
+	    questionHTML: "Which of the following score-interpretation options is most <i>readily interpretable?</i>",
       choices: [
-        'A teacher’s willingness to try new procedures in class',
-        correct('Use of assessment-elicited evidence to make adjustments'),
-        'Teachers’ willingness to refrain from grading most of their students’ exams',
-        'Teachers’ use of a variety of both selected-response and constructed-response items',
+        correct('Percentiles'),
+        'NCEs',
+        'Grade equivalents',
+
+      ],
+    },
+
+    {
+	    questionHTML: "Which of the following score-interpretation options is especially useful in equalizing the disparate difficulty levels of different test forms?",
+      choices: [
+        'Percentiles',
+        'Grade equivalents',
+        correct('Scale scores'),
+
+      ],
+    },
+
+    {
+	    questionHTML: "Which of the following score-interpretation options is <i>most often misunderstood?</i>",
+      choices: [
+        'Stanines',
+        correct('Grade equivalents'),
+        'Percentiles',
+
+      ],
+    },
+
+    {
+	    questionHTML: "Which of the following score-interpretation indices were initially introduced to permit amalgamation of students’ scores on different standardized tests?",
+      choices: [
+        correct('Normal curve equivalents'),
+        'Stanines',
+        'Grade equivalents',
+
+      ],
+    },
+
+    {
+	    questionHTML: "True or False. The heart of the <i>Professional Ethics Guideline</i> is that teachers should not prepare students for tests in a way that violates universal canons of fundamental morality.",
+      choices: [
+        'True',
+        correct('False'),
+
+      ],
+    },
+
+    {
+	    questionHTML: "True or False. The essence of the <i>Educational Defensibility Guideline</i> is that a suitable test-preparation practice will boost students’ mastery on both a curricular aim’s domain knowledge and/or skill as well as the test representing that curricular aim.",
+      choices: [
+        correct('True'),
+        'False',
+
+      ],
+    },
+
+    {
+	    questionHTML: "True or False. Generalized test-taking preparation, if not excessively lengthy, represents an appropriate way to ready students for a high-stakes test.",
+      choices: [
+        correct('True'),
+        'False',
+
+      ],
+    },
+
+    {
+	    questionHTML: "True or False. Current-form preparation, that is, special instruction based on an existing form of a test, can be appropriate in some situations.",
+      choices: [
+        'True',
+        correct('False'),
+
+      ],
+    },
+
+    {
+	    questionHTML: "True or False. Most standardized achievement tests are accompanied by fairly explicit descriptions of what is being measured, such descriptions being sufficiently clear for most teachers’ instructional planning purposes.",
+      choices: [
+        'True',
+        correct('False'),
+
+      ],
+    },
+
+    {
+	    questionHTML: "Which of the following is NOT a factor to take into account when structuring an evaluative strategy for your classroom?",
+      choices: [
+        'Evidence pertaining to any positive or negative side effects.',
+        'Assessment evidence collected via accountability tests.',
+        correct('Evidence pertaining to assessments taken previous to the current level.'),
+        'Assessment evidence collected via classroom assessments.',
+
+      ],
+    },
+
+    {
+	    questionHTML: "Which of the following is a key strength of the pretest versus posttest model for determining instructional impact?",
+      choices: [
+        'Testing a student before and after instruction provides more data than testing just once',
+        correct('Testing a student before and after instruction ensures that you measure how much the teaching impacted changes in performance.'),
+        'Testing a student before and after instruction accounts for factors such as the the “dissimilar students” problem.',
+        'Testing a student before and after instruction accounts for any student growth that can happen by chance alone.',
+
+      ],
+    },
+
+    {
+	    questionHTML: "What is one reason that the “split-and-switch” design can provide better evidence of a teacher’s instructional effectiveness than simply pretesting and posttesting?",
+      choices: [
+        correct('It controls for the testing effect whereby the pretest tells students what will be on the posttest'),
+        'It provides the instructor with evidence of instructional effectiveness regardless of the size of the class.',
+        'It provides the instructor with evidence to judge instructional effectiveness in the form of pretest and posttest grades.',
+        'None of the above.',
+
+      ],
+    },
+
+    {
+	    questionHTML: "Which of the following statements does NOT represent instructional sensitivity?",
+      choices: [
+        'The focus of instructional sensitivity is on instructional quality--which is the amount of instruction directed toward student achievement on a skill.',
+        'An instructionally sensitive test will accurately distinguish between effectively and ineffectively taught students.',
+        'The focus of instructional sensitivity is on the degree to which test performance measures the quality of instruction directed toward students’ mastery of a skill.',
+        correct('An instructionally sensitive test will be sensitive to the instruction provided to promote student’s mastery on what is being assessed.'),
+      ],
+    },
+
+    {
+      questionHTML: "Which of the following represents an accurate definition of Value-Added Model (VAM)?",
+      choices: [
+        "An approach to teacher evaluation that measures the teacher's contribution in a given year by comparing the current standardized test scores of all the students in that class to the scores of the students in the same class last year.",
+        correct('An approach to teacher evaluation that represents a statistical strategy to increase the accuracy of estimates of achievement gains of each student from one year to the next.'),
+        'An approach to teacher evaluation that examines the effect a teachers has on student growth by examining various classroom assessments within a given year.',
+        'None of the above.',
+
+
         ],
-    }],
+    },
+
+
+    {
+      questionHTML: "Indicate whether the following statement <i>Appropriately</i> or <i>Inappropriately</i> represents a goal-attainment approach to grading: “Goal-attainment grading emphasizes a teacher’s communicating information to students and their parents about students’ goal-attainment.”",
+      choices: [
+        correct('Appropriately'),
+        'Inappropriately',
+      ],
+    },
+
+    {
+      questionHTML: "Indicate whether the following statement <i>Appropriately</i> or <i>Inappropriately</i> represents a goal-attainment approach to grading: “Genuine goal-attainment grading should be based <i>exclusively</i> on a student’s status with respect to the mastery of curricular aims.”",
+      choices: [
+        correct('Appropriately'),
+        'Inappropriately',
+
+      ],
+    },
+
+    {
+      questionHTML: "Indicate whether the following statement <i>Appropriately</i> or <i>Inappropriately</i> represents a goal-attainment approach to grading: “All assessment-based evidence related to a student’s mastery of the teacher’s designated curricular aims should be weighted identically when goal-attainment graders arrive at students’ grades.”",
+      choices: [
+        'Appropriately',
+        correct('Inappropriately'),
+
+      ],
+    },
+
+    {
+      questionHTML: "Indicate whether the following statement <i>Appropriately</i> or <i>Inappropriately</i> represents a goal-attainment approach to grading: “After clarifying curricular aims to students and their parents, a goal-attainment grader should identify the evidence by which a student’s attainment of goals will be determined.”",
+      choices: [
+        correct('Appropriately'),
+        'Inappropriately',
+
+      ],
+    },
+
+    {
+      questionHTML: "Indicate whether the following statement Appropriately or Inappropriately represents a goal-attainment approach to grading: “For goal-attainment grading to succeed, especially when used with standards-based report cards, it will often be necessary to meaningfully reduce the number of grade-relevant goals via stringent prioritization.”",
+      choices: [
+        correct('Appropriately'),
+        'Inappropriately',
+
+      ],
+    }
+
+  ],
 
   // The assessmentName key is deprecated in v1.3 of Course Builder, and no
   // longer used. The assessment name should be set in the unit.csv file or via

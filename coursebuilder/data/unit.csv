@@ -15,5 +15,5 @@ id,type,unit_id,title,release_date,now_available
 14,U,9,Test Preparation (ch. 14),opens November 4,True
 15,U,10,Evaluation of Instruction and Teaching (ch. 15),opens November 11,True
 16,U,11,Assessment-Based Grading (ch. 16),opens November 18,True
-17,A,Policies,<i>Assessment Policies Exam (open November 25 through December 4)</i>,,False
+17,A,Policies,<i>Assessment Policies Exam (open November 25 through December 4)</i>,,True
 18,O,Final,<i>Comprehensive Exam (open December 2 through 11)</i>,,False
