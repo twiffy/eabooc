@@ -212,9 +212,11 @@ module = None
 def register_module():
     global module
 
+    import exit_survey
     handlers = [
             ('/confirm', ConfirmationHandler),
             ('/enrollment', StudentCountHandler),
+            ('/try', exit_survey.TryhardSurveyHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("RegConf", "Registration Confirmation",
