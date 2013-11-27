@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% from 'exit_survey_macros.html' import required_mark, field_label_and_errors %}
+
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <h2>Exit Survey (page 2 of 3)</h2>
+      <form action="{{ post_url }}" method="POST" id="booc-survey">
+        Required fields are marked with {{ required_mark() }}
+        <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+        <table class="survey">
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.book_format) }}
+            </td>
+            <td class="a">
+              {{ form.book_format }}
+              {{ form.book_format_explain }}
+            </td>
+          </tr>
+
+
+        </table>
+        <input type="submit">
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
