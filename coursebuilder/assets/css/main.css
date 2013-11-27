@@ -947,6 +947,11 @@ form#unenroll-form table, form#booc-survey table {
     width: 95%;
     height: 4em; }
   form#unenroll-form table td.q, form#booc-survey table td.q {
-    text-align: right; }
+    text-align: right;
+    width: 50%;
+    padding: 10px; }
+  form#unenroll-form table td.a, form#booc-survey table td.a {
+    width: 50%;
+    padding: 10px; }
 form#unenroll-form span.error, form#unenroll-form div.error, form#booc-survey span.error, form#booc-survey div.error {
   color: #a00; }

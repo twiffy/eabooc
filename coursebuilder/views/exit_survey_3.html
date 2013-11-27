@@ -6,70 +6,55 @@
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
-      <h2>Exit Survey (page 1 of 3)</h2>
+      <h2>Exit Survey (page 3 of 3)</h2>
       <form action="{{ post_url }}" method="POST" id="booc-survey">
         Required fields are marked with {{ required_mark() }}
         <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
         <table class="survey">
           <tr>
             <td class="q">
-              {{ field_label_and_errors(form.first_hear) }}
+              {{ field_label_and_errors(form.hours_per_week) }}
             </td>
             <td class="a">
-              {{ form.first_hear }}
-              {{ form.first_hear_explain() }}
+              {{ form.hours_per_week }}
             </td>
           </tr>
 
           <tr>
             <td class="q">
-              {{ field_label_and_errors(form.other_courses) }}
+              {{ field_label_and_errors(form.most_favorite) }}
             </td>
             <td class="a">
-              {{ form.other_courses }}
+              {{ form.most_favorite }}
             </td>
           </tr>
 
           <tr>
             <td class="q">
-              {{ field_label_and_errors(form.other_courses_how_many) }}
+              {{ field_label_and_errors(form.least_favorite) }}
             </td>
             <td class="a">
-              {{ form.other_courses_how_many }}
+              {{ form.least_favorite }}
             </td>
           </tr>
 
           <tr>
             <td class="q">
-              {{ field_label_and_errors(form.other_courses_what) }}
+              {{ field_label_and_errors(form.suggestions) }}
             </td>
             <td class="a">
-              {{ form.other_courses_what() }}
+              {{ form.suggestions }}
             </td>
           </tr>
 
           <tr>
             <td class="q">
-              {{ field_label_and_errors(form.enroll_motivation) }}
+              {{ field_label_and_errors(form.would_recommend) }}
             </td>
             <td class="a">
-              {{ form.enroll_motivation }}
-              {{ form.enroll_motivation_other }}
+              {{ form.would_recommend }}
             </td>
           </tr>
-
-          <tr>
-            <td class="q">
-              {{ field_label_and_errors(form.complete_motivation) }}
-            </td>
-            <td class="a">
-              {{ form.complete_motivation }}
-              {{ form.complete_motivation_other }}
-            </td>
-          </tr>
-
-
-
 
         </table>
         <input type="submit">

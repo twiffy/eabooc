@@ -1150,6 +1150,12 @@ form#unenroll-form, form#booc-survey {
     }
     td.q {
       text-align: right;
+      width: 50%;
+      padding: 10px;
+    }
+    td.a {
+      width: 50%;
+      padding: 10px;
     }
   }
   span.error, div.error {

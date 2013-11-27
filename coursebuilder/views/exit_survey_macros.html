@@ -1,0 +1,9 @@
+{% macro required_mark() -%}
+<span class="required-mark">*</span>
+{%- endmacro %}
+
+{% macro field_label_and_errors(field) -%}
+{% if field.flags.required %}{{ required_mark() }}{% endif %}
+{{ field.label }}
+<div class="error">{{ ", ".join(field.errors) }}</div>
+{%- endmacro %}
