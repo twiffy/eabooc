@@ -955,3 +955,17 @@ form#unenroll-form table, form#booc-survey table {
     padding: 10px; }
 form#unenroll-form span.error, form#unenroll-form div.error, form#booc-survey span.error, form#booc-survey div.error {
   color: #a00; }
+
+form div.likert label {
+  background: #aaa;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.5em;
+  margin: 0.25em;
+  cursor: pointer; }
+form div.likert label.likert-na {
+  margin-left: 0.75em;
+  background: #9ab; }
+form div.likert label.likert-idk {
+  margin-left: 0.75em;
+  background: #9ab; }

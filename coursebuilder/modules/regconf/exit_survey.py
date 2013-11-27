@@ -282,3 +282,16 @@ class ExitSurvey3Handler(SurveyHandler):
 
     def action(self, user, form):
         print "YAY", form.data
+
+
+class ExitSurveyFeaturesForm(wtf.Form):
+    dogs = LikertField()
+
+class ExitSurveyFeaturesHandler(SurveyHandler):
+    form = ExitSurveyFeaturesForm
+    template = 'exit_survey_features.html'
+    name = 'exit_survey_features'
+
+    def action(self, user, form):
+        print "YAY", form.data
+

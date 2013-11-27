@@ -1162,3 +1162,22 @@ form#unenroll-form, form#booc-survey {
     color: #a00;
   }
 }
+
+form div.likert {
+  label {
+    background:#aaa;
+    color:#fff;
+    border-radius:8px;   
+    padding:0.5em;
+    margin:0.25em;
+    cursor:pointer;
+  }
+  label.likert-na {
+    margin-left: 0.75em;
+    background: #9ab;
+  }
+  label.likert-idk {
+    margin-left: 0.75em;
+    background: #9ab;
+  }
+}

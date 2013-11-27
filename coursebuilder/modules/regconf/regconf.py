@@ -219,6 +219,7 @@ def register_module():
             ('/survey', exit_survey.ExitSurvey1Handler),
             ('/survey2', exit_survey.ExitSurvey2Handler),
             ('/survey3', exit_survey.ExitSurvey3Handler),
+            ('/survey4', exit_survey.ExitSurveyFeaturesHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("RegConf", "Registration Confirmation",
