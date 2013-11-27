@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% from 'exit_survey_macros.html' import required_mark, field_label_and_errors %}
+{% from 'exit_survey_macros.html' import required_mark, field_label_and_errors, likert_input, likert_row %}
 
 {% block main_content %}
 <div class="gcb-aux">
@@ -10,18 +10,23 @@
       <form action="{{ post_url }}" method="POST" id="booc-survey">
         Required fields are marked with {{ required_mark() }}
         <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
-        <table class="survey">
+        <table class="survey" style="width: 100%">
           <tr>
             <td class="q">
               {{ field_label_and_errors(form.dogs) }}
             </td>
             <td class="a">
-              {{ form.dogs }}
+              {{ likert_input('dogs') }}
             </td>
           </tr>
 
+        </table>
+        <div class="likert">
+        <table class="survey" style="width: 100%">
+          {{ likert_row(form.dogs) }}
 
         </table>
+      </div>
         <input type="submit">
       </form>
     </div>

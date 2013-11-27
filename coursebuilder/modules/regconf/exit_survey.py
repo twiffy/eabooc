@@ -285,7 +285,9 @@ class ExitSurvey3Handler(SurveyHandler):
 
 
 class ExitSurveyFeaturesForm(wtf.Form):
-    dogs = LikertField()
+    dogs = wtf.RadioField(
+            choices=[
+                (a, a) for a in ('1', '2', '3', '4', '5', 'na', 'idk')])
 
 class ExitSurveyFeaturesHandler(SurveyHandler):
     form = ExitSurveyFeaturesForm

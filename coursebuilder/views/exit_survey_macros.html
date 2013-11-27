@@ -7,3 +7,27 @@
 {{ field.label }}
 <div class="error">{{ ", ".join(field.errors) }}</div>
 {%- endmacro %}
+
+{% macro likert_input(name) %}
+<div class="likert">
+  <label title="Strongly Disagree"><input type="radio" name="{{ name }}" value="1"></label>
+  <label title="Disagree"><input type="radio" name="{{ name }}" value="2"></label>
+  <label title="Neutral"><input type="radio" name="{{ name }}" value="3"></label>
+  <label title="Agree"><input type="radio" name="{{ name }}" value="4"></label>
+  <label title="Strongly Agree"><input type="radio" name="{{ name }}" value="5"></label>
+</div>
+{% endmacro %}
+
+{% macro likert_row(field) %}
+<tr class="likert-row">
+  <td class="likert-q">{{ field_label_and_errors(field) }}</td>
+  <td><label title="Strongly Disagree"><input type="radio" name="{{ field.name }}" value="1"></label></td>
+  <td><label title="Disagree"><input type="radio" name="{{ field.name }}" value="2"></label></td>
+  <td><label title="Neutral"><input type="radio" name="{{ field.name }}" value="3"></label></td>
+  <td><label title="Agree"><input type="radio" name="{{ field.name }}" value="4"></label></td>
+  <td><label title="Strongly Agree"><input type="radio" name="{{ field.name }}" value="5"></label></td>
+  <td><label title="Not Applicable"><input type="radio" name="{{ field.name }}" value="na"></label></td>
+  <td><label title="Don't Know"><input type="radio" name="{{ field.name }}" value="idk"></label></td>
+</tr>
+{% endmacro %}
+
