@@ -1,10 +1,89 @@
 {% extends 'base.html' %}
 
-{% block main_content %}
-{{ post_url }}
-{% for field in form %}
+{% macro required_mark() %}
+<span class="required-mark">*</span>
+{% endmacro %}
 
-{{ field.label }} {{ field }}
-{% endfor %}
+{% macro field_label_and_errors(field) -%}
+{% if field.flags.required %}{{ required_mark() }}{% endif %}
+{{ field.label }}
+<div class="error">{{ ", ".join(field.errors) }}</div>
+{%- endmacro %}
+
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <h2>Exit Survey (page 1 of 3)</h2>
+      <form action="{{ post_url }}" method="POST" id="booc-survey">
+        Required fields are marked with {{ required_mark() }}
+        <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+        <table class="survey">
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.first_hear) }}
+            </td>
+            <td class="a">
+              {{ form.first_hear }}
+              {{ form.first_hear_explain() }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.other_courses) }}
+            </td>
+            <td class="a">
+              {{ form.other_courses }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.other_courses_how_many) }}
+            </td>
+            <td class="a">
+              {{ form.other_courses_how_many }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.other_courses_what) }}
+            </td>
+            <td class="a">
+              {{ form.other_courses_what() }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.enroll_motivation) }}
+            </td>
+            <td class="a">
+              {{ form.enroll_motivation }}
+              {{ form.enroll_motivation_other }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.complete_motivation) }}
+            </td>
+            <td class="a">
+              {{ form.complete_motivation }}
+              {{ form.complete_motivation_other }}
+            </td>
+          </tr>
+
+
+
+
+        </table>
+        <input type="submit">
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
 

@@ -928,21 +928,25 @@ div.badge-faq-contents .literal {
   #endorsement-list div.endorsement span.exemplary-star {
     color: #fc0; }
 
-form#unenroll-form span.required-mark {
+form#unenroll-form span.required-mark, form#booc-survey span.required-mark {
   font-size: 110%;
   color: #a00; }
-form#unenroll-form li {
+form#unenroll-form li, form#booc-survey li {
   list-style-type: none; }
-form#unenroll-form table {
+form#unenroll-form td ul, form#booc-survey td ul {
+  margin-left: 10px; }
+form#unenroll-form table, form#booc-survey table {
   border-collapse: collapse;
   margin-bottom: 2em; }
-  form#unenroll-form table th {
+  form#unenroll-form table th, form#booc-survey table th {
     width: 50%;
     text-align: left; }
-  form#unenroll-form table td input[type=text] {
-    width: 90%; }
-  form#unenroll-form table td textarea {
-    width: 90%;
+  form#unenroll-form table td input[type=text], form#booc-survey table td input[type=text] {
+    width: 95%; }
+  form#unenroll-form table td textarea, form#booc-survey table td textarea {
+    width: 95%;
     height: 4em; }
-form#unenroll-form span.error {
+  form#unenroll-form table td.q, form#booc-survey table td.q {
+    text-align: right; }
+form#unenroll-form span.error, form#unenroll-form div.error, form#booc-survey span.error, form#booc-survey div.error {
   color: #a00; }
