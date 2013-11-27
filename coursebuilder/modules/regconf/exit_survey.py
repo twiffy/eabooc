@@ -59,7 +59,7 @@ class SurveyHandler(BaseHandler):
             # Validation errors will be included in the 'form' object
             self.do_render(form)
 
-class TryhardForm(wtf.Form):
+class ExitSurvey1Form(wtf.Form):
     first_hear = wtf.RadioField(
             "Where did you first hear about this course?",
             choices=(
@@ -117,10 +117,10 @@ class TryhardForm(wtf.Form):
             validators=[wtf.validators.optional()])
 
 
-class TryhardSurveyHandler(SurveyHandler):
-    form = TryhardForm
-    template = 'try.html'
-    name = 'tryhard'
+class ExitSurvey1Handler(SurveyHandler):
+    form = ExitSurvey1Form
+    template = 'exit_survey_1.html'
+    name = 'exit_survey_1'
 
     def action(self, user, form):
         print "YAY", form.data

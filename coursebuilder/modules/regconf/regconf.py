@@ -216,7 +216,7 @@ def register_module():
     handlers = [
             ('/confirm', ConfirmationHandler),
             ('/enrollment', StudentCountHandler),
-            ('/try', exit_survey.TryhardSurveyHandler),
+            ('/survey', exit_survey.ExitSurvey1Handler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("RegConf", "Registration Confirmation",
