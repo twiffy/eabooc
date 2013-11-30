@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 from regconf import FormSubmission
 from controllers.utils import BaseHandler, XsrfTokenManager
 import webapp2
@@ -283,11 +284,60 @@ class ExitSurvey3Handler(SurveyHandler):
     def action(self, user, form):
         print "YAY", form.data
 
-
 class ExitSurveyFeaturesForm(wtf.Form):
-    dogs = wtf.RadioField(
-            choices=[
-                (a, a) for a in ('1', '2', '3', '4', '5', 'na', 'idk')])
+    field_pairs = []
+
+feature_list = [
+        u'to initially define my curricular aim', 
+        u'to be assigned to a networking group', 
+        u'to redefine my curricular aim', 
+        u'to redefine my context and role', 
+        u'to read the chapters', 
+        u'to rank concepts', 
+        u'to find outside resources', 
+        u'to write big ideas  ', 
+        u'to write reflections', 
+        u'to endorse others', 
+        u'to receive endorsements', 
+        u'to promote others', 
+        u'to receive promotions', 
+        u'to post questions for others on my wikifolio', 
+        u'to give comments', 
+        u'to reply to comments', 
+        u'to receive notifications', 
+        u'to complete exams', 
+        u'to get early feedback before a wiki was due ', 
+        u'to get instructor observations after wikis were completed', 
+        u'to get announcements in-course', 
+        u'to use the discussion forum', 
+        u'to extend/change my name to reflect my identity and role', 
+        u'to see others’ names on the participant list with their role', 
+        u'to use the formatting and styling functions of the wikifolio editor', 
+        u'to have a public profile “My Wikifolio” page with an introduction', 
+        u'to read the Remediating Assessment blog', 
+        ]
+
+LIKERT_CHOICES = [
+        (a, a) for a in ('1', '2', '3', '4', '5', 'na', 'idk')]
+likert_kwargs = {
+        'validators': [wtf.validators.optional()],
+        'choices': LIKERT_CHOICES
+        }
+comment_kwargs = {
+        'validators': [wtf.validators.optional()],
+        }
+
+class LikertItemForm(wtf.Form):
+    rating = wtf.RadioField(**likert_kwargs)
+    comment = wtf.StringField(**comment_kwargs)
+
+for feature in feature_list:
+    field_name = re.sub('[^\w\s]', '', feature)
+    field_name = re.sub('[\s]+', '_', field_name)
+
+    setattr(ExitSurveyFeaturesForm, field_name,
+            wtf.FormField(LikertItemForm, feature))
+
 
 class ExitSurveyFeaturesHandler(SurveyHandler):
     form = ExitSurveyFeaturesForm

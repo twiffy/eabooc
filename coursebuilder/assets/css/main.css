@@ -956,16 +956,26 @@ form#unenroll-form table, form#booc-survey table {
 form#unenroll-form span.error, form#unenroll-form div.error, form#booc-survey span.error, form#booc-survey div.error {
   color: #a00; }
 
-form div.likert label {
-  background: #aaa;
-  color: #fff;
-  border-radius: 8px;
-  padding: 0.5em;
-  margin: 0.25em;
-  cursor: pointer; }
-form div.likert label.likert-na {
-  margin-left: 0.75em;
-  background: #9ab; }
-form div.likert label.likert-idk {
-  margin-left: 0.75em;
-  background: #9ab; }
+form div.likert td.a, form div.likert th.a {
+  border-left: none;
+  border-right: none;
+  text-align: center;
+  width: 3em;
+  padding-left: 0.3em;
+  padding-right: 0.3em; }
+  form div.likert td.a label, form div.likert th.a label {
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.5em;
+    margin: 0.25em;
+    cursor: pointer;
+    background: #9ab; }
+  form div.likert td.a label.na, form div.likert td.a label.idk, form div.likert th.a label.na, form div.likert th.a label.idk {
+    background: #aaa;
+    margin-left: 0.75em; }
+  form div.likert td.a label:hover, form div.likert th.a label:hover {
+    background: #ccc; }
+form div.likert td.a.border, form div.likert th.a.border {
+  border-left: thin solid #b8a18b; }
+form div.likert table {
+  border-collapse: collapse; }

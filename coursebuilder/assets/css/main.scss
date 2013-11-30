@@ -1164,20 +1164,34 @@ form#unenroll-form, form#booc-survey {
 }
 
 form div.likert {
-  label {
-    background:#aaa;
-    color:#fff;
-    border-radius:8px;   
-    padding:0.5em;
-    margin:0.25em;
-    cursor:pointer;
+  td.a, th.a {
+    border-left: none;
+    border-right: none;
+    text-align: center;
+    width: 3em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+
+    label {
+      color:#fff;
+      border-radius:8px;   
+      padding:0.5em;
+      margin:0.25em;
+      cursor:pointer;
+      background: #9ab;
+    }
+    label.na, label.idk  {
+      background:#aaa;
+      margin-left: 0.75em;
+    }
+    label:hover {
+      background: #ccc;
+    }
   }
-  label.likert-na {
-    margin-left: 0.75em;
-    background: #9ab;
+  td.a.border, th.a.border {
+    border-left: thin solid $page-bg-color;
   }
-  label.likert-idk {
-    margin-left: 0.75em;
-    background: #9ab;
+  table {
+    border-collapse: collapse;
   }
 }

@@ -18,16 +18,30 @@
 </div>
 {% endmacro %}
 
+{% macro likert_header() %}
+<tr class="likert-row">
+  <th class="q">It was helpful and efficient for learning...</th>
+  <th class="a">Strongly Disagree</th>
+  <th class="a">Disagree</th>
+  <th class="a">Neutral</th>
+  <th class="a">Agree</th>
+  <th class="a">Strongly Agree</th>
+  <th class="a border">Not Applicable</th>
+  <th class="a">Don't Know</th>
+  <th>Comments</th>
+</tr>
+{% endmacro %}
 {% macro likert_row(field) %}
 <tr class="likert-row">
-  <td class="likert-q">{{ field_label_and_errors(field) }}</td>
-  <td><label title="Strongly Disagree"><input type="radio" name="{{ field.name }}" value="1"></label></td>
-  <td><label title="Disagree"><input type="radio" name="{{ field.name }}" value="2"></label></td>
-  <td><label title="Neutral"><input type="radio" name="{{ field.name }}" value="3"></label></td>
-  <td><label title="Agree"><input type="radio" name="{{ field.name }}" value="4"></label></td>
-  <td><label title="Strongly Agree"><input type="radio" name="{{ field.name }}" value="5"></label></td>
-  <td><label title="Not Applicable"><input type="radio" name="{{ field.name }}" value="na"></label></td>
-  <td><label title="Don't Know"><input type="radio" name="{{ field.name }}" value="idk"></label></td>
+  <td class="q">{{ field_label_and_errors(field) }}</td>
+  <td class="a"><label title="Strongly Disagree"><input type="radio" name="{{ field.rating.name }}" value="1"></label></td>
+  <td class="a"><label title="Disagree"><input type="radio" name="{{ field.rating.name }}" value="2"></label></td>
+  <td class="a"><label title="Neutral"><input type="radio" name="{{ field.rating.name }}" value="3"></label></td>
+  <td class="a"><label title="Agree"><input type="radio" name="{{ field.rating.name }}" value="4"></label></td>
+  <td class="a"><label title="Strongly Agree"><input type="radio" name="{{ field.rating.name }}" value="5"></label></td>
+  <td class="a border"><label class="na" title="Not Applicable"><input type="radio" name="{{ field.rating.name }}" value="na"></label></td>
+  <td class="a"><label class="idk" title="Don't Know"><input type="radio" name="{{ field.rating.name }}" value="idk"></label></td>
+  <td>{{ field.comment }}</td>
 </tr>
 {% endmacro %}
 
