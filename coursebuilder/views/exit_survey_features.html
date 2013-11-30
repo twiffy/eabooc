@@ -6,14 +6,16 @@
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 gcb-aside">
-      <h2>Exit Survey (page 2 of 3)</h2>
+      <h2>Course Features Survey (last page!)</h2>
       <form action="{{ post_url }}" method="POST">
-        Required fields are marked with {{ required_mark() }}
+        Each field is optional, but we really appreciate your feedback!  You're helping to make our next course better!
         <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
         <div class="likert">
           <table class="survey" style="width: 100%">
-            {{ likert_header() }}
             {% for field in form %}
+            {% if loop.index0 % 7 == 0 %}
+            {{ likert_header() }}
+            {% endif %}
             {{ likert_row(field) }}
             {% endfor %}
 

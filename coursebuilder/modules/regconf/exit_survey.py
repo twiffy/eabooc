@@ -54,17 +54,26 @@ class SurveyHandler(BaseHandler):
         form = self.form(self.request.POST)
         if form.validate():
             submission = FormSubmission(form_name=self.name, user=user)
-            for k,v in form.data.items():
-                if isinstance(v, basestring):
-                    setattr(submission, k, db.Text(v))
-                else:
-                    setattr(submission, k, v)
+            for k,v in self.create_db_values(form.data):
+                setattr(submission, k, v)
             submission.put()
             self.action(user, form)
         else:
             # Validation errors will be included in the 'form' object
             self.do_render(form)
 
+    def create_db_values(self, form_dict):
+        for k,v in form_dict.iteritems():
+            if isinstance(v, dict):
+                for inner_k, inner_v in self.create_db_values(v):
+                    yield (
+                            "-".join((k, inner_k)),
+                            inner_v
+                            )
+            elif isinstance(v, basestring):
+                yield (k, db.Text(v))
+            else:
+                yield (k, v)
 
 class HorizontalWidget(object):
     def __init__(self, html_tag):
@@ -288,33 +297,33 @@ class ExitSurveyFeaturesForm(wtf.Form):
     field_pairs = []
 
 feature_list = [
-        u'to initially define my curricular aim', 
-        u'to be assigned to a networking group', 
-        u'to redefine my curricular aim', 
-        u'to redefine my context and role', 
-        u'to read the chapters', 
-        u'to rank concepts', 
-        u'to find outside resources', 
-        u'to write big ideas  ', 
-        u'to write reflections', 
-        u'to endorse others', 
-        u'to receive endorsements', 
-        u'to promote others', 
-        u'to receive promotions', 
-        u'to post questions for others on my wikifolio', 
-        u'to give comments', 
-        u'to reply to comments', 
-        u'to receive notifications', 
-        u'to complete exams', 
-        u'to get early feedback before a wiki was due ', 
-        u'to get instructor observations after wikis were completed', 
-        u'to get announcements in-course', 
-        u'to use the discussion forum', 
-        u'to extend/change my name to reflect my identity and role', 
-        u'to see others’ names on the participant list with their role', 
-        u'to use the formatting and styling functions of the wikifolio editor', 
-        u'to have a public profile “My Wikifolio” page with an introduction', 
-        u'to read the Remediating Assessment blog', 
+        u'...to initially define my curricular aim.', 
+        u'...to be assigned to a networking group.', 
+        u'...to redefine my curricular aim.', 
+        u'...to redefine my context and role.', 
+        u'...to read the chapters.', 
+        u'...to rank concepts.', 
+        u'...to find outside resources.', 
+        u'...to write big ideas.', 
+        u'...to write reflections.', 
+        u'...to endorse others.', 
+        u'...to receive endorsements.', 
+        u'...to promote others.', 
+        u'...to receive promotions.', 
+        u'...to post questions for others on my wikifolio.', 
+        u'...to give comments.', 
+        u'...to reply to comments.', 
+        u'...to receive notifications.', 
+        u'...to complete exams.', 
+        u'...to get early feedback before a wiki was due.', 
+        u'...to get instructor observations after wikis were completed.', 
+        u'...to get announcements in-course.', 
+        u'...to use the discussion forum.', 
+        u'...to extend/change my name to reflect my identity and role.', 
+        u'...to see others’ names on the participant list with their role.', 
+        u'...to use the formatting and styling functions of the wikifolio editor.', 
+        u'...to have a public profile “My Wikifolio” page with an introduction.', 
+        u'...to read the Remediating Assessment blog.', 
         ]
 
 LIKERT_CHOICES = [
@@ -346,4 +355,3 @@ class ExitSurveyFeaturesHandler(SurveyHandler):
 
     def action(self, user, form):
         print "YAY", form.data
-
