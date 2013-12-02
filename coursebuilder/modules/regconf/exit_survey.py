@@ -357,4 +357,4 @@ class ExitSurveyFeaturesHandler(SurveyHandler):
     name = 'exit_survey_features'
 
     def action(self, user, form):
-        print "YAY", form.data
+        self.redirect("/course")
