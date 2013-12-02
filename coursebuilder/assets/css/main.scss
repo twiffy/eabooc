@@ -1124,6 +1124,7 @@ div.badge-faq-contents {
 }
 
 form#unenroll-form, form#booc-survey {
+  font-size: 115%;
   span.required-mark {
     font-size: 110%;
     color: #a00;
@@ -1158,6 +1159,9 @@ form#unenroll-form, form#booc-survey {
       padding: 10px;
     }
   }
+  tr.continues td {
+    border-bottom: solid thin $content-bg-color;
+  }
   span.error, div.error {
     color: #a00;
   }
@@ -1171,22 +1175,15 @@ form div.likert {
     width: 3em;
     padding-left: 0.3em;
     padding-right: 0.3em;
+    padding-top: 0.5em;
 
     label {
-      color:#fff;
-      border: solid thin darken($content-bg-color, 10%);
-      background: lighten($content-bg-color, 5%);
-      border-radius:8px;   
       padding:0.5em;
       margin:0.5em;
       cursor:pointer;
     }
     label.na, label.idk  {
-      background:#aaa;
       margin-left: 0.75em;
-    }
-    label:hover {
-      background: #ccc;
     }
   }
   td.a.border, th.a.border {
@@ -1197,5 +1194,8 @@ form div.likert {
   }
   table {
     border-collapse: collapse;
+  }
+  th.q, td.q {
+    font-size: 115%;
   }
 }

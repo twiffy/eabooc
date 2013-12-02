@@ -1,5 +1,6 @@
 import wtforms as wtf
 import bleach
+from markupsafe import Markup
 
 ALLOWED_TAGS = (
         # bleach.ALLOWED_TAGS:
@@ -66,7 +67,7 @@ def bleach_comment(html):
 
 # Monkey patch wtforms.Field so that each field gets a Title attribute
 def _awesome_field_call(field_self, **kwargs):
-    args = {'title': field_self.label.text}
+    args = {'title': Markup(field_self.label.text).striptags()}
     args.update(kwargs)
     return field_self.widget(field_self, **args)
 

@@ -216,7 +216,8 @@ def register_module():
     handlers = [
             ('/confirm', ConfirmationHandler),
             ('/enrollment', StudentCountHandler),
-            ('/survey', exit_survey.ExitSurvey1Handler),
+            ('/survey', exit_survey.ExitSurveyIntroHandler),
+            ('/survey1', exit_survey.ExitSurvey1Handler),
             ('/survey2', exit_survey.ExitSurvey2Handler),
             ('/survey3', exit_survey.ExitSurvey3Handler),
             ('/survey4', exit_survey.ExitSurveyFeaturesHandler),

@@ -75,6 +75,7 @@ class SurveyHandler(BaseHandler):
             else:
                 yield (k, v)
 
+
 class HorizontalWidget(object):
     def __init__(self, html_tag):
         self.html_tag = html_tag
@@ -91,9 +92,18 @@ class HorizontalWidget(object):
         return Markup(''.join(html))
 
 
+class ExitSurveyIntroHandler(BaseHandler):
+    def get(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+        self.template_value['navbar'] = {}
+        self.render('exit_survey_intro.html')
+
+
 class ExitSurvey1Form(wtf.Form):
     first_hear = wtf.RadioField(
-            "Where did you first hear about this course?",
+            "Where did you first hear about this course?<br>Select one.",
             choices=(
                 ('facebook', 'Facebook'),
                 ('twitter', 'Twitter'),
@@ -125,7 +135,7 @@ class ExitSurvey1Form(wtf.Form):
             validators=[wtf.validators.optional()])
 
     enroll_motivation = wtf.RadioField(
-            "What factor most motivated you to <i>enroll</i> in this course?",
+            "What factor most motivated you to <i>enroll</i> in this course?<br>Select one.",
             choices=(
                 ('expert-badges', 'Earning assessment expert & expertise badges'),
                 ('leader-badges', 'Earning assessment leader badges'),
@@ -142,7 +152,7 @@ class ExitSurvey1Form(wtf.Form):
             validators=[wtf.validators.optional()])
 
     complete_motivation = wtf.RadioField(
-            "What factor most motivated you to <i>complete</i> this course?",
+            "What factor most motivated you to <i>complete</i> this course?<br>Select one.",
             choices=enroll_motivation.kwargs['choices'],
             validators=[wtf.validators.required()])
     complete_motivation_other = wtf.StringField(
@@ -155,7 +165,7 @@ class ExitSurvey1Handler(SurveyHandler):
     name = 'exit_survey_1'
 
     def action(self, user, form):
-        print "YAY", form.data
+        self.redirect("/survey2")
 
 
 class MultiCheckboxField(wtf.SelectMultipleField):
@@ -171,7 +181,7 @@ class MultiCheckboxField(wtf.SelectMultipleField):
 
 class ExitSurvey2Form(wtf.Form):
     book_format = MultiCheckboxField(
-            "Which book format(s) did you use?",
+            "Which book format(s) did you use?<br>Check all that apply.",
             choices=(
                 ('book-7th', 'Hard copy of Popham (Seventh Edition)'),
                 ('book-6th', 'Hard copy of Popham (Sixth Edition)'),
@@ -245,20 +255,13 @@ class ExitSurvey2Handler(SurveyHandler):
     name = 'exit_survey_2'
 
     def action(self, user, form):
-        print "YAY", form.data
+        self.redirect("/survey3")
 
 
 class ExitSurvey3Form(wtf.Form):
     hours_per_week = wtf.SelectField(
             "On average, how many hours per week did you spend on this course?",
-            choices=(
-                [(str(n), str(n)) for n in range(1,16)]
-                + [
-                    ('16-20', '16 to 20'),
-                    ('21-25', '21 to 25'),
-                    ('26-30', '26 to 30'),
-                    ('30+', 'more than 30'),
-                    ]),
+            choices=[(str(n), str(n)) for n in range(1,31)],
             validators=[wtf.validators.required()])
 
     most_favorite = wtf.TextAreaField(
@@ -291,7 +294,7 @@ class ExitSurvey3Handler(SurveyHandler):
     name = 'exit_survey_3'
 
     def action(self, user, form):
-        print "YAY", form.data
+        self.redirect('/survey4')
 
 class ExitSurveyFeaturesForm(wtf.Form):
     field_pairs = []
