@@ -329,7 +329,7 @@ var assessment = {
     },
 
 
-    {questionHTML: "Which statement best characterized this nation’s current use of formative assessment?",
+    {questionHTML: "Which statement best characterized the current use of formative assessment in the United States?",
       choices: [
         'Most teachers now employ the formative-assessment process in their classes.',
         correct('Although research-supported, formative assessment is not widely used.'),
