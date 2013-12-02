@@ -977,5 +977,7 @@ form div.likert td.a, form div.likert th.a {
     background: #ccc; }
 form div.likert td.a.border, form div.likert th.a.border {
   border-left: thin solid #b8a18b; }
+form div.likert td.comment input {
+  width: 15em; }
 form div.likert table {
   border-collapse: collapse; }

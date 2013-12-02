@@ -1191,6 +1191,9 @@ form div.likert {
   td.a.border, th.a.border {
     border-left: thin solid $page-bg-color;
   }
+  td.comment input {
+    width: 15em;
+  }
   table {
     border-collapse: collapse;
   }
