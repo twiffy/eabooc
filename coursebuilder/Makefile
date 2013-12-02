@@ -28,9 +28,9 @@ deploy: no-sandbox
 	@echo
 	sleep 7
 	appcfg update . --email booc.class
-	git stash apply stash^{/APPSTATS2}
-	appcfg update . --email booc.class -V stats
-	git checkout -- app.yaml appengine_config.py
+	#git stash apply stash^{/APPSTATS2}
+	#appcfg update . --email booc.class -V stats
+	#git checkout -- app.yaml appengine_config.py
 	git push . -f HEAD:deployed
 
 badge-dep:
