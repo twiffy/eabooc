@@ -27,13 +27,16 @@
 
     <br>
 
-    {% if 'assessment_confirmations' in course_info and is_last_assessment and overall_score != None and result %}
-      <!-- Displays result-specific text for the final assessment. -->
-      <p class="gcb-top-content">
-        {{course_info.assessment_confirmations['result_text'][result] % overall_score}}
-      </p>
-    {% endif %}
+    {% if is_last_assessment %}
+    <p class="gcb-top-content">
+    This was the last exam of the course!  Assessment Expert badges will be
+    issued a couple of days after the exam closes.  To claim this badge, if
+    you've earned it, we will ask you to fill out a short (5-10 minute) survey
+    about the course.  More details will be available very soon, and will be
+    sent to you by announcement.
+    </p>
 
+    {% endif %}
     <p>
       <a class="gcb-button" href="course">
         {# I18N: Shown after the student has submitted an assessment. This button allows the student to navigate back to the main course page. #}
