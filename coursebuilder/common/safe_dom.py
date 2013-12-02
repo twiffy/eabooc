@@ -60,7 +60,7 @@ class Text(Node):
 class Element(Node):
     """Embodies an HTML element which will be sanitized when accessed."""
 
-    _ALLOWED_NAME_PATTERN = re.compile('^[a-zA-Z][a-zA-Z0-9]*$')
+    _ALLOWED_NAME_PATTERN = re.compile('^[a-zA-Z][-a-zA-Z0-9]*$')
 
     _VOID_ELEMENTS = frozenset([
         'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen',
