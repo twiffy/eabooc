@@ -965,11 +965,12 @@ form div.likert td.a, form div.likert th.a {
   padding-right: 0.3em; }
   form div.likert td.a label, form div.likert th.a label {
     color: #fff;
+    border: solid thin #e3dbbb;
+    background: #f9f8f1;
     border-radius: 8px;
     padding: 0.5em;
-    margin: 0.25em;
-    cursor: pointer;
-    background: #9ab; }
+    margin: 0.5em;
+    cursor: pointer; }
   form div.likert td.a label.na, form div.likert td.a label.idk, form div.likert th.a label.na, form div.likert th.a label.idk {
     background: #aaa;
     margin-left: 0.75em; }

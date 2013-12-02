@@ -1174,11 +1174,12 @@ form div.likert {
 
     label {
       color:#fff;
+      border: solid thin darken($content-bg-color, 10%);
+      background: lighten($content-bg-color, 5%);
       border-radius:8px;   
       padding:0.5em;
-      margin:0.25em;
+      margin:0.5em;
       cursor:pointer;
-      background: #9ab;
     }
     label.na, label.idk  {
       background:#aaa;
