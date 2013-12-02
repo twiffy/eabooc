@@ -60,7 +60,7 @@ class Text(Node):
 class Element(Node):
     """Embodies an HTML element which will be sanitized when accessed."""
 
-    _ALLOWED_NAME_PATTERN = re.compile('^[a-zA-Z][-a-zA-Z0-9]*$')
+    _ALLOWED_NAME_PATTERN = re.compile('^[a-zA-Z][a-zA-Z0-9]*$')
 
     _VOID_ELEMENTS = frozenset([
         'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen',
@@ -90,9 +90,8 @@ class Element(Node):
 
     def add_attribute(self, **attr):
         for attr_name, value in attr.items():
-            assert Element._ALLOWED_NAME_PATTERN.match(attr_name), (
-                'attribute name %s is not allowed' % attr_name)
-            self._attr[attr_name] = value
+            if Element._ALLOWED_NAME_PATTERN.match(attr_name):
+                self._attr[attr_name] = value
         return self
 
     def add_child(self, node):
