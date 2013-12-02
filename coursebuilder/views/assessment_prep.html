@@ -22,8 +22,13 @@
 
         <li>You will see your score immediately after you take the exam.</li>
 
+        {% if assessment_name != 'Final' %}
         <li>You must score an 80% or higher, and complete your wikifolio, in
         order to earn the badge for this section of the course.</li>
+        {% else %}
+        <li>You must score an 80% or higher, and have earned all three Expertise
+        badges, to earn the final badge of the course.</li>
+        {% endif %}
 
         <li>The HIGHEST score will be recorded.</li>
 

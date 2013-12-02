@@ -352,6 +352,7 @@ class AssessmentHandler(BaseHandler, ReflectiveRequestHandler):
 
         self.template_value['navbar'] = {'course': True}
         self.template_value['assessment_title'] = unit.title
+        self.template_value['assessment_name'] = unit_id
 
         reason = AssessmentTracker.reason_if_cant_take(student, unit_id)
         if reason:
