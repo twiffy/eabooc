@@ -13,9 +13,9 @@ stage: no-sandbox
 	@echo "Going to deploy to STAGING: https://booc-stage.appspot.com/"
 	sleep 5
 	appcfg update . --email booc.class -A booc-stage
-	git stash apply stash^{/APPSTATS2}
-	appcfg update . --email booc.class -A booc-stage -V stats
-	git checkout -- app.yaml appengine_config.py
+	#git stash apply stash^{/APPSTATS2}
+	#appcfg update . --email booc.class -A booc-stage -V stats
+	#git checkout -- app.yaml appengine_config.py
 	git push . -f HEAD:staged
 
 deploy: no-sandbox

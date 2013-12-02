@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block subtitle %}Exit Survey{% endblock %}
+
+{% from 'exit_survey_macros.html' import required_mark, field_label_and_errors %}
+
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <h2>Exit Survey (page 2 of 3)</h2>
+      <form action="{{ post_url }}" method="POST" id="booc-survey">
+        Required fields are marked with {{ required_mark() }}
+        <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+        <table class="survey">
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.book_format) }}
+            </td>
+            <td class="a">
+              {{ form.book_format }}
+              {{ form.book_format_explain }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.required_to_take) }}
+            </td>
+            <td class="a">
+              {{ form.required_to_take }}
+              {{ form.required_to_take_explain }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.professional_development) }}
+            </td>
+            <td class="a">
+              {{ form.professional_development }}
+              {{ form.professional_development_explain }}
+            </td>
+          </tr>
+
+          {# TODO: professional role #}
+
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.shared_any_badges) }}
+            </td>
+            <td class="a">
+              {{ form.shared_any_badges }}
+              {{ form.shared_badges_experience }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.claimed_badges_mozilla) }}
+            </td>
+            <td class="a">
+              {{ form.claimed_badges_mozilla }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.course_badges_price) }}
+            </td>
+            <td class="a">
+              {{ form.course_badges_price }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.certificate_price) }}
+            </td>
+            <td class="a">
+              {{ form.certificate_price }}
+            </td>
+          </tr>
+
+
+
+        </table>
+        <input type="submit" value="Save and go to page 3 &rarr;" class="gcb-button">
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block subtitle %}Exit Survey{% endblock %}
+
+{% from 'exit_survey_macros.html' import required_mark, field_label_and_errors, likert_input, likert_row, likert_header %}
+
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <h2>Course Features Survey (optional)</h2>
+      <form action="{{ post_url }}" method="POST">
+        <div class="gcb-top-content"><strong>Thank you!</strong> You're done with the required part of the
+          Exit Survey!</div>
+        <br>
+
+        <div class="gcb-top-content">If you have another few minutes, we'd really appreciate
+          your input on these particular course features.  If not, you can
+          go back to the course now, or close your browser tab.</div>
+        <br><br>
+        <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+        <div class="likert">
+          <table class="survey" style="width: 100%">
+            {% for field in form %}
+            {% if loop.index0 % 7 == 0 %}
+            {{ likert_header() }}
+            {% endif %}
+            {{ likert_row(field) }}
+            {% endfor %}
+
+          </table>
+        </div>
+        <input class="gcb-button" type="submit" value="Save">
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -17,3 +17,4 @@ id,type,unit_id,title,release_date,now_available
 16,U,11,Assessment-Based Grading (ch. 16),opens November 18,True
 17,A,Policies,<i>Assessment Policies Exam (open November 25 through December 4)</i>,,True
 18,A,Final,<i>Comprehensive Exam (open December 2 through 11)</i>,,True
+19,O,/survey,Exit Survey (required for final badge or Certificate),,True

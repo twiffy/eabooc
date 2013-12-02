@@ -1123,13 +1123,17 @@ div.badge-faq-contents {
   }
 }
 
-form#unenroll-form {
+form#unenroll-form, form#booc-survey {
+  font-size: 115%;
   span.required-mark {
     font-size: 110%;
     color: #a00;
   }
   li {
     list-style-type: none;
+  }
+  td ul {
+    margin-left: 10px;
   }
   table {
     border-collapse: collapse;
@@ -1139,14 +1143,59 @@ form#unenroll-form {
       text-align: left;
     }
     td input[type=text] {
-      width: 90%;
+      width: 95%;
     }
     td textarea {
-      width: 90%;
+      width: 95%;
       height: 4em;
     }
+    td.q {
+      text-align: right;
+      width: 50%;
+      padding: 10px;
+    }
+    td.a {
+      width: 50%;
+      padding: 10px;
+    }
   }
-  span.error {
+  tr.continues td {
+    border-bottom: solid thin $content-bg-color;
+  }
+  span.error, div.error {
     color: #a00;
+  }
+}
+
+form div.likert {
+  td.a, th.a {
+    border-left: none;
+    border-right: none;
+    text-align: center;
+    width: 3em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    padding-top: 0.5em;
+
+    label {
+      padding:0.5em;
+      margin:0.5em;
+      cursor:pointer;
+    }
+    label.na, label.idk  {
+      margin-left: 0.75em;
+    }
+  }
+  td.a.border, th.a.border {
+    border-left: thin solid $page-bg-color;
+  }
+  td.comment input {
+    width: 15em;
+  }
+  table {
+    border-collapse: collapse;
+  }
+  th.q, td.q {
+    font-size: 115%;
   }
 }

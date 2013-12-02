@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block subtitle %}Exit Survey{% endblock %}
+
+{% from 'exit_survey_macros.html' import required_mark, field_label_and_errors %}
+
+{% block main_content %}
+<div class="gcb-aux">
+  <div class="gcb-cols">
+    <div class="gcb-col-11 gcb-aside">
+      <h2>Exit Survey (page 3 of 3)</h2>
+      <form action="{{ post_url }}" method="POST" id="booc-survey">
+        Required fields are marked with {{ required_mark() }}
+        <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+        <table class="survey">
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.hours_per_week) }}
+            </td>
+            <td class="a">
+              {{ form.hours_per_week }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.most_favorite) }}
+            </td>
+            <td class="a">
+              {{ form.most_favorite }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.least_favorite) }}
+            </td>
+            <td class="a">
+              {{ form.least_favorite }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.suggestions) }}
+            </td>
+            <td class="a">
+              {{ form.suggestions }}
+            </td>
+          </tr>
+
+          <tr>
+            <td class="q">
+              {{ field_label_and_errors(form.would_recommend) }}
+            </td>
+            <td class="a">
+              {{ form.would_recommend }}
+            </td>
+          </tr>
+
+        </table>
+        <div>
+        <input type="submit" value="Save! &rarr;" class="gcb-button">
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
