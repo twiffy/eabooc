@@ -358,3 +358,19 @@ class ExitSurveyFeaturesHandler(SurveyHandler):
 
     def action(self, user, form):
         self.redirect("/course")
+
+all_exit_forms = [
+        ExitSurvey1Form,
+        ExitSurvey2Form,
+        ExitSurvey3Form,
+        ExitSurveyFeaturesForm
+        ]
+
+all_exit_form_db_fields = []
+for normal_form in all_exit_forms[0:3]:
+    all_exit_form_db_fields.extend(
+            [f.name for f in normal_form()])
+
+for field in ExitSurveyFeaturesForm():
+    all_exit_form_db_fields.append(field.name + '-rating')
+    all_exit_form_db_fields.append(field.name + '-comment')

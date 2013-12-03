@@ -26,6 +26,7 @@ import itertools
 from common import prefetch
 import plag
 from common.crosstab import CrossTab
+from modules.regconf import exit_survey
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -435,6 +436,40 @@ class ListIncompletesQuery(object):
 analytics_queries['pages_marked_incomplete_by_admins'] = ListIncompletesQuery
 
 
+class ExitSurveyQuery(object):
+    fields = [
+            'student',
+            'submitted',
+            ] + exit_survey.all_exit_form_db_fields
+
+    def __init__(self, handler):
+        pass
+
+    def run(self):
+        query = FormSubmission.all()
+        query.filter('form_name IN', ['exit_survey_1', 'exit_survey_2', 'exit_survey_3', 'exit_survey_features'])
+        query.order('user')
+
+        for student, all_responses in itertools.groupby(query.run(),
+                FormSubmission.user.get_value_for_datastore):
+            # all_responses may contain more than one submission per form,
+            # we need to choose the most recent one for each form.
+            sorted_responses = sorted(list(all_responses),
+                    key=lambda x: x.submitted, reverse=True)
+
+            row = {'student': student.name()}
+            seen = set()
+
+            for response in sorted_responses:
+                if response.form_name not in seen:
+                    row.update(db.to_dict(response))
+                    seen.add(response.form_name)
+
+            yield row
+
+analytics_queries['exit_survey'] = ExitSurveyQuery
+
+
 class BadgeAssertionQuery(object):
     fields = [
             'badge_name',
@@ -488,7 +523,7 @@ analytics_queries['badge_assertions'] = BadgeAssertionQuery
 analytics_queries['badge_assertions_with_revoked'] = BadgeAssertionQueryWithRevoked
 
 
-class ExitSurveyQuery(object):
+class UnenrollSurveyQuery(object):
     fields = [
             # from us
             'email',
@@ -514,7 +549,7 @@ class ExitSurveyQuery(object):
         for survey in query.run():
             yield transforms.loads(survey.data)
 
-analytics_queries['exit_survey'] = ExitSurveyQuery
+analytics_queries['unenroll_survey'] = UnenrollSurveyQuery
 
 
 class AnalyticsHandler(BaseHandler):

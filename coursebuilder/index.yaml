@@ -37,6 +37,11 @@ indexes:
   properties:
   - name: form_name
   - name: user
+
+- kind: FormSubmission
+  properties:
+  - name: form_name
+  - name: user
   - name: submitted
     direction: desc
 
