@@ -346,6 +346,11 @@ class Unit11PageForm(wtf.Form):
 forms[11] = Unit11PageForm
 templates[11] = 'wf_temp_u11.html'
 
+class TermPaperForm(wtf.Form):
+    term_paper = BleachedTextAreaField()
+
+forms[12] = TermPaperForm
+templates[12] = 'wf_temp_term_paper.html'
 
 def viewable_model(model):
     unit = model.unit

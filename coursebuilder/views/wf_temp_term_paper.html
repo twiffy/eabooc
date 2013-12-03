@@ -1,0 +1,59 @@
+{% extends layout_template if layout_template is defined else 'wf_page.html' %}
+{% block wiki_content %}
+
+<div class="wiki-question">
+<h2 id="optional-term-paper-and-customized-assessment-expert-badge">Optional Term Paper</h2>
+
+  <div>
+<p>In order to solidify and document your growing expertise in educational assessment, you are invited to assemble all of the insights you generated in your weekly wikifolios into a term paper.  This paper will be worth up to 10 extra points for the students in the for-credit section; those who complete paper according to the criteria below will also be awarded a customizable <em>Assessment Expert</em> badge which the earner is able to indicate the domain, state, or context in which they have developed that expertise.  The paper is also the only way to earn an A+ in the for-credit section of the course.</p>
+<p>Dr. Hickey will provide detailed written feedback on each draft and a summary statement regarding the paper and about the authors’ developing assessment expertise in their domain.  The badge will contain a link to the criteria for the paper (which includes earning the other badges); the earner will have an option of including a link to the paper as well as Dr. Hickey’s feedback and summary evaluation.  </p>
+<p>The badge itself should serve as a credible credential of your “local expertise” in assessment.  For many of you, the combined structure of the course and the paper should allow you to draft a paper that will be quite useful to your immediate colleagues.  Further revision with input from Dr. Hickey and peers should yield a paper that is eventually worthy of presentation at professional meeting and even publication in a professional outlet. You may well have come across such meetings, organizations, online magazines, and journals while searching for resources.</p>
+<h3 id="on-expertise">On Expertise</h3>
+<p>Those of you who have successfully completed all of the units and exams have developed substantial expertise regarding educational assessment.  Certainly one course does not make one an “expert” in the general sense.  In most areas, people who are regarded as “experts” have at least 10,000 hours of experience, which is five years of full time work.</p>
+<p>But most of you likely now know a lot more about assessment than your peers.  And because you have been continually reframing your role and context as it relates to assessment, you are most certainly an expert in that regard. You have what learning scientists might call “local expertise.”  Writing the term paper will help you formalize this expertise while the completed paper and the formal review process will provide very direct evidence of that expertise.</p>
+<h3 id="paper-overview">Paper Overview</h3>
+<p>The paper should start with content of the various wikfolios.  You will be pulling together as a coherent paper that would be interesting and helpful for your professional peers.   Essentially the sections of the course (Practices, Principles, and Policies) should form the major sections of the paper; while your curricular aim and description of your role can serve as an introduction.  You will need to write some sort of conclusion for each section and then for the entire paper.  </p>
+<p>You should be able readily draft each section by starting with cutting and pasting from your wiki.Your consideration of the most relevant practices, concepts, and resources for your aim and role underlies the story that you can now tell.  You are welcome and encouraged to find a peer in your networking group or the class at large and engage in peer review.  Because of plagiarism issues and debates in past courses when using this format, an example paper is not provided.</p>
+<h3 id="criteria-and-section-suggestions">Criteria and Section Suggestions</h3>
+<p>Here are the minimum requirements for the paper to be accepted.  Included are some suggested guidelines that you might find helpful for this particular paper.</p>
+<ul>
+<li>It must be complete coherent paper, with an appropriate transitions and headings and written in APA format (or some other recognized professional style)</li>
+<li>The paper must contain an appropriate introduction.  This presumably will summarize your context and role as one example of a setting in which assessment is carried out.  This presumably will also summarize your curricular aim as specific context for presenting relevant disciplinary knowledge about assessment.</li>
+<li>The paper must primarily concern the domain of educational assessment as defined by the topics of this course, as it relates to a specific role, issue, or aim.  The paper can be a survey that discusses the practices, principles, and policies that are most relevant to a particular aim and context.</li>
+<li>The paper can also be a more focused consideration of a particular issue.  But it must still consider the relevance of the 11 units to that issue.  For example, if you are primarily interested in a specific assessment policy, you would want to include a section on assessment practices where you discuss which assessment formats and guidelines are particularly relevant to that discussion and how, and a section on the principles.  These can be relatively short and lead up to a much longer discussion of policies in general and in these policies in particular.  The paper is intended to support the claim of deeper knowledge of practices, principles, and policies in a particular context.  That context can be a specific issue, but the other relevance of the other aspects of the course must be apparent.</li>
+<li>The paper must have section conclusions and an overall conclusion.  These presumably will concern what you have discovered to be the most relevant domain knowledge in each section and then for the entire paper.  For example, after discussing the four assessment formats and the most relevant guidelines or insights, you can conclude the Practices section by stating which of the formats is probably most relevant and important in your professional context; similarly in the principles sections you might conclude that reliability is not particularly relevant for classroom assessment, but validity and particularly consequential validity is highly relevant.</li>
+<li>The paper must include at least three references to outside resources, appropriately referenced.  These can be the resources provided in class, resources you found, or articles you locate.</li>
+<li>The paper must be submitted by December 20 at 5 pm.  Students in the for-credit section who complete the paper to improve their course grade may be given additional opportunity to submit a revision in the event that the revision would impact their course grade.</li>
+</ul>
+<p>Please do not submit incomplete papers.  This course touches on all of the generally relevant topics in educational assessment.  But as you are learning they are not all relevant to everyone.  So for example, if you don't think portfolio assessment is appropriate in your context, you should explain why.  (You should have already done so in arguing why you did performance assessment in that assignment).</p>
+<h3 id="policies-and-grading-for-for-credit-students">Policies and Grading for For Credit Students</h3>
+<p>All students can expect personal feedback from Dr. Hickey that is commensurate with the effort they put into the paper.  Students who are enrolled in the for-credit section will essentially get all the instructor feedback that they wish for.  For the for-credit students, points will be awarded based on apparent investment of time, corresponding with the class. Given that a 3 credit course represents 180 hours of time (12 hours/week x 15 weeks), each of the 100 points in the class represents approximately 1.8 hours--or approximately two hours.  So if you spend 10 hours on your paper you can expect it to be worth 5 points.  Most of you will need to spend about 20 hours to write a paper that is worth the full ten points.</p>
+  </div>
+</div>
+<div class="wiki-user-content">{{ fields.term_paper }}</div>
+
+
+
+<script>
+  $(document).ready(function() {
+    var icons = {
+      header: "ui-icon-circle-triangle-e",
+      activeHeader: "ui-icon-circle-triangle-s"
+    };
+    // TODO: maybe collapse by default if we're not editing???
+    $('.wiki-info-collapsible').accordion({
+      collapsible: true,
+      //active: 0,
+      active: false,
+      heightStyle: 'content',
+      icons: icons,
+    });
+    $('.wiki-question').accordion({
+      collapsible: true,
+      active: false,
+      heightStyle: 'content',
+      icons: icons,
+    });
+  });
+</script>
+{% endblock %}
