@@ -38,8 +38,13 @@ Participant List
             {% for unit in student.wikis_posted|sort %}
             <span class="unit-badgelet">
               <a href="/wiki?unit={{ unit }}&student={{ student.wiki_id }}&action=view">
+                {% if unit == 12 %}
+                Term Paper
+                {% else %}
                 {% if loop.first %}Unit{% endif %}
-                {{ unit }}</a></span>
+                {{ unit }}
+                {% endif %}
+            </a></span>
             {% endfor %}
             </li>
             {% endfor %}
