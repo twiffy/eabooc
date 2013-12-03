@@ -12,13 +12,17 @@
       <p>You are about to take the {{ assessment_title|safe }}.  Please keep these things in mind:</p>
 
       <ul>
+        {% if assessment_name != 'Final' %}
         <li>You will have THREE hours in which to take this exam.</li>
+        {% else %}
+        <li>You will have FIVE hours in which to take this exam.</li>
+        {% endif %}
 
         <li>You may NOT enter the exam, save your work, and return later. (That
         is, if you click to begin, you should be prepared to take the exam
         now).</li>
 
-        <li>You may take the exam TWICE within the three hours.</li>
+        <li>You may take the exam TWICE within the exam period.</li>
 
         <li>You will see your score immediately after you take the exam.</li>
 
@@ -26,7 +30,7 @@
         <li>You must score an 80% or higher, and complete your wikifolio, in
         order to earn the badge for this section of the course.</li>
         {% else %}
-        <li>You must score an 80% or higher, and have earned all three Expertise
+        <li>You must score 70% or higher, and have earned all three Expertise
         badges, to earn the final badge of the course.</li>
         {% endif %}
 
@@ -42,10 +46,7 @@
         trouble, contact us at the e-mail address below.</li>
       </ul>
 
-      <p>Please be sure you are ready to take the exam prior to opening the
-      exam. <u>Once you open the exam, you will have three hours in which to take
-      it.</u> Within those three hours, you may submit the exam two times. You may
-      not save your work now and return to the exam later.</p>
+      <p>Please be sure you are ready to take the exam before you open it!</p>
     </div>
 
     <center>
