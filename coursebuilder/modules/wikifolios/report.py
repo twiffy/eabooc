@@ -27,7 +27,9 @@ _parts = {
             },
 
         3: {
-            'assessments': ['Policies'],
+            # The test was too hard and is being thrown out
+            #'assessments': ['Policies'],
+            'assessments': [],
             'units': [8,9,10,11],
             'name': 'Assessment Policies',
             'slug': 'policies',
