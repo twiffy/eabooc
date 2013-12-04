@@ -1,7 +1,7 @@
 {% macro profile(badge, assertion, assertion_link) -%}
 <div class="profile-badge-info">
   {% if assertion.evidence %}
-  <a href="{{ assertion.evidence }}">
+  <a class="ga-badge-link" id="view-evidence:{{ badge.key().name() }}" href="{{ assertion.evidence }}">
     {% endif %}
     <img src="{{ badge.image }}" {% if not assertion %}class="not-issued"{% endif %}>
     {% if assertion.evidence %}
@@ -10,7 +10,7 @@
 </div>
 {% if assertion.evidence %}
 <div class="share-button">
-  See your <a id="view-evidence" href="{{ assertion.evidence }}">Evidence page</a> for this badge.
+	See your <a class="ga-badge-link" id="view-evidence:{{ badge.key().name() }}" href="{{ assertion.evidence }}">Evidence page</a> for this badge.
 </div>
 {% endif %}
 {%- endmacro %}

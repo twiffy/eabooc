@@ -32,18 +32,19 @@
   <div class="badge-share-links">
     {% set assertion = part.badge_assertion %}
     {% if assertion %}
+    {% set badge_name = part.badge.key().name() %}
     <div class="issue-link share-button">
-      <a id="obi-issue" href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">
+      <a id="obi-issue:{{ badge_name }}" href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">
         <img src="/assets/img/share/mozillaopenbadges.png" alt="Mozilla Open Badges" title="Mozilla Open Badges">
         Claim on Mozilla Badge Backpack</a>
     </div>
     {% if assertion.evidence %}
-    {{ share_buttons.email(assertion.evidence) }}
-    {{ share_buttons.facebook(assertion.evidence) }}
-    {{ share_buttons.twitter(assertion.evidence) }}
-    {{ share_buttons.gplus(assertion.evidence) }}
+    {{ share_buttons.email(assertion.evidence, badge_name) }}
+    {{ share_buttons.facebook(assertion.evidence, badge_name) }}
+    {{ share_buttons.twitter(assertion.evidence, badge_name) }}
+    {{ share_buttons.gplus(assertion.evidence, badge_name) }}
     <div class="settings share-button">
-      <a id="settings" href="{{ assertion.evidence }}&amp;action=settings">
+      <a id="settings:{{ badge_name }}" href="{{ assertion.evidence }}&amp;action=settings">
         <img src="/assets/img/share/settings.png" alt="Edit Settings">
         Badge Settings</a>
     </div>

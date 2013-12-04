@@ -21,6 +21,10 @@
     $('div.badge-faq-heading').on('click', function() {
       ga('send', 'event', 'badge-faq', 'click');
     });
+
+    $('a.ga-badge-link').on('click', function() {
+      ga('send', 'event', 'share-button', 'click', $(this).attr('id'));
+    });
   });
 </script>
 {% endif %}
