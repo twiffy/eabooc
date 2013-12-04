@@ -160,6 +160,7 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['fields'] = fields
         self.template_value['unit'] = self.find_unit_by_id(self.unit_num)
         self.template_value['report'] = self.unit
+        self.template_value['badge_slug'] = self.report.badge.key().name()
         self.template_value['layout_template'] = 'wf_evidence.html'
         self.render(page_templates.templates[self.unit_num])
 

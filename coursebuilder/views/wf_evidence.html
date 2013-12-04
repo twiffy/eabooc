@@ -40,4 +40,7 @@ Unit {{ unit.unit_id }}
     </div>
   </div>
 </div>
+<script>
+  ga('send', 'event', 'evidence', 'view', '{{ badge_slug }}:{{ unit.unit_id }}');
+</script>
 {% endblock %}
