@@ -80,6 +80,7 @@ class PartReport(db.Model):
     student = db.ReferenceProperty(Student, indexed=True)
     timestamp = db.DateTimeProperty(indexed=False, auto_now_add=True)
     units_are_public = db.BooleanProperty(default=True)
+    exam_display = db.StringProperty(indexed=False)
 
     @classmethod
     def on(cls, student, course, part, force_re_run=False, put=False):

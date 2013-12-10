@@ -20,6 +20,24 @@ import logging
 
 import wtforms as wtf
 
+def exam_display_choices(exam_info):
+    choices = [
+            ('blank', '(Blank)'),
+            ]
+    default = 'blank'
+
+    if exam_info['completed']:
+        choices.append( ('completed', 'Completed the exam') )
+
+    if exam_info['did_pass']:
+        choices.append( ('passed', 'Passed the exam, with at least (passing score) out of 100%') )
+        choices.append( ('scored', 'Passed the exam, scoring (your score) out of 100%') )
+
+        default = 'passed'
+
+    return locals()
+
+
 class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
     get_actions = ['view', 'settings']
     default_action = 'view'
@@ -29,6 +47,10 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         report_id = wtf.HiddenField()
         units_are_public = wtf.BooleanField(
                 "Show my Wikifolio entries for this badge on the evidence page?")
+
+        # Will set choices dynamically.
+        exam_display = wtf.SelectField(
+                "How to display exam scores on the evidence page?")
 
     def get_settings(self):
         user = self.personalize_page_and_get_enrolled()
@@ -47,7 +69,16 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
 
         form = self.SettingsForm(
                 report_id=report.key().id(),
-                units_are_public=report.units_are_public)
+                units_are_public=report.units_are_public,
+                exam_display=report.exam_display)
+
+        if len(report.assessment_scores) > 1:
+            logging.warning("Evidence page settings assuming there's just one exam per part, but there is more than one")
+        display_field_params = exam_display_choices(
+                report.assessment_scores[0])
+        form.exam_display.choices = display_field_params['choices']
+        form.exam_display.default = display_field_params['default']
+
         self.template_value['report'] = report
         self.template_value['form'] = form
         self.template_value['xsrf_token'] = XsrfTokenManager.create_xsrf_token('save_settings')
@@ -79,15 +110,17 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
             self.abort(403, "You can't edit that user's report.")
 
         report.units_are_public = form.units_are_public.data
+        report.exam_display = form.exam_display.data
         report.put()
 
         EventEntity.record(
-                'set-evidence-publicity',
+                'set-evidence-settings',
                 users.get_current_user(),
                 transforms.dumps({
                     'part': report.part,
                     'slug': report.slug,
                     'public': report.units_are_public,
+                    'exam_display': report.exam_display,
                     'email': user.key().name()
                     }))
 
