@@ -27,7 +27,7 @@ def exam_display_choices(exam_info):
     default = 'blank'
 
     if exam_info['completed']:
-        choices.append( ('completed', 'Completed the exam') )
+        choices.append( ('completed', 'Submitted the exam') )
 
     if exam_info['did_pass']:
         choices.append( ('passed', 'Passed the exam, with at least (passing score) out of 100%') )
