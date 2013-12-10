@@ -72,10 +72,17 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
                 units_are_public=report.units_are_public,
                 exam_display=report.exam_display)
 
-        if len(report.assessment_scores) > 1:
-            logging.warning("Evidence page settings assuming there's just one exam per part, but there is more than one")
-        display_field_params = exam_display_choices(
-                report.assessment_scores[0])
+        display_field_params = {
+                'choices': [('blank', '(Blank)')],
+                'default': 'blank'
+                }
+
+        if report.assessment_scores:
+            if len(report.assessment_scores) > 1:
+                logging.warning("Evidence page settings assuming there's just one exam per part, but there is more than one")
+            display_field_params = exam_display_choices(
+                    report.assessment_scores[0])
+
         form.exam_display.choices = display_field_params['choices']
         form.exam_display.default = display_field_params['default']
 
