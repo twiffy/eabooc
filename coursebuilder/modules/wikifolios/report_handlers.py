@@ -95,9 +95,6 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
             return
 
         form = self.SettingsForm(self.request.POST)
-        if not form.validate():
-            self.redirect('/')
-            return
 
         try:
             report = PartReport.get_by_id(int(form.report_id.data))
@@ -108,6 +105,15 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
 
         if not self.can_edit(user, report):
             self.abort(403, "You can't edit that user's report.")
+
+        display_field_params = exam_display_choices(
+                report.assessment_scores[0])
+        form.exam_display.choices = display_field_params['choices']
+        form.exam_display.default = display_field_params['default']
+
+        if not form.validate():
+            self.redirect('/')
+            return
 
         report.units_are_public = form.units_are_public.data
         report.exam_display = form.exam_display.data
