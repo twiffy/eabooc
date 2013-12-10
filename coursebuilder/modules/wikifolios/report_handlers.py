@@ -154,8 +154,11 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
             self.abort(404)
 
         if not report.exam_display:
-            display_info = exam_display_choices(report.assessment_scores[0])
-            report.exam_display = display_info['default']
+            if report.assessment_scores:
+                display_info = exam_display_choices(report.assessment_scores[0])
+                report.exam_display = display_info['default']
+            else:
+                report.exam_display = 'blank'
 
         self.report = report
         self.template_value['navbar'] = {}

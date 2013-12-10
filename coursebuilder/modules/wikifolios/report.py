@@ -11,15 +11,15 @@ COUNT_LIMIT = 100
 _parts = {
         1: {
             'assessments': ['Practices'],
+            'assessments_required': True,
             'units': [1,2,3,4],
             'name': 'Assessment Practices',
             'slug': 'practices',
             'deadline': datetime.datetime(year=2013, month=10, day=20, hour=0, minute=0, second=0),
             },
         2: {
-            # The test was too hard and is being thrown out
-            #'assessments': ['Principles'],
-            'assessments': [],
+            'assessments': ['Principles'],
+            'assessments_required': False,
             'units': [5,6,7],
             'name': 'Assessment Principles',
             'slug': 'principles',
@@ -27,9 +27,8 @@ _parts = {
             },
 
         3: {
-            # The test was too hard and is being thrown out
-            #'assessments': ['Policies'],
-            'assessments': [],
+            'assessments': ['Policies'],
+            'assessments_required': False,
             'units': [8,9,10,11],
             'name': 'Assessment Policies',
             'slug': 'policies',
@@ -169,18 +168,20 @@ class PartReport(db.Model):
             u.is_complete for u in self.unit_reports))
         assessments_done = all((
             e['did_pass'] for e in self.assessment_scores))
-        return units_done and assessments_done
+        assessments_required = self._config['assessments_required']
+        return units_done and (assessments_done or not assessments_required)
 
     @property
     def incomplete_reasons(self):
         units = [ (u.unit, u.is_complete) for u in self.unit_reports ]
         tests = [ e['did_pass'] for e in self.assessment_scores ]
+        assessments_required = self._config['assessments_required']
         inc_reasons = []
 
         for num, done in units:
             if not done:
                 inc_reasons.append('Unit %d' % num)
-        if not all(tests):
+        if not all(tests) and assessments_required:
             inc_reasons.append('Test')
 
         return inc_reasons
