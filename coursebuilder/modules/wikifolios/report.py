@@ -121,11 +121,15 @@ class PartReport(db.Model):
         config = _parts[self.part]
         self.slug = config['slug']
         self.timestamp = datetime.datetime.now()
-        student_scores = course.get_all_scores(self.student)
-        scores_to_save = []
         for ur in self.unit_reports:
             if ur.is_saved():
                 ur._run()
+        self._run_assessments(course)
+
+    def _run_assessments(self, course):
+        config = _parts[self.part]
+        student_scores = course.get_all_scores(self.student)
+        scores_to_save = []
 
         for exam_id in config['assessments']:
             for maybe_exam in student_scores:
