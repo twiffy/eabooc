@@ -153,6 +153,10 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         if not report:
             self.abort(404)
 
+        if not report.exam_display:
+            display_info = exam_display_choices(report.assessment_scores[0])
+            report.exam_display = display_info['default']
+
         self.report = report
         self.template_value['navbar'] = {}
         self.template_value['author'] = self.report.student
