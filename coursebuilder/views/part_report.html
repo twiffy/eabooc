@@ -74,14 +74,20 @@
     </span></div>
     <div class="assessment-stats">
       {% if part.exam_display == 'scored' %}
-      Scored {{ exam.score }} out of 100%.
+      {%   if exam.did_pass %}
+      Passed the exam, scoring {{ exam.score }} out of 100%.
+      {%   else %}
+      Did not pass the exam, scoring {{ exam.score }} out of 100%.
+      {%   endif %}
+
       {% elif part.exam_display == 'passed' %}
-      {% if exam.did_pass %}
-      Passed with at least
-      {% else %}
-      Did not pass, needed
-      {% endif %}
+      {%   if exam.did_pass %}
+      Passed the exam, with at least
+      {%   else %}
+      Did not pass the exam, needed
+      {%   endif %}
       {{ exam.passing_score }} out of 100%.
+
       {% endif %}
     </div>
     {% endfor %}
