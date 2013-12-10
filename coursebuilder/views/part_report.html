@@ -64,6 +64,7 @@
     {% for report in part.unit_reports %}
     {{ unit_report.evidence_unit_report(report, evidence_link, unit_title) }}
     {% endfor %}
+    {% if part.exam_display != 'blank' %}
     {% for exam in part.assessment_scores %}
     <div class="assessment-title">{{ exam.title|striptags }} <span class="status"> -
         {% if exam.did_pass %}<span class="complete">Complete!</span>
@@ -72,14 +73,19 @@
         {% endif %}
     </span></div>
     <div class="assessment-stats">
+      {% if part.exam_display == 'scored' %}
+      Scored {{ exam.score }} out of 100%.
+      {% elif part.exam_display == 'passed' %}
       {% if exam.did_pass %}
       Passed with at least
       {% else %}
       Did not pass, needed
       {% endif %}
       {{ exam.passing_score }} out of 100%.
+      {% endif %}
     </div>
     {% endfor %}
+    {% endif %}
   </div>
   {% if part.badge %}
   {{ badge_views.evidence(part.badge, part.badge_assertion) }}
