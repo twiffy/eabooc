@@ -476,3 +476,56 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['problems'] = []
         self.template_value['log'] = messages
         self.render('badge_bulk_issue_done.html')
+
+class DammitMapper(LoggingMapper):
+    KIND = PartReport
+
+    def __init__(self, course):
+        super(DammitMapper, self).__init__()
+        self.course = course
+
+    def map(self, report):
+        self.log.append("Working on report for %s, part %d" % (report.student_email, report.part))
+        had_before = bool(report.assessment_scores)
+        report._run_assessments(self.course)
+        has_after = bool(report.assessment_scores)
+        self.log.append("had before? %s.  has after? %s" % (had_before, has_after))
+
+        return ([report], [])
+
+
+class DammitHandler(BaseHandler, ReflectiveRequestHandler):
+    get_actions = ['start', 'watch']
+    default_action = 'watch'
+
+    def _action_url(self, action, **kwargs):
+        params = dict(kwargs)
+        params['action'] = action
+        return '?'.join((
+            self.request.path,
+            urllib.urlencode(params)))
+
+    def get_start(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        course = self.get_course()
+        job = DammitMapper(course)
+        job_id = job.job_id
+        deferred.defer(job.run, batch_size=50)
+        self.redirect(self._action_url('watch', job_id=job_id))
+
+    def get_watch(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        job_id = self.request.GET.get('job_id', None)
+        if not job_id:
+            self.abort(404)
+
+        messages = BulkIssueMapper.logs_for_job(job_id)
+
+        self.template_value['title'] = "GRRRRRR"
+        self.template_value['problems'] = []
+        self.template_value['log'] = messages
+        self.render('badge_bulk_issue_done.html')
