@@ -11,7 +11,7 @@ COUNT_LIMIT = 100
 _parts = {
         1: {
             'assessments': ['Practices'],
-            'assessments_required': True,
+            'assessments_required': False,
             'units': [1,2,3,4],
             'name': 'Assessment Practices',
             'slug': 'practices',
