@@ -261,3 +261,81 @@ class UnitReport(db.Model):
                 self.endorsements > 0,
                 not self.incomplete_reasons,
                 ))
+
+FINAL_EXAM_PASSING_SCORE = 70
+class BigBadgeReport(db.Model):
+    # identifying this report
+    student = db.ReferenceProperty(Student, indexed=True)
+    timestamp = db.DateTimeProperty(auto_now_add=True)
+
+    # display properties
+    exam_display = db.StringProperty(indexed=False)
+    link_to_other_badges = db.BooleanProperty(default=True, indexed=False)
+
+    # conditions for getting the badge
+    final_exam_score_json = db.TextProperty()
+    done_with_survey = db.BooleanProperty(indexed=False)
+    earned_practices = db.BooleanProperty(indexed=False)
+    earned_principles = db.BooleanProperty(indexed=False)
+    earned_policies = db.BooleanProperty(indexed=False)
+
+    # maybe store # of exemplaries, etc....?
+
+    @classmethod
+    def on(cls, student, course, force_re_run=False, put=False):
+        q = cls.all()
+        q.filter('student', student)
+        reports = q.fetch(limit=2)
+        if len(reports) > 1:
+            raise AssertionError('Found more than one part report for part %d student %s' % (
+                part, student.key().name()))
+        elif len(reports) == 1:
+            report = reports[0]
+            if force_re_run:
+                report._run(course)
+        else:
+            report = cls(None, student=student)
+            report._run(course)
+
+        if put:
+            report.put()
+        return report
+
+    def _run(self, course):
+        self._set_badge_flags()
+        self._set_survey_flag()
+        self._set_exam_info(course)
+
+    @cached_property
+    def student_key(self):
+        return type(self).student.get_value_for_datastore(self)
+
+    def _set_badge_flags(self):
+        assertions = BadgeAssertion.all().filter('student', self.student_key).run()
+        for ass in assertions:
+            slug_root = ass.badge_name.split('.')[0]
+            if slug_root == 'practices':
+                self.earned_practices = True
+            elif slug_root == 'principles':
+                self.earned_principles = True
+            elif slug_root == 'policies':
+                self.earned_policies = True
+
+    def _set_survey_flag(self):
+        # Here not at top to break import loop
+        from modules.regconf.regconf import FormSubmission
+        form_submissions = FormSubmission.all()
+        form_submissions.filter('form_name', 'exit_survey_3')
+        form_submissions.filter('user', self.student_key)
+        self.done_with_survey = bool(form_submissions.count(limit=1))
+
+    def _set_exam_info(self, course):
+        looking_for = 'Final'
+
+        for exam in course.get_all_scores(self.student):
+            if exam['id'] != looking_for:
+                continue
+            exam['passing_score'] = FINAL_EXAM_PASSING_SCORE
+            exam['did_pass'] = exam['score'] >= FINAL_EXAM_PASSING_SCORE
+            self.final_exam_score_json = transforms.dumps(exam)
+            break

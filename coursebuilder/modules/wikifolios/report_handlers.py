@@ -1,10 +1,11 @@
 from controllers.utils import BaseHandler, ReflectiveRequestHandler, XsrfTokenManager
+import pprint
 from models.roles import Roles
 import re
 from collections import defaultdict
 from models import transforms
 from modules.badges.badge_models import Badge, BadgeAssertion
-from report import UnitReport, PartReport
+from report import UnitReport, PartReport, BigBadgeReport
 from report import _parts as part_config
 from models.models import Student
 from models.models import EventEntity
@@ -320,6 +321,27 @@ class BulkIssueMapper(LoggingMapper):
         self._batch_write()
 
 
+class BulkExpertBadgeIssueMapper(LoggingMapper):
+    KIND = Student
+    FILTERS = [('is_participant', True)]
+
+    def __init__(self, really, course, unused_part_num, host_url, force_re_run):
+        LoggingMapper.__init__(self)
+        self.really = really
+        self.course = course
+        self.host_url = host_url
+        self.force_re_run = force_re_run
+
+    def map(self, student):
+        self.log.append('--------------- Student %s' % student.key().name())
+
+        report = BigBadgeReport.on(student, self.course,
+                force_re_run=self.force_re_run, put=self.really)
+
+        self.log.append(pprint.pformat(db.to_dict(report)))
+        return ([], [])
+
+
 NOBODY = object()
 def default_dict_entry():
     return ([NOBODY], -1)
@@ -404,6 +426,7 @@ class BulkLeaderIssueMapper(LoggingMapper):
 issuer_mappers = {
         'completion': BulkIssueMapper,
         'leader': BulkLeaderIssueMapper,
+        'expert': BulkExpertBadgeIssueMapper,
         }
 
 
@@ -477,7 +500,10 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['log'] = messages
         self.render('badge_bulk_issue_done.html')
 
+
+
 class DammitMapper(LoggingMapper):
+    """Goes through all PartReports and re-runs their assessment grades."""
     KIND = PartReport
 
     def __init__(self, course):
