@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from models import transforms
 from modules.badges.badge_models import Badge, BadgeAssertion
-from report import UnitReport, PartReport, BigBadgeReport
+from report import UnitReport, PartReport, ExpertBadgeReport
 from report import _parts as part_config
 from models.models import Student
 from models.models import EventEntity
@@ -335,7 +335,7 @@ class BulkExpertBadgeIssueMapper(LoggingMapper):
     def map(self, student):
         self.log.append('--------------- Student %s' % student.key().name())
 
-        report = BigBadgeReport.on(student, self.course,
+        report = ExpertBadgeReport.on(student, self.course,
                 force_re_run=self.force_re_run, put=self.really)
 
         self.log.append(pprint.pformat(db.to_dict(report)))

@@ -263,7 +263,7 @@ class UnitReport(db.Model):
                 ))
 
 FINAL_EXAM_PASSING_SCORE = 70
-class BigBadgeReport(db.Model):
+class ExpertBadgeReport(db.Model):
     # identifying this report
     student = db.ReferenceProperty(Student, indexed=True)
     timestamp = db.DateTimeProperty(auto_now_add=True)
