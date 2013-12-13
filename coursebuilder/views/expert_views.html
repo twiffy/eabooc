@@ -1,0 +1,75 @@
+{% import 'badge_views.html' as badge_views %}
+{% import 'share_buttons.html' as share_buttons %}
+
+{% macro earned_view(name, did_earn) %}
+<div class="unit-title">
+  Assessment {{ name }} Badge <span class="status">-
+    {% if did_earn %}<span class="complete">Earned!</span>
+    {% else %}Not earned yet
+    {% endif %}
+  </span>
+</div>
+{% endmacro %}
+
+{% macro profile_view(report, assertion_link) %}
+<div id="{{ report.slug }}" class="part-report clearfix">
+  <div class="scores">
+    <div class="timestamp">As of {{ report.timestamp.strftime('%Y-%m-%d at %H:%M UTC:') }}</div>
+    <div class="profile-unit-report">
+      {{ earned_view('Practices', report.earned_practices) }}
+      {{ earned_view('Principles', report.earned_principles) }}
+      {{ earned_view('Policies', report.earned_policies) }}
+    </div>
+    {% set exam = report.final_exam_score %}
+    <div class="assessment-title">{{ exam.title|striptags }} <span class="status"> -
+        {% if exam.did_pass %}<span class="complete">Complete!</span>
+        {% elif exam.completed %}Submitted
+        {% else %}Not submitted
+        {% endif %}
+    </span></div>
+    <div class="assessment-stats">
+      {{ exam.score }} out of 100, {{ exam.passing_score }} required to pass
+    </div>
+    <div class="assessment-title">
+      Exit Survey <span class="status"> -
+        {% if report.done_with_survey %}<span class="complete">Complete!</span>
+        {% else %}Not submitted - <a href="/survey">click here to start</a>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+
+  <div class="part-badge-image">
+    {% if report.badge %}
+    {{ badge_views.profile(report.badge, report.badge_assertion, assertion_link) }}
+    {% else %}
+    <!-- (There's no badge set up for this part yet - it should have key_name {{ report.slug }}) -->
+    {% endif %}
+  </div>
+  <div class="badge-share-links">
+    {% set assertion = report.badge_assertion %}
+    {% if assertion %}
+    {% set badge_name = report.badge.key().name() %}
+    <div class="issue-link share-button">
+      <a id="obi-issue:{{ badge_name }}" href="javascript:OpenBadges.issue(['{{ assertion_link(assertion)|escapejs }}'], function(err, ok) {});">
+        <img src="/assets/img/share/mozillaopenbadges.png" alt="Mozilla Open Badges" title="Mozilla Open Badges">
+        Claim on Mozilla Badge Backpack</a>
+    </div>
+    {% if assertion.evidence %}
+    {{ share_buttons.email(assertion.evidence, badge_name) }}
+    {{ share_buttons.facebook(assertion.evidence, badge_name) }}
+    {{ share_buttons.twitter(assertion.evidence, badge_name) }}
+    {{ share_buttons.gplus(assertion.evidence, badge_name) }}
+    <div class="settings share-button">
+      <a id="settings:{{ badge_name }}" href="{{ assertion.evidence }}&amp;action=settings">
+        <img src="/assets/img/share/settings.png" alt="Edit Settings">
+        Badge Settings</a>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="not-earned">(You have not earned this badge yet)</div>
+    {% endif %}
+  </div>
+
+</div>
+{% endmacro %}

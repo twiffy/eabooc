@@ -38,7 +38,7 @@ from google.appengine.api import mail
 from google.appengine.ext.db import BadValueError
 from common import mailchimp
 import modules.badges.util
-from modules.wikifolios.report import PartReport
+from modules.wikifolios.report import PartReport, ExpertBadgeReport
 import wtforms as wtf
 
 # The name of the template dict key that stores a course's base location.
@@ -562,7 +562,7 @@ class StudentProfileHandler(BaseHandler):
         self.template_value['score_list'] = course.get_all_scores(student)
         self.template_value['overall_score'] = course.get_overall_score(student)
         self.template_value['part_reports'] = [PartReport.on(student, course, p) for p in (1,2,3)]
-        self.template_value['expert_report'] = ExpertBadgeReport.on(student)
+        self.template_value['expert_report'] = ExpertBadgeReport.on(student, course)
         self.template_value['student_edit_xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('student-edit'))
         self.render('student_profile.html')

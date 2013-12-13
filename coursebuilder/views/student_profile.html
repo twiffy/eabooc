@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% import 'part_report.html' as part_report %}
+{% import 'expert_views.html' as expert_views %}
 
 {% block subtitle %}
   {# I18N: Title of the webpage. #}
@@ -44,6 +45,9 @@
         {% for part in part_reports %}
         {{ part_report.profile_view(part, assertion_link) }}
         {% endfor %}
+
+        {{ expert_views.profile_view(expert_report, assertion_link) }}
+
         <div class="accordion-badge-faq">
           <div class="badge-faq-heading">Questions about badges?  Click here.</div>
           <div class="badge-faq-contents">

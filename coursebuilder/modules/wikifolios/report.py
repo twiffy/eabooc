@@ -46,10 +46,9 @@ def get_part_num_by_badge_name(badge_name):
 
 ASSESSMENT_PASSING_SCORE = 80
 
-def find_badge_and_assertion(student, part):
-    config = _parts[part]
+def find_badge_and_assertion(student, base_slug):
     # in order of preference for issuing
-    slugs = (config['slug'] + '.leader', config['slug'])
+    slugs = (base_slug + '.leader', base_slug)
     badge_keys = [db.Key.from_path(Badge.kind(), s) for s in slugs]
     badge_ents = db.get(badge_keys)
 
@@ -67,7 +66,7 @@ def find_badge_and_assertion(student, part):
 
     # otherwise, we show the default badge.
     if not badge_ents[1]:
-        logging.warning('No badges found with key_name %s (or .leader)', config['slug'])
+        logging.warning('No badges found with key_name %s (or .leader)', base_slug)
 
     return (badge_ents[1], None)
 
@@ -113,7 +112,7 @@ class PartReport(db.Model):
         if not self.is_saved():
             self._run(course)
 
-        (b, a) = find_badge_and_assertion(self.student, self.part)
+        (b, a) = find_badge_and_assertion(self.student, self._config['slug'])
         self.badge = b
         self.badge_assertion = a
 
@@ -301,6 +300,13 @@ class ExpertBadgeReport(db.Model):
             report.put()
         return report
 
+    def __init__(self, *args, **kwargs):
+        db.Model.__init__(self, *args, **kwargs)
+
+        (b, a) = find_badge_and_assertion(self.student, 'expert')
+        self.badge = b
+        self.badge_assertion = a
+
     def _run(self, course):
         self._set_badge_flags()
         self._set_survey_flag()
@@ -311,7 +317,7 @@ class ExpertBadgeReport(db.Model):
         return type(self).student.get_value_for_datastore(self)
 
     def _set_badge_flags(self):
-        assertions = BadgeAssertion.all().filter('student', self.student_key).run()
+        assertions = BadgeAssertion.all().filter('recipient', self.student_key).run()
         for ass in assertions:
             slug_root = ass.badge_name.split('.')[0]
             if slug_root == 'practices':
@@ -339,3 +345,18 @@ class ExpertBadgeReport(db.Model):
             exam['did_pass'] = exam['score'] >= FINAL_EXAM_PASSING_SCORE
             self.final_exam_score_json = transforms.dumps(exam)
             break
+
+    @property
+    def final_exam_score(self):
+        return transforms.loads(self.final_exam_score_json)
+
+    @property
+    def is_complete(self):
+        return all((
+                self.earned_practices,
+                self.earned_principles,
+                self.earned_policies,
+                self.done_with_survey,
+                self.final_exam_score['did_pass'],
+                ))
+

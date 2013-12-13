@@ -332,15 +332,34 @@ class BulkExpertBadgeIssueMapper(LoggingMapper):
         self.host_url = host_url
         self.force_re_run = force_re_run
 
+        self.badge = Badge.get_by_key_name('expert')
+        self.num_issued = 0
+
     def map(self, student):
         self.log.append('--------------- Student %s' % student.key().name())
 
         report = ExpertBadgeReport.on(student, self.course,
                 force_re_run=self.force_re_run, put=self.really)
 
-        self.log.append(pprint.pformat(db.to_dict(report)))
+        self.log.append('Passed? %s.' % report.is_complete)
+
+        if report.is_complete:
+            self.num_issued += 1
+            if self.really and self.badge:
+                b = Badge.issue(self.badge, student, put=False) # need to include evidence URL here somehow
+                b.evidence = self.host_url + '/badges/expert_evidence?id=%d' % report.key().id()
+                b.put()
+                self.log.append(' Issued badge, name=%s, assertion id=%d' % (
+                    self.badge.key().name(), b.key().id()))
+                return ([b], [])
+            else:
+                self.log.append(' WOULD issue badge.')
+        
         return ([], [])
 
+    def finish(self):
+        self.log.append('DONE.  Issued %d badges total.' % self.num_issued)
+        self._batch_write()
 
 NOBODY = object()
 def default_dict_entry():
