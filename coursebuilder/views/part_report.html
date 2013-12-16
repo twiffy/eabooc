@@ -56,6 +56,34 @@
 </div>
 {% endmacro %}
 
+{% macro show_exam(exam, display_type) %}
+{% if display_type != 'blank' %}
+<div class="assessment-title">{{ exam.title|striptags }} <span class="status"> -
+    {% if exam.did_pass %}<span class="complete">Complete!</span>
+    {% elif exam.completed %}Submitted
+    {% else %}Not submitted
+    {% endif %}
+</span></div>
+<div class="assessment-stats">
+  {% if display_type == 'scored' %}
+  {%   if exam.did_pass %}
+  Passed the exam, scoring {{ exam.score }} out of 100%.
+  {%   else %}
+  Did not pass the exam, scoring {{ exam.score }} out of 100%.
+  {%   endif %}
+
+  {% elif display_type == 'passed' %}
+  {%   if exam.did_pass %}
+  Passed the exam, with at least
+  {%   else %}
+  Did not pass the exam, needed
+  {%   endif %}
+  {{ exam.passing_score }} out of 100%.
+
+  {% endif %}
+</div>
+{% endif %}
+{% endmacro %}
 
 {% macro evidence_view(part, evidence_link, unit_title) %}
 <div class="part-report clearfix">
@@ -64,34 +92,9 @@
     {% for report in part.unit_reports %}
     {{ unit_report.evidence_unit_report(report, evidence_link, unit_title) }}
     {% endfor %}
-    {% if part.exam_display != 'blank' %}
     {% for exam in part.assessment_scores %}
-    <div class="assessment-title">{{ exam.title|striptags }} <span class="status"> -
-        {% if exam.did_pass %}<span class="complete">Complete!</span>
-        {% elif exam.completed %}Submitted
-        {% else %}Not submitted
-        {% endif %}
-    </span></div>
-    <div class="assessment-stats">
-      {% if part.exam_display == 'scored' %}
-      {%   if exam.did_pass %}
-      Passed the exam, scoring {{ exam.score }} out of 100%.
-      {%   else %}
-      Did not pass the exam, scoring {{ exam.score }} out of 100%.
-      {%   endif %}
-
-      {% elif part.exam_display == 'passed' %}
-      {%   if exam.did_pass %}
-      Passed the exam, with at least
-      {%   else %}
-      Did not pass the exam, needed
-      {%   endif %}
-      {{ exam.passing_score }} out of 100%.
-
-      {% endif %}
-    </div>
+    {{ show_exam(exam, part.exam_display) }}
     {% endfor %}
-    {% endif %}
   </div>
   {% if part.badge %}
   {{ badge_views.evidence(part.badge, part.badge_assertion) }}

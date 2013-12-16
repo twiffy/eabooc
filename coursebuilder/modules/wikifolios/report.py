@@ -279,8 +279,8 @@ class ExpertBadgeReport(db.Model):
     earned_principles = db.BooleanProperty(indexed=False)
     earned_policies = db.BooleanProperty(indexed=False)
 
-    # maybe store # of exemplaries, etc....?
-
+    # shown in leader badge page
+    exemplary_count = db.IntegerProperty(indexed=False)
 
     @classmethod
     def on(cls, student, course, force_re_run=False, put=False):
@@ -313,6 +313,7 @@ class ExpertBadgeReport(db.Model):
         self._set_badge_flags()
         self._set_survey_flag()
         self._set_exam_info(course)
+        self._set_exemplary_count()
 
     @cached_property
     def student_key(self):
@@ -348,6 +349,9 @@ class ExpertBadgeReport(db.Model):
             exam['did_pass'] = exam['score'] >= FINAL_EXAM_PASSING_SCORE
             self.final_exam_score_json = transforms.dumps(exam)
             break
+
+    def _set_exemplary_count(self):
+        self.exemplary_count = Annotation.exemplaries(whose=self.student_key).count(limit=500)
 
     @property
     def final_exam_score(self):

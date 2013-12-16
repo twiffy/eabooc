@@ -996,6 +996,10 @@ div.assessment {
   border: 2px solid darken($page-bg-color, 15%);
   padding: 5px;
 
+  &.expert {
+    border: 2px solid mix(yellow, $page-bg-color, 60%);
+  }
+
   > div {
     // border: thin solid black;
     padding: 5px;

@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
-{% import 'expert_views.html' as expert_views %}
+{% from "part_report.html" import show_exam %}
 {% block subtitle %}Badge Evidence{% endblock %}
+
+{% macro image_badge_link(assertion) %}
+<div class="part-badge-image">
+  <a href="{{ assertion.evidence }}">
+    <img src="{{ assertion.badge.image }}">
+    {{ assertion.badge.name }} Badge - Earned!
+</a></div>
+{% endmacro %}
+
 {% block main_content %}
 <div class="gcb-aux">
   <div class="gcb-cols">
@@ -8,21 +17,32 @@
 
       <h1>{{ report.badge.name }}</h1>
       <div>
+        <img class="gcb-pull-right" src="{{ report.badge.image }}">
         {{ author.badge_name }} earned this badge by participating in the <a
           href="https://booc-iu.appspot.com/">Educational Assessment BOOC</a>. {{ report.badge.description }}
       </div>
 
       <h2>Criteria for issuance</h2>
-      {% if no_unit_links %}
-      <div>{{ report.badge.criteria|safe }}</div>
-      {% else %}
       <div>{{ report.badge.evidence_page_criteria|safe }}</div>
-      {% endif %}
 
 
       <h2>Evidence</h2>
 
-      {# {{ expert_views.evidence_view(part, unit_link, unit_title) }} #}
+      <div class="part-report expert clearfix">
+        <div style="width: 100%">{{ show_exam(report.final_exam_score, report.exam_display) }}</div>
+        {% if report.exemplary_count %}
+        <div style="width: 100%">
+          Exemplary promotions: <span style="color: #fc0;">★</span> {{ report.exemplary_count }}
+        </div>
+        {% endif %}
+        <hr>
+        <div style="width: 100%">Click on these badge images to see the evidence for each one!</div>
+
+        {{ image_badge_link(part_assertions.practices) }}
+        {{ image_badge_link(part_assertions.principles) }}
+        {{ image_badge_link(part_assertions.policies) }}
+      </div>
+
     </div>
     <div class="gcb-col-11 gcb-aside">
       <!-- Begin MailChimp Signup Form -->

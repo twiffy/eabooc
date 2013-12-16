@@ -830,6 +830,8 @@ div.assessment {
   background: #cbbbab;
   border: 2px solid #997b5e;
   padding: 5px; }
+  .part-report.expert {
+    border: 2px solid #e2d937; }
   .part-report > div {
     padding: 5px; }
   .part-report .unit-title, .part-report .assessment-title {
