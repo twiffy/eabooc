@@ -42,11 +42,11 @@
 
         {% include 'student_data_table.html' %}
 
+        {{ expert_views.profile_view(expert_report, assertion_link) }}
+
         {% for part in part_reports %}
         {{ part_report.profile_view(part, assertion_link) }}
         {% endfor %}
-
-        {{ expert_views.profile_view(expert_report, assertion_link) }}
 
         <div class="accordion-badge-faq">
           <div class="badge-faq-heading">Questions about badges?  Click here.</div>

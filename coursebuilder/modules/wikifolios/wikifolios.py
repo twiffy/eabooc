@@ -1436,7 +1436,7 @@ module = None
 def register_module():
     global module
 
-    from report_handlers import EvidenceHandler, BulkIssuanceHandler, SingleIssueHandler, DammitHandler
+    from report_handlers import EvidenceHandler, BulkIssuanceHandler, SingleIssueHandler, DammitHandler, ExpertEvidenceHandler
     handlers = [
             ('/ranktest', RankTestHandler),
             ('/wiki', WikiPageHandler),
@@ -1452,6 +1452,7 @@ def register_module():
             ('/grump', HarrumphHandler),
             ('/exam_reset', ExamResetHandler),
             ('/badges/evidence', EvidenceHandler),
+            ('/badges/expert_evidence', ExpertEvidenceHandler),
             ('/badges/bulk_issue', BulkIssuanceHandler),
             ('/badges/single_issue', SingleIssueHandler),
             ('/badges/dammit', DammitHandler),

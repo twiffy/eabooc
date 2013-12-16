@@ -266,6 +266,7 @@ class ExpertBadgeReport(db.Model):
     # identifying this report
     student = db.ReferenceProperty(Student, indexed=True)
     timestamp = db.DateTimeProperty(auto_now_add=True)
+    slug = 'expert'
 
     # display properties
     exam_display = db.StringProperty(indexed=False)
@@ -279,6 +280,7 @@ class ExpertBadgeReport(db.Model):
     earned_policies = db.BooleanProperty(indexed=False)
 
     # maybe store # of exemplaries, etc....?
+
 
     @classmethod
     def on(cls, student, course, force_re_run=False, put=False):
@@ -337,6 +339,7 @@ class ExpertBadgeReport(db.Model):
 
     def _set_exam_info(self, course):
         looking_for = 'Final'
+        self.final_exam_score_json = "{}"
 
         for exam in course.get_all_scores(self.student):
             if exam['id'] != looking_for:

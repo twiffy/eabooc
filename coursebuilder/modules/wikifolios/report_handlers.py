@@ -226,6 +226,32 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['part'] = self.report
         self.render('wf_evidence_top.html')
 
+class ExpertEvidenceHandler(BaseHandler, ReflectiveRequestHandler):
+    get_actions = ['view', 'settings']
+    default_action = 'view'
+
+    def get_view(self):
+        try:
+            report = ExpertBadgeReport.get_by_id(int(self.request.GET.get('id', -1)))
+        except ValueError:
+            report = None
+        if not report:
+            self.abort(404)
+
+        if not report.exam_display:
+            if report.final_exam_score:
+                display_info = exam_display_choices(report.final_exam_score)
+                report.exam_display = display_info['default']
+            else:
+                report.exam_display = 'blank'
+
+        self.template_value['report'] = report
+        self.template_value['navbar'] = {}
+        self.template_value['author'] = report.student
+        # TODO: links to the other badges
+
+        self.render('wf_expert_evidence.html')
+
 
 class SingleIssueHandler(BaseHandler):
     class Form(wtf.Form):
