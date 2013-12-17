@@ -490,6 +490,8 @@ class BulkExpertBadgeIssueMapper(LoggingMapper):
                 return ([b], [])
             else:
                 self.log.append(' WOULD issue badge.')
+        else:
+            self.log.append('Incomplete, we are missing: %s' % (', '.join(report.incomplete_reasons())))
         
         return ([], [])
 

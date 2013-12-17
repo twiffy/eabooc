@@ -367,6 +367,20 @@ class ExpertBadgeReport(db.Model):
                 self.final_exam_score['did_pass'],
                 ))
 
+    def incomplete_reasons(self):
+        r = []
+        if not self.earned_practices:
+            r.append('Practices')
+        if not self.earned_principles:
+            r.append('Principles')
+        if not self.earned_policies:
+            r.append('Policies')
+        if not self.done_with_survey:
+            r.append('Survey')
+        if not self.final_exam_score['did_pass']:
+            r.append('Final')
+        return r
+
     @cached_property
     def student_email(self):
         return type(self).student.get_value_for_datastore(self).name()
