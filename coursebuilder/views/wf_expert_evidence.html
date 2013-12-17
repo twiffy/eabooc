@@ -3,11 +3,14 @@
 {% block subtitle %}Badge Evidence{% endblock %}
 
 {% macro image_badge_link(assertion) %}
-<div class="part-badge-image">
-  <a href="{{ assertion.evidence }}">
-    <img src="{{ assertion.badge.image }}">
-    {{ assertion.badge.name }} Badge - Earned!
-</a></div>
+<td class="part-badge-image">
+  <center>
+    <a href="{{ assertion.evidence }}">
+      <img src="{{ assertion.badge.image }}"><br>
+      <b>{{ assertion.badge.name }}</b>
+    </center>
+  </a>
+</td>
 {% endmacro %}
 
 {% block main_content %}
@@ -36,11 +39,20 @@
         </div>
         {% endif %}
         <hr>
-        <div style="width: 100%">Click on these badge images to see the evidence for each one!</div>
+        <div>
+          <div class="assessment-title">Three BOOC Section Badges <span
+              class="status">- <span
+                class="complete">Complete!</span></span></div>
+          <div class="assessment-stats">Click on each badge to see detailed evidence.</div>
+        </div>
 
-        {{ image_badge_link(part_assertions.practices) }}
-        {{ image_badge_link(part_assertions.principles) }}
-        {{ image_badge_link(part_assertions.policies) }}
+        <table style="width: 100%">
+          <tr>
+            {{ image_badge_link(part_assertions.practices) }}
+            {{ image_badge_link(part_assertions.principles) }}
+            {{ image_badge_link(part_assertions.policies) }}
+          </tr>
+        </table>
       </div>
 
     </div>

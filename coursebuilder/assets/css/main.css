@@ -849,11 +849,18 @@ div.assessment {
     width: 35%;
     max-width: 400px;
     min-width: 10em; }
-  .part-report .part-badge-image {
+  .part-report div.part-badge-image {
     max-width: 275px;
     width: 28%;
     float: left; }
-    .part-report .part-badge-image img.not-issued {
+    .part-report div.part-badge-image img.not-issued {
+      opacity: 0.5;
+      filter: alpha(opacity=50);
+      /* for ie8 */ }
+  .part-report td.part-badge-image {
+    width: 33%;
+    border: none; }
+    .part-report td.part-badge-image img.not-issued {
       opacity: 0.5;
       filter: alpha(opacity=50);
       /* for ie8 */ }
