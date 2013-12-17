@@ -92,6 +92,8 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['form'] = form
         self.template_value['xsrf_token'] = XsrfTokenManager.create_xsrf_token('save_settings')
         self.template_value['navbar'] = {}
+        self.template_value['action_url'] = '/badges/evidence?action=save_settings'
+        self.template_value['badge_name'] = report._config['name']
         self.render('wf_evidence_settings.html')
 
     def can_edit(self, user, report):
@@ -230,6 +232,98 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
 class ExpertEvidenceHandler(BaseHandler, ReflectiveRequestHandler):
     get_actions = ['view', 'settings']
     default_action = 'view'
+    post_actions = ['save_settings']
+
+    def can_edit(self, user, report):
+        return report.student_email == user.key().name()
+
+    class SettingsForm(wtf.Form):
+        report_id = wtf.HiddenField()
+
+        # Will set choices dynamically.
+        exam_display = wtf.SelectField(
+                "How to display exam scores on the evidence page?")
+
+    def get_settings(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+
+        try:
+            report = ExpertBadgeReport.get_by_id(int(self.request.GET.get('id', -1)))
+        except ValueError:
+            report = None
+        if not report:
+            self.abort(404, "That evidence report was not found.")
+
+        if not self.can_edit(user, report):
+            self.abort(403)
+
+        form = self.SettingsForm(
+                report_id=report.key().id(),
+                exam_display=report.exam_display)
+
+        display_field_params = {
+                'choices': [('blank', '(Blank)')],
+                'default': 'blank'
+                }
+
+        display_field_params = exam_display_choices(
+                report.final_exam_score)
+
+        form.exam_display.choices = display_field_params['choices']
+        form.exam_display.default = display_field_params['default']
+
+        self.template_value['report'] = report
+        self.template_value['form'] = form
+        self.template_value['xsrf_token'] = XsrfTokenManager.create_xsrf_token('save_settings')
+        self.template_value['navbar'] = {}
+        self.template_value['badge_name'] = "Assessment Expert Badge"
+        self.template_value['action_url'] = '/badges/expert_evidence?action=save_settings'
+        self.render('wf_evidence_settings.html')
+
+    def post_save_settings(self):
+        user = self.personalize_page_and_get_enrolled()
+        if not user:
+            return
+
+        form = self.SettingsForm(self.request.POST)
+
+        try:
+            report = ExpertBadgeReport.get_by_id(int(form.report_id.data))
+        except ValueError:
+            report = None
+        if not report:
+            self.abort(404, "That evidence report was not found.")
+
+        if not self.can_edit(user, report):
+            self.abort(403, "You can't edit that user's report.")
+
+        display_field_params = exam_display_choices(
+                report.final_exam_score)
+        form.exam_display.choices = display_field_params['choices']
+        form.exam_display.default = display_field_params['default']
+
+        if not form.validate():
+            self.redirect('/')
+            return
+
+        report.exam_display = form.exam_display.data
+        report.put()
+
+        EventEntity.record(
+                'set-evidence-settings',
+                users.get_current_user(),
+                transforms.dumps({
+                    'slug': report.slug,
+                    'exam_display': report.exam_display,
+                    'email': user.key().name()
+                    }))
+
+        self.template_value['navbar'] = {}
+        self.template_value['content'] = '''<div class="gcb-aside">OK, saved settings.<br>
+        <a href="/student/home">Back to your account page...</a></div>'''
+        self.render('bare.html')
 
     def get_view(self):
         try:

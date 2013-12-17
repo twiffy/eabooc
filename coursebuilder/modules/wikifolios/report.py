@@ -367,3 +367,7 @@ class ExpertBadgeReport(db.Model):
                 self.final_exam_score['did_pass'],
                 ))
 
+    @cached_property
+    def student_email(self):
+        return type(self).student.get_value_for_datastore(self).name()
+

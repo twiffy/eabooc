@@ -12,13 +12,15 @@ Badge Evidence Settings
   <div class="gcb-article tab-content">
     <div class="gcb-aside">
       <h2>
-        Badge Evidence Settings for {{ report._config.name }}
+        Badge Evidence Settings for {{ badge_name }}
       </h2>
-      <form action="/badges/evidence?action=save_settings" method="POST">
+      <form action="{{ action_url }}" method="POST">
         <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
         {{ form.report_id }}
+        {% if form.units_are_public %}
         {{ form.units_are_public }} {{ form.units_are_public.label }}
         <br>
+        {% endif %}
         {{ form.exam_display.label }}<br>
         {{ form.exam_display }}<br>
         <input type="submit" value="Save">
@@ -27,7 +29,7 @@ Badge Evidence Settings
   </div>
 </div>
 <script>
-  ga('send', 'event', 'evidence-settings', 'view', '{{ report._config.slug }}');
+  ga('send', 'event', 'evidence-settings', 'view', '{{ report.slug }}');
 </script>
 {% endblock %}
 
