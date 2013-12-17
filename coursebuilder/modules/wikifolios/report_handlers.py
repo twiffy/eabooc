@@ -176,6 +176,7 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
                 report.exam_display = 'blank'
 
         self.report = report
+        self.template_value['inline_save'] = lambda: ''
         self.template_value['navbar'] = {}
         self.template_value['author'] = self.report.student
         if report.units_are_public:
