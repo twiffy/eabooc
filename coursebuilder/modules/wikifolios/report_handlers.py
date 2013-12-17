@@ -605,22 +605,26 @@ class BulkExpertLeaderIssueMapper(LoggingMapper):
         if self.re_run:
             report._run(self.course)
 
-        if not report.is_complete:
-            self.log.append('Skipping, not complete.')
-            return ([], [])
-
         best_so_far = self.best_by_group[student.group_id][1]
         promotions = report.exemplary_count
 
         if promotions > best_so_far:
-            self.best_by_group[student.group_id] = ([student.key().name()], promotions)
             self.log.append('New best for group %s, %d promotions' % (
                 student.group_id, promotions))
 
+            if report.is_complete:
+                self.best_by_group[student.group_id] = ([student.key().name()], promotions)
+            else:
+                self.log.append('BUT, Skipping, not complete.')
+
         elif promotions == best_so_far:
-            self.best_by_group[student.group_id][0].append(student.key().name())
             self.log.append('TIED best for group %s, %d promotions' % (
                 student.group_id, promotions))
+
+            if report.is_complete:
+                self.best_by_group[student.group_id][0].append(student.key().name())
+            else:
+                self.log.append('BUT, Skipping, not complete.')
 
         return ([], [])
 
