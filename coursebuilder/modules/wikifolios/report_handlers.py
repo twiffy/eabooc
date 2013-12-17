@@ -546,7 +546,7 @@ class BulkExpertLeaderIssueMapper(LoggingMapper):
                             db.Key.from_path(Student.kind(), email),
                             course=self.course,
                             force_re_run=self.re_run)
-                    b.evidence = self.host_url + '/badges/evidence?id=%d' % report.key().id()
+                    b.evidence = self.host_url + '/badges/expert_evidence?id=%d' % report.key().id()
                     b.put()
                     self.log.append('... ISSUED leader badge to %s, id=%d' % (email, b.key().id()))
             else:
