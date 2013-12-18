@@ -1,12 +1,18 @@
 {% extends 'base.html' %}
 {% block main_content %}
-<div>
-  Finished?  {{ is_finished }}<br>
-  Batches done?  {{ batch_count }}
-</div>
-<div>
-  {% for text, link in continue_links.iteritems() %}
-  <b><a href="{{ link }}">{{ text }}</a></b><br>
-  {% endfor %}
+<div class="gcb-aside">
+  {% if result.is_started %}
+  <h2>{{ result.query_name }}</h2>
+  {% endif %}
+  
+  <div>
+    Finished?  {{ result.is_finished }}<br>
+    Batches done?  {{ result.batch_count }}
+  </div>
+  <div>
+    {% for text, link in continue_links.iteritems() %}
+    <b><a href="{{ link }}">{{ text }}</a></b><br>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

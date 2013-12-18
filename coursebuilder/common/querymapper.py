@@ -149,6 +149,8 @@ class ObjLogEntity(db.Model):
 
 
 class TableMakerMapper(Mapper):
+    NAME = ''
+
     def __init__(self, **kwargs):
         super(TableMakerMapper, self).__init__()
         self._rows = []
@@ -158,6 +160,7 @@ class TableMakerMapper(Mapper):
 
     def _batch_write(self):
         to_pickle = {
+                'query_name': self.NAME or type(self).__name__,
                 'fields': self.FIELDS,
                 'rows': self._rows,
                 }
@@ -190,12 +193,30 @@ class TableMakerResult(object):
     def _query(self):
         return ObjLogEntity.all().filter('job_id', self.job_id).order('sort_key')
 
+    @property
+    def is_started(self):
+        try:
+            x = self._metadata
+            return True
+        except Exception:
+            return False
+
     @cached_property
-    def fields(self):
+    def _metadata(self):
         batch0 = self._query().get()
         if not batch0:
             raise Exception("No batches are done yet, can't determine fields.")
-        return pickle.loads(batch0.value)['fields']
+        meta = pickle.loads(batch0.value)
+        del meta['rows']
+        return meta
+
+    @cached_property
+    def fields(self):
+        return self._metadata['fields']
+
+    @cached_property
+    def query_name(self):
+        return self._metadata['query_name']
 
     @property
     def is_finished(self):

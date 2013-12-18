@@ -580,19 +580,7 @@ class AnalyticsHandler(TableRenderingHandler):
             self.render_as_table(query.fields, iterator)
 
     def render_choices_page(self, error=''):
-        self.prettify()
-        form_fields = Markup("<p>\n").join(
-                Markup(field.label) + Markup(field) for field in self.NavForm())
-        self.template_value['content'] = Markup('''
-                <div class="gcb-aside">
-                <div style="background-color: #fcc;">%s</div>
-                <form action="/analytics" method="GET">
-                %s
-                <br><input type="submit" value="Run">
-                </form>
-                </div>
-                ''') % (error, form_fields)
-        self.render('bare.html')
+        self.redirect('/long_analytics')
 
 
 class JobsHandler(BaseHandler):
@@ -656,11 +644,9 @@ class BadgeAssertionMapQuery(TableMakerMapper):
         self.add_row(d)
 
 class BadgeAssertionMapQueryWithRevoked(BadgeAssertionMapQuery):
-    FILTERS = None
+    FILTERS = []
 
-mapper_queries = {
-        'test': TestMapBlah,
-        }
+mapper_queries = {}
 mapper_queries['badge_assertions'] = BadgeAssertionMapQuery
 mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevoked
 
@@ -692,6 +678,9 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
         self.template_value['xsrf_token'] = self.create_xsrf_token('start')
         self.template_value['action_url'] = self._action_url('start')
         self.template_value['title'] = self.TITLE
+
+        self.template_value['classic_form'] = AnalyticsHandler.NavForm()
+        self.template_value['classic_action_url'] = '/analytics'
         self.render('csv_form.html')
 
     def post_start(self):
@@ -720,9 +709,8 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
 
         self.prettify()
         result = TableMakerResult(job_id)
-        self.template_value['batch_count'] = result.batch_count
+        self.template_value['result'] = result
         is_finished = result.is_finished
-        self.template_value['is_finished'] = is_finished
 
         continue_links = {}
         if is_finished:

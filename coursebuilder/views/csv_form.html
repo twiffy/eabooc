@@ -5,14 +5,28 @@
   {{ k }} - {{ ' '.join(v) }}<br>
   {% endfor %}
 </div>
-<div>
-  <form action="{{ action_url }}" method="POST">
-    <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
-    {% for field in form %}
-    <p>{{ field.label }} - {{ field }}</p>
-    {% endfor %}
+<div class="gcb-aside">
+  <div>
+    <h3>Fancy Queries</h3>
+    <form action="{{ action_url }}" method="POST">
+      <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+      {% for field in form %}
+      <p>{{ field.label }} - {{ field }}</p>
+      {% endfor %}
 
-    <input type="submit" name="Start" value="Start!">
-  </form>
+      <input type="submit" name="Start" value="Start!">
+    </form>
+  </div>
+  <hr>
+  <div>
+    <h3>Classic Queries</h3>
+    <form action="{{ classic_action_url }}" method="GET">
+      {% for field in classic_form %}
+      <p>{{ field.label }} - {{ field }}</p>
+      {% endfor %}
+
+      <input type="submit" name="Start" value="Start!">
+    </form>
+  </div>
 </div>
 {% endblock %}
