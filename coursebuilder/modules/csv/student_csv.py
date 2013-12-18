@@ -646,7 +646,7 @@ class BadgeAssertionMapQuery(TableMakerMapper):
 class BadgeAssertionMapQueryWithRevoked(BadgeAssertionMapQuery):
     FILTERS = []
 
-mapper_queries = {}
+mapper_queries = OrderedDict()
 mapper_queries['badge_assertions'] = BadgeAssertionMapQuery
 mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevoked
 
