@@ -473,60 +473,6 @@ class ExitSurveyQuery(object):
 analytics_queries['exit_survey'] = ExitSurveyQuery
 
 
-class BadgeAssertionQuery(object):
-    fields = [
-            'badge_name',
-            'recipient',
-            'email',
-            'group_id',
-            'issuedOn',
-            'endorsements',
-            'promotions',
-            'comments',
-            'expires',
-            'revoked',
-            'evidence',
-            'id',
-            ]
-    exclude_revoked = True
-
-    def __init__(self, handler):
-        self.handler = handler
-
-    def run(self):
-        asserts = badge_models.BadgeAssertion.all()
-        if self.exclude_revoked:
-            asserts.filter('revoked', False)
-        for ass in asserts.run():
-            d = {}
-            for f in ['issuedOn', 'expires', 'revoked', 'evidence']:
-                d[f] = getattr(ass, f)
-
-            d['badge_name'] = ass.badge_name
-            student = ass.recipient
-            d['recipient'] = student.badge_name
-            d['email'] = student.key().name()
-            d['group_id'] = student.group_id
-            d['id'] = ass.key().id()
-
-            # Eet ees TOO SLOW for my GOOGLE.
-            #if 'expert' not in ass.badge_name:
-                #part_num = get_part_num_by_badge_name(ass.badge_name)
-                #report = PartReport.on(student, self.handler.get_course(), part_num)
-                #unit_reps = report.unit_reports
-                #for attr in ['endorsements', 'promotions', 'comments']:
-                    #d[attr] = sum(getattr(u, attr) for u in unit_reps)
-
-            yield d
-
-class BadgeAssertionQueryWithRevoked(BadgeAssertionQuery):
-    def __init__(self, handler):
-        super(BadgeAssertionQueryWithRevoked, self).__init__(handler)
-        self.exclude_revoked = False
-
-analytics_queries['badge_assertions'] = BadgeAssertionQuery
-analytics_queries['badge_assertions_with_revoked'] = BadgeAssertionQueryWithRevoked
-
 
 class UnenrollSurveyQuery(object):
     fields = [
@@ -664,9 +610,60 @@ class TestMapBlah(TableMakerMapper):
     def map(self, student):
         self.add_row({'good': 7, 'bad': 4})
 
+class BadgeAssertionMapQuery(TableMakerMapper):
+    FIELDS = [
+            'badge_name',
+            'recipient',
+            'email',
+            'group_id',
+            'issuedOn',
+            'endorsements',
+            'promotions',
+            'comments',
+            'expires',
+            'revoked',
+            'evidence',
+            'id',
+            ]
+    KIND = badge_models.BadgeAssertion
+
+    FILTERS = [('revoked', False)]
+
+    def __init__(self, **kwargs):
+        super(BadgeAssertionMapQuery, self).__init__()
+        self.course = kwargs['course']
+
+    def map(self, ass):
+        d = {}
+        for f in ['issuedOn', 'expires', 'revoked', 'evidence']:
+            d[f] = getattr(ass, f)
+
+        d['badge_name'] = ass.badge_name
+        student = ass.recipient
+        d['recipient'] = student.badge_name
+        d['email'] = student.key().name()
+        d['group_id'] = student.group_id
+        d['id'] = ass.key().id()
+        logging.warning('Considering %s issued to %s', d['badge_name'], d['email'])
+
+        if 'expert' not in ass.badge_name:
+            part_num = get_part_num_by_badge_name(ass.badge_name)
+            report = PartReport.on(student, self.course, part_num)
+            unit_reps = report.unit_reports
+            for attr in ['endorsements', 'promotions', 'comments']:
+                d[attr] = sum(getattr(u, attr) for u in unit_reps)
+
+        self.add_row(d)
+
+class BadgeAssertionMapQueryWithRevoked(BadgeAssertionMapQuery):
+    FILTERS = None
+
 mapper_queries = {
         'test': TestMapBlah,
         }
+mapper_queries['badge_assertions'] = BadgeAssertionMapQuery
+mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevoked
+
 class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
     TITLE = 'HIIIII'
     default_action = 'prep'
@@ -707,7 +704,7 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
             return
 
         query_class = mapper_queries[form.query.data]
-        mapper = query_class()
+        mapper = query_class(course=self.get_course())
         assert isinstance(mapper, TableMakerMapper)
         job_id = mapper.job_id
         deferred.defer(mapper.run, batch_size=50)

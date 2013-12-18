@@ -149,7 +149,7 @@ class ObjLogEntity(db.Model):
 
 
 class TableMakerMapper(Mapper):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super(TableMakerMapper, self).__init__()
         self._rows = []
         self.job_id = str(uuid.uuid4())
@@ -169,6 +169,7 @@ class TableMakerMapper(Mapper):
                 )
         self.to_put.append(entity)
         super(TableMakerMapper, self)._batch_write()
+        logging.debug('Put %d rows', len(self._rows))
         self.part_number += 1
         self._rows = []
 
