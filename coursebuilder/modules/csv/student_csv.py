@@ -1,4 +1,7 @@
 from models import custom_modules
+from common.querymapper import TableMakerMapper, TableMakerResult
+from controllers.utils import ReflectiveRequestHandler
+from google.appengine.api import users
 from google.appengine.ext import deferred
 from models.models import Student
 from models.models import EventEntity
@@ -553,8 +556,32 @@ class UnenrollSurveyQuery(object):
 
 analytics_queries['unenroll_survey'] = UnenrollSurveyQuery
 
+class TableRenderingHandler(BaseHandler):
+    def render_as_csv(self, fields, items):
+        self.response.content_type = 'text/csv; charset=UTF-8'
+        self.response.headers['Content-Disposition'] = 'attachment;filename=analytics.csv'
 
-class AnalyticsHandler(BaseHandler):
+        self.response.write(u'\ufeff')
+        out = csv.DictWriter(self.response, fields, extrasaction='ignore')
+        out.writeheader()
+        for item in items:
+            for p in item.keys():
+                if type(item[p]) is list:
+                    item[p] = u", ".join(item[p])
+            out.writerow(item)
+
+    def render_as_table(self, fields, items):
+        self.prettify()
+        self.template_value['fields'] = fields
+        self.template_value['items'] = items
+        self.render('analytics_table.html')
+
+    def prettify(self):
+        self.personalize_page_and_get_enrolled()
+        self.template_value['navbar'] = {'booctools': True}
+
+
+class AnalyticsHandler(TableRenderingHandler):
     class NavForm(wtf.Form):
         query = wtf.RadioField('Analytics query',
                 choices=[(k, k) for k in analytics_queries.keys()])
@@ -606,10 +633,6 @@ class AnalyticsHandler(BaseHandler):
                 iterator = [query.htmlize_row(r) for r in iterator]
             self.render_as_table(query.fields, iterator)
 
-    def prettify(self):
-        self.personalize_page_and_get_enrolled()
-        self.template_value['navbar'] = {'booctools': True}
-
     def render_choices_page(self, error=''):
         self.prettify()
         form_fields = Markup("<p>\n").join(
@@ -625,24 +648,6 @@ class AnalyticsHandler(BaseHandler):
                 ''') % (error, form_fields)
         self.render('bare.html')
 
-    def render_as_csv(self, fields, items):
-        self.response.content_type = 'text/csv; charset=UTF-8'
-        self.response.headers['Content-Disposition'] = 'attachment;filename=analytics.csv'
-
-        self.response.write(u'\ufeff')
-        out = csv.DictWriter(self.response, fields, extrasaction='ignore')
-        out.writeheader()
-        for item in items:
-            for p in item.keys():
-                if type(item[p]) is list:
-                    item[p] = u", ".join(item[p])
-            out.writerow(item)
-
-    def render_as_table(self, fields, items):
-        self.prettify()
-        self.template_value['fields'] = fields
-        self.template_value['items'] = items
-        self.render('analytics_table.html')
 
 class JobsHandler(BaseHandler):
     def get(self):
@@ -652,6 +657,109 @@ class JobsHandler(BaseHandler):
         job = jobs.the_job()
         deferred.defer(job.run)
 
+class TestMapBlah(TableMakerMapper):
+    KIND = Student
+    FIELDS = ['good', 'bad']
+
+    def map(self, student):
+        self.add_row({'good': 7, 'bad': 4})
+
+mapper_queries = {
+        'test': TestMapBlah,
+        }
+class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
+    TITLE = 'HIIIII'
+    default_action = 'prep'
+    get_actions = ['prep', 'watch', 'download', 'view']
+    post_actions = ['start']
+
+    class NavForm(wtf.Form):
+        query = wtf.RadioField('Analytics query',
+                choices=[(k, k) for k in mapper_queries.keys()])
+
+    def _action_url(self, action, **kwargs):
+        params = dict(kwargs)
+        params['action'] = action
+        return '?'.join((
+            self.request.path,
+            urllib.urlencode(params)))
+
+    def get_prep(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+        self.render_form(self.NavForm())
+
+    def render_form(self, form):
+        self.prettify()
+        self.template_value['form'] = form
+        self.template_value['xsrf_token'] = self.create_xsrf_token('start')
+        self.template_value['action_url'] = self._action_url('start')
+        self.template_value['title'] = self.TITLE
+        self.render('csv_form.html')
+
+    def post_start(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        form = self.NavForm(self.request.POST)
+        if not form.validate():
+            self.render_form(form)
+            return
+
+        query_class = mapper_queries[form.query.data]
+        mapper = query_class()
+        assert isinstance(mapper, TableMakerMapper)
+        job_id = mapper.job_id
+        deferred.defer(mapper.run, batch_size=50)
+        self.redirect(self._action_url('watch', job_id=job_id))
+        
+    def get_watch(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        job_id = self.request.GET.get('job_id', None)
+        if not job_id:
+            self.abort(404)
+
+        self.prettify()
+        result = TableMakerResult(job_id)
+        self.template_value['batch_count'] = result.batch_count
+        is_finished = result.is_finished
+        self.template_value['is_finished'] = is_finished
+
+        continue_links = {}
+        if is_finished:
+            continue_links['Download as CSV'] = self._action_url('download', job_id=job_id)
+            continue_links['View as table'] = self._action_url('view', job_id=job_id)
+        self.template_value['continue_links'] = continue_links
+
+        self.template_value['title'] = self.TITLE
+        self.template_value['problems'] = []
+        self.render('csv_watch.html')
+
+    def get_download(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        job_id = self.request.GET.get('job_id', None)
+        if not job_id:
+            self.abort(404)
+
+        result = TableMakerResult(job_id)
+        fields = result.fields
+        self.render_as_csv(fields, result)
+
+    def get_view(self):
+        if not users.is_current_user_admin():
+            self.abort(403)
+
+        job_id = self.request.GET.get('job_id', None)
+        if not job_id:
+            self.abort(404)
+
+        result = TableMakerResult(job_id)
+        fields = result.fields
+        self.render_as_table(fields, result)
 
 
 module = None
@@ -661,6 +769,7 @@ def register_module():
 
     handlers = [
             ('/analytics', AnalyticsHandler),
+            ('/long_analytics', MapperTableHandler),
             ('/adminjob', JobsHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):

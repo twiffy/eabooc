@@ -50,6 +50,17 @@ indexes:
   - name: job_id
   - name: sort_key
 
+- kind: ObjLogEntity
+  properties:
+  - name: finished
+  - name: job_id
+  - name: sort_key
+
+- kind: ObjLogEntity
+  properties:
+  - name: job_id
+  - name: sort_key
+
 - kind: Post
   properties:
   - name: forum

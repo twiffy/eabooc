@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block main_content %}
+<div>
+  Finished?  {{ is_finished }}<br>
+  Batches done?  {{ batch_count }}
+</div>
+<div>
+  {% for text, link in continue_links.iteritems() %}
+  <b><a href="{{ link }}">{{ text }}</a></b><br>
+  {% endfor %}
+</div>
+{% endblock %}
