@@ -506,12 +506,13 @@ class BadgeAssertionQuery(object):
             d['group_id'] = student.group_id
             d['id'] = ass.key().id()
 
-            if 'expert' not in ass.badge_name:
-                part_num = get_part_num_by_badge_name(ass.badge_name)
-                report = PartReport.on(student, self.handler.get_course(), part_num)
-                unit_reps = report.unit_reports
-                for attr in ['endorsements', 'promotions', 'comments']:
-                    d[attr] = sum(getattr(u, attr) for u in unit_reps)
+            # Eet ees TOO SLOW for my GOOGLE.
+            #if 'expert' not in ass.badge_name:
+                #part_num = get_part_num_by_badge_name(ass.badge_name)
+                #report = PartReport.on(student, self.handler.get_course(), part_num)
+                #unit_reps = report.unit_reports
+                #for attr in ['endorsements', 'promotions', 'comments']:
+                    #d[attr] = sum(getattr(u, attr) for u in unit_reps)
 
             yield d
 
