@@ -615,15 +615,15 @@ class UnitCommentQuery(TableMakerMapper):
     KIND = WikiPage
 
     def __init__(self, **kwargs):
-        super(UnitCommentQuery, self).__init__()
         self.course = kwargs['course']
         self.unit = kwargs['unit']
         self.host_url = kwargs['host_url']
         if not self.unit:
             raise ValueError('"unit" parameter is required for this query')
         self.counter = itertools.count(1)
-        self.FILTER = [('unit', self.unit)]
+        self.FILTERS = [('unit', self.unit)]
         self._has_posted = dict()
+        super(UnitCommentQuery, self).__init__()
 
     def has_posted(self, student):
         email = student.key().name()
