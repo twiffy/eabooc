@@ -237,53 +237,6 @@ class CurrentGroupIDQuery(object):
                     'group_id': student.group_id,
                     }
 
-class UnitCommentQuery(object):
-    fields = [
-            'orig_row_number',
-            'link',
-            'unit',
-            'page_author',
-            'comment_author',
-            'is_reply',
-            'added_time',
-            'is_edited',
-            'is_deleted',
-            'text',
-            ]
-
-    def __init__(self, handler):
-        request = handler.request
-        self.request = request
-        unit_str = request.GET['unit']
-        if not unit_str:
-            raise ValueError('"unit" parameter is required for this query')
-        # value error may bubble up
-        self.unit = int(unit_str)
-
-    def run(self):
-        counter = itertools.count(1)
-        pages = WikiPage.all().filter('unit', self.unit).run(limit=600)
-        prefetcher = prefetch.CachingPrefetcher()
-        for page in pages:
-            comments = page.comments.run(limit=100)
-            page_author = "%s (%s)" % (page.author.name, page.author_email)
-            prefetcher.add(page.author)
-
-            for comment in wf.sort_comments(
-                    prefetcher.prefetch(comments, WikiComment.author)):
-                row = defaultdict(str)
-                row['orig_row_number'] = next(counter)
-                row['page_author'] = page_author
-                row['link'] = self.request.host_url + '/' + wf.comment_permalink(comment)
-                row['comment_author'] = "%s (%s)" % (comment.author.name, comment.author_email)
-                row['unit'] = page.unit
-                row['is_reply'] = comment.is_reply()
-                for attr in ['added_time', 'text']:
-                    row[attr] = getattr(comment, attr)
-                for attr in ['is_edited', 'is_deleted']:
-                    row[attr] = bool(getattr(comment, attr))
-                row['text'] = re.sub(r'<[^>]*?>', '', row['text'])
-                yield row
 
 
 class UnitCompletionQuery(object):
@@ -403,7 +356,6 @@ analytics_queries['initial_curricular_aim'] = CurricularAimQuery
 analytics_queries['unit_completion_and_full_text'] = UnitCompletionQuery
 analytics_queries['unit_ranking'] = UnitRankingQuery
 analytics_queries['unit_ranking_raw'] = UnitRawRankingQuery
-analytics_queries['unit_all_comments'] = UnitCommentQuery
 analytics_queries['unit_plagiarism_detector'] = UnitTextSimilarityQuery
 analytics_queries['one_student_wiki_edit_history'] = StudentEditHistoryQuery
 analytics_queries['endorsements_per_wiki_page'] = AllWikifolioQuery
@@ -646,9 +598,72 @@ class BadgeAssertionMapQuery(TableMakerMapper):
 class BadgeAssertionMapQueryWithRevoked(BadgeAssertionMapQuery):
     FILTERS = []
 
+class UnitCommentQuery(TableMakerMapper):
+    FIELDS = [
+            'orig_row_number',
+            'link',
+            'unit',
+            'page_author',
+            'comment_author',
+            'comment_author_has_posted',
+            'is_reply',
+            'added_time',
+            'is_edited',
+            'is_deleted',
+            'text',
+            ]
+    KIND = WikiPage
+
+    def __init__(self, **kwargs):
+        super(UnitCommentQuery, self).__init__()
+        self.course = kwargs['course']
+        self.unit = kwargs['unit']
+        self.host_url = kwargs['host_url']
+        if not self.unit:
+            raise ValueError('"unit" parameter is required for this query')
+        self.counter = itertools.count(1)
+        self.FILTER = [('unit', self.unit)]
+        self._has_posted = dict()
+
+    def has_posted(self, student):
+        email = student.key().name()
+        if email not in self._has_posted:
+            self._has_posted[email] = bool(
+                    db.get(WikiPage.get_key(student, unit=self.unit)))
+        return self._has_posted[email]
+
+    def map(self, page):
+        # May want to re-introduce the prefetcher, but want it to last per-batch.
+        # Maybe write a .__getstate__(self) method, that deletes it from the __dict__
+        # before this mapper gets pickled.
+        #prefetcher = prefetch.CachingPrefetcher()
+        comments = page.comments.run(limit=100)
+        if not page.author:
+            return
+        page_author = "%s (%s)" % (page.author.name, page.author_email)
+        #prefetcher.add(page.author)
+
+        #for comment in wf.sort_comments(prefetcher.prefetch(comments, WikiComment.author)):
+        for comment in wf.sort_comments(list(comments)):
+            row = defaultdict(str)
+            row['orig_row_number'] = next(self.counter)
+            row['page_author'] = page_author
+            row['link'] = self.host_url + '/' + wf.comment_permalink(comment)
+            row['comment_author'] = "%s (%s)" % (comment.author.name, comment.author_email)
+            row['comment_author_has_posted'] = self.has_posted(comment.author)
+            row['unit'] = page.unit
+            row['is_reply'] = comment.is_reply()
+            for attr in ['added_time', 'text']:
+                row[attr] = getattr(comment, attr)
+            for attr in ['is_edited', 'is_deleted']:
+                row[attr] = bool(getattr(comment, attr))
+            row['text'] = re.sub(r'<[^>]*?>', '', row['text'])
+            self.add_row(row)
+
 mapper_queries = OrderedDict()
 mapper_queries['badge_assertions'] = BadgeAssertionMapQuery
 mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevoked
+mapper_queries['unit_all_comments'] = UnitCommentQuery
 
 class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
     TITLE = 'HIIIII'
@@ -659,6 +674,8 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
     class NavForm(wtf.Form):
         query = wtf.RadioField('Analytics query',
                 choices=[(k, k) for k in mapper_queries.keys()])
+        unit = wtf.IntegerField('Unit Number (for unit queries)',
+                validators=[wtf.validators.Optional()])
 
     def _action_url(self, action, **kwargs):
         params = dict(kwargs)
@@ -693,7 +710,7 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
             return
 
         query_class = mapper_queries[form.query.data]
-        mapper = query_class(course=self.get_course())
+        mapper = query_class(course=self.get_course(), unit=form.unit.data, host_url=self.request.host_url)
         assert isinstance(mapper, TableMakerMapper)
         job_id = mapper.job_id
         deferred.defer(mapper.run, batch_size=50)
