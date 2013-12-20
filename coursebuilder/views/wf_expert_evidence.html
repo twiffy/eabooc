@@ -12,6 +12,9 @@
   </a>
 </td>
 {% endmacro %}
+{% block extrahead %}
+<meta property="og:image" content="{{ report.badge.image}}" />
+{% endblock %}
 
 {% block main_content %}
 <div class="gcb-aux">
