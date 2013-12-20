@@ -1,4 +1,18 @@
 {% extends 'base.html' %}
+{% block extrahead %}
+{% if not result.is_finished %}
+<meta http-equiv="refresh" content="7">
+{% endif %}
+{% endblock %}
+
+{% block subtitle %}
+{% if not result.is_finished %}
+Working
+{% else %}
+Finished!
+{% endif %}
+{% endblock %}
+
 {% block main_content %}
 <div class="gcb-aside">
   {% if result.is_started %}
