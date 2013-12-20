@@ -7,8 +7,8 @@ threadsafe: false
 env_variables:
   GCB_PRODUCT_VERSION: '1.4.1'
 
-inbound_services:
-- warmup
+#inbound_services:
+#- warmup
 
 builtins:
 - remote_api: on
