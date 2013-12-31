@@ -34,6 +34,14 @@ _parts = {
             'slug': 'policies',
             'deadline': datetime.datetime(year=2013, month=12, day=4, hour=0, minute=0, second=0),
             },
+        4: {
+            'assessments': [],
+            'assessments_required': False,
+            'units': [12],
+            'name': 'Assessment Expert',
+            'slug': 'paper',
+            'deadline': datetime.datetime(year=2014, month=1, day=4, hour=0, minute=0, second=0),
+            },
         }
 
 
