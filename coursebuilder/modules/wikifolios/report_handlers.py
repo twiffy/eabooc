@@ -409,6 +409,8 @@ class SingleIssueHandler(BaseHandler):
                 self.response.write('Issued the badge!')
             else:
                 self.response.write('Would have issued the badge!')
+        else:
+            self.response.write('Not issuing because: %s' % (', '.join(report.incomplete_reasons)))
 
 
 class BulkIssueMapper(LoggingMapper):
