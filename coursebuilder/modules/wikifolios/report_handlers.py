@@ -679,6 +679,8 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
         leader_or_completion = wtf.RadioField('Do you want to issue completion badges, or leader badges?',
                 choices=[(k, k) for k in issuer_mappers.keys()])
         force_re_run_reports = wtf.BooleanField('Re-run all unit and part reports? Will delete old ones if you also choose Really freeze above.', default=False)
+        one_email = wtf.TextField('Only consider one student? Enter their e-mail here.',
+                validators=[wtf.validators.Optional()])
 
     def _action_url(self, action, **kwargs):
         params = dict(kwargs)
@@ -717,6 +719,9 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
         issuer = issuer_mappers[form.leader_or_completion.data]
 
         job = issuer(REALLY, self.get_course(), part_num, self.request.host_url, form.force_re_run_reports.data)
+        if form.one_email.data:
+            job.FILTERS.append(
+                    ('__key__', db.Key.from_path('Student', form.one_email.data)))
         job_id = job.job_id
         deferred.defer(job.run, batch_size=50)
         self.redirect(self._action_url('watch', job_id=job_id))
