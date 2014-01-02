@@ -292,6 +292,31 @@ class Annotation(models.BaseEntity):
             q.filter("whose = ", whose)
         return q
 
+    @classmethod
+    def review(cls, what, who, text):
+        ann = Annotation()
+        ann.why = 'review'
+        ann.who = who
+        ann.what = what
+        ann.unit = what.unit
+        ann.whose = what.author_key
+        ann.reason = text
+        ann.put()
+
+    @classmethod
+    def reviews(cls, what=None, who=None, unit=None, whose=None):
+        q = Annotation.all()
+        q.filter('why =', 'review')
+        if what:
+            q.filter("what =", what)
+        if who:
+            q.filter("who =", who)
+        if unit:
+            q.filter("unit =", unit)
+        if whose:
+            q.filter("whose = ", whose)
+        return q
+
 
 class Notification(models.BaseEntity):
     recipient = db.ReferenceProperty(models.Student, collection_name="notification_set")

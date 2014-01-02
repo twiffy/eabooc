@@ -6,6 +6,7 @@ from wiki_models import WikiPage, WikiComment, Annotation
 from models.models import Student
 from models import transforms
 from modules.badges.badge_models import *
+from webapp2 import cached_property
 COUNT_LIMIT = 100
 
 _parts = {

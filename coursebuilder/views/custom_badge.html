@@ -1,0 +1,26 @@
+{% extends 'badge_base.html' %}
+{% block content %}
+<div style="background-color: #faa;">
+  {% for form in forms %}
+  {% for k,v in form.errors|dictsort %}
+  {{ k }} - {{ ' '.join(v) }}<br>
+  {% endfor %}
+  {% endfor %}
+</div>
+<div>
+  <form action="{{ action_url('save') }}" method="POST">
+    <input type="hidden" name="xsrf_token" value="{{ xsrf_token }}">
+    {% for form in forms %}
+    {% for field in form %}
+    <p>{{ field.label }} - {{ field }}</p>
+    {% endfor %}
+    {% endfor %}
+
+    <input type="submit" name="Save" value="Save and Issue">
+  </form>
+  {# <form action="{{ action_url('delete') }}" method="POST">
+    <input type="hidden" name="xsrf_token" value="{{ delete_xsrf_token }}">
+    <input type="submit" value="DELETE">
+  </form> #}
+</div>
+{% endblock %}

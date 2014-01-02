@@ -5,6 +5,14 @@ from jinja2 import Markup
 import datetime
 import logging
 
+
+__all__ = [
+        'Issuer',
+        'Badge',
+        'BadgeAssertion',
+        ]
+
+
 class Issuer(BaseEntity):
     # Fields from the OBI specification
     name = db.StringProperty(indexed=False)
