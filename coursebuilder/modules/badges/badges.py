@@ -240,10 +240,12 @@ module = None
 def register_module():
     global module
 
+    import custom_badge
     handlers = [
             (ISSUER_URL, IssuerHandler),
             (BADGE_URL, BadgeHandler),
             (ASSERTION_URL, AssertionHandler),
+            ('/badges/custom', custom_badge.CustomBadgeEditHandler),
             ]
     # def __init__(self, name, desc, global_routes, namespaced_routes):
     module = custom_modules.Module("Badges", "Badges",
