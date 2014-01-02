@@ -26,7 +26,6 @@ _parts = {
             'slug': 'principles',
             'deadline': datetime.datetime(year=2013, month=11, day=6, hour=0, minute=0, second=0),
             },
-
         3: {
             'assessments': ['Policies'],
             'assessments_required': False,
@@ -121,7 +120,7 @@ class PartReport(db.Model):
         if not self.is_saved():
             self._run(course)
 
-        (b, a) = find_badge_and_assertion(self.student, self._config['slug'])
+        (b, a) = find_badge_and_assertion(self.student, self.slug)
         self.badge = b
         self.badge_assertion = a
 

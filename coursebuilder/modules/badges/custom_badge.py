@@ -80,8 +80,8 @@ class CustomBadgeEditHandler(BaseHandler, ReflectiveRequestHandler):
         if not student:
             self.abort(404, Markup('Could not find a student with email "%s"') % student_email)
 
-        badge = Badge.get_or_insert(
-                custom_badge_name(student))
+        badge_slug = custom_badge_name(student)
+        badge = Badge.get_or_insert(badge_slug)
 
         badge_form = BadgeForm(self.request.POST, badge)
         comments_form = CommentsForm(self.request.POST)
@@ -93,13 +93,19 @@ class CustomBadgeEditHandler(BaseHandler, ReflectiveRequestHandler):
         if not page:
             self.abort(404, Markup('Could not find unit %d wikifolio for student "%s"') % (UNIT_NUMBER, student_email))
         Annotation.review(page, who=user, text=comments_form.public_comments.data)
+        Annotation.endorse(page, who=user, optional_done=True)
         
         badge_form.populate_obj(badge)
         badge.put()
 
-        report = PartReport.on(student, self.get_course(), 4, force_re_run=True, put=True)
+        report = PartReport.on(student, self.get_course(), 4, force_re_run=True, put=False)
+        for rep in report.unit_reports:
+            rep._run()
+            rep.put()
+        report.slug = badge_slug
+        report.put()
         assertion = Badge.issue(badge, student, put=False)
-        assertion.evidence = urljoin(self.host_url, '/badges/evidence?id=%d' % report.key().id())
+        assertion.evidence = urljoin(self.request.host_url, '/badges/evidence?id=%d' % report.key().id())
         assertion.put()
         self.response.write(
                 Markup("Issued badge %s to %s, evidence %s") % (
