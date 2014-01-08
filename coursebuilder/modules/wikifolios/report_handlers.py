@@ -722,6 +722,7 @@ class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
         if form.one_email.data:
             job.FILTERS.append(
                     ('__key__', db.Key.from_path('Student', form.one_email.data)))
+            logging.debug('Filters for issuing: %s', repr(job.FILTERS))
         job_id = job.job_id
         deferred.defer(job.run, batch_size=50)
         self.redirect(self._action_url('watch', job_id=job_id))
