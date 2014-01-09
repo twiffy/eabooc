@@ -601,6 +601,7 @@ class BadgeAssertionMapQueryWithRevoked(BadgeAssertionMapQuery):
 class TermPaperQuery(TableMakerMapper):
     _term_paper_unit_number = 12
     _term_paper_slug_matcher = lambda s: s.startswith('paper')
+    _link_template = Markup('<a href="%s">link</a>')
     KIND = WikiPage
     FILTERS = [('unit', _term_paper_unit_number)]
     FIELDS = [
@@ -619,8 +620,10 @@ class TermPaperQuery(TableMakerMapper):
     def map(self, wiki_page):
         row = {
                 'email': wiki_page.author_email,
-                'paper_link': self.host_url + '/' + wiki_page.link,
-                'badge_edit_link': 'yus?',
+                'paper_link': self._link_template % (
+                    self.host_url + '/' + wiki_page.link),
+                'badge_edit_link': self._link_template % (
+                    self.host_url + '/badges/custom?' + urllib.urlencode({'email': wiki_page.author_email})),
                 }
 
         badge_assertions = badge_models.BadgeAssertion.all().filter('recipient', wiki_page.author)
