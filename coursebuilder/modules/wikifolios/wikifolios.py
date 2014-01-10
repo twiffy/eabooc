@@ -601,6 +601,9 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.template_value['comments'] = sort_comments(prefetcher.prefetch(comments, WikiComment.author))
             prefetcher.done()
 
+            if query['unit'] == 12:
+                self.template_value['review'] = Annotation.reviews(what=page).get()
+
             def who(ann):
                 return Annotation.who.get_value_for_datastore(ann)
 
