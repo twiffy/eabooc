@@ -19,10 +19,15 @@ Badge Evidence Settings
         {{ form.report_id }}
         {% if form.units_are_public %}
         {{ form.units_are_public }} {{ form.units_are_public.label }}
-        <br>
+        <p>
         {% endif %}
         {{ form.exam_display.label }}<br>
         {{ form.exam_display }}<br>
+        <p>
+        {% if form.review_is_public %}
+        {{ form.review_is_public }}
+        {{ form.review_is_public.label }}<br>
+        {% endif %}
         <input type="submit" value="Save">
       </form>
     </div>

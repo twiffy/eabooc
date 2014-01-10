@@ -15,10 +15,18 @@ Unit {{ unit.unit_id }}
       </div>
       <div>
         by {{ author.badge_name }}</div>
+      {% if review_is_public and review %}
       <div>
-        {% for r in report.promotion_texts %}
-        {% if loop.first %}
         <div class="highlight-box">
+          <strong>{{ review.who.name }} reviewed this work:</strong><p>
+          {{ review.reason }}
+        </div>
+      </div>
+      {% endif %}
+      <div>
+        <div class="highlight-box">
+          {% for r in report.promotion_texts %}
+          {% if loop.first %}
           <p>
           <div style="float:right; color: #fc0; font-size: 200%;">★</div>
           <strong>{{ author.badge_name }}'s peers promoted this work as Exemplary!</strong> Here are the reasons they gave:</p>
@@ -27,12 +35,12 @@ Unit {{ unit.unit_id }}
             <li>{{ r }}</li>
             {% if loop.last %}
           </ul>
+          {% endif %}
+          {% endfor %}
           <p>{# At the badge issuance time, {{ report.timestamp.strftime('%Y-%m-%d') }}, #}
           This assignment was endorsed as complete by {{ report.endorsements }} participants.
           The discussion generated {{ report.comments }} comments.</p>
         </div>
-        {% endif %}
-        {% endfor %}
       </div>
       {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
       {% block wiki_content %}

@@ -10,6 +10,7 @@ from report import UnitReport, PartReport, ExpertBadgeReport
 from report import _parts as part_config
 from models.models import Student
 from models.models import EventEntity
+from wiki_models import Annotation
 from jinja2 import Markup
 import urllib
 import wtforms as wtf
@@ -54,6 +55,10 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         exam_display = wtf.SelectField(
                 "How to display exam scores on the evidence page?")
 
+        review_is_public = wtf.BooleanField(
+                """Show the instructor's review of the paper on the evidence page?  Only
+                relevant for the term paper.""")
+
     def get_settings(self):
         user = self.personalize_page_and_get_enrolled()
         if not user:
@@ -72,7 +77,12 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         form = self.SettingsForm(
                 report_id=report.key().id(),
                 units_are_public=report.units_are_public,
-                exam_display=report.exam_display)
+                exam_display=report.exam_display,
+                review_is_public=report.review_is_public)
+
+
+        #if report.part != 4:
+            #del form.review_is_public
 
         display_field_params = {
                 'choices': [('blank', '(Blank)')],
@@ -130,6 +140,7 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
             return
 
         report.units_are_public = form.units_are_public.data
+        report.review_is_public = form.review_is_public.data
         if report.assessment_scores:
             report.exam_display = form.exam_display.data
         report.put()
@@ -140,6 +151,7 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
                 transforms.dumps({
                     'part': report.part,
                     'slug': report.slug,
+                    'review_is_public': report.review_is_public,
                     'public': report.units_are_public,
                     'exam_display': report.exam_display,
                     'email': user.key().name()
@@ -179,6 +191,7 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['inline_save'] = lambda: ''
         self.template_value['navbar'] = {}
         self.template_value['author'] = self.report.student
+        self.template_value['review_is_public'] = self.report.review_is_public
         if report.units_are_public:
             self.template_value['unit_link'] = self._unit_link
         else:
@@ -224,6 +237,7 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['report'] = self.unit
         self.template_value['badge_slug'] = self.report.badge.key().name()
         self.template_value['layout_template'] = 'wf_evidence.html'
+        self.template_value['review'] = Annotation.reviews(whose=self.report.student, unit=self.unit_num).get()
         self.render(page_templates.templates[self.unit_num])
 
     def render_top(self):
