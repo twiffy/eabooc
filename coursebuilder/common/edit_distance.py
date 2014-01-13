@@ -9,23 +9,20 @@ def levenshtein(source, target):
     if len(target) == 0:
         return len(source)
 
+    source = np.array(tuple(source))
+    target = np.array(tuple(target))
     # We use a dynamic programming algorithm, but with the
     # added optimization that we only need the last two rows
     # of the matrix.
-    previous_row = np.arange(len(target) + 1)
+    previous_row = np.arange(target.size + 1)
     current_row = previous_row + 1
     # s = source[i], t = target[j]
     for i, s in enumerate(source):
-        current_row[0] = i + 1
-
-        for j, t in enumerate(target):
-            # find possible values for current_row[j+1]
-            insert = previous_row[j + 1] + 1
-            delete = current_row[j] + 1
-            # subst has 0 cost if s == t
-            subst = previous_row[j] + (s != t)
-
-            current_row[j + 1] = min(insert, delete, subst)
+        current_row = previous_row + 1
+        current_row[1:] = np.minimum(current_row[1:],
+                np.add(previous_row[:-1], target != s))
+        current_row[1:] = np.minimum(current_row[1:],
+            current_row[0:-1] + 1)
 
         # Swap current and previous rows
         (previous_row, current_row) = (current_row, previous_row)
