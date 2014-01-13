@@ -698,16 +698,13 @@ class EditDistanceQuery(TableMakerMapper):
                 WikiPage.get_key(student, unit)
                 for unit in range(2, 12)
                 ]
-        logging.debug(repr(page_keys))
         pages = sorted(db.get(page_keys), key=lambda p: getattr(p, 'unit', 999999))
-        logging.debug(repr(pages))
 
         last_context = None
         this_context = None
         for page in pages:
             if not page:
                 break
-            logging.debug("Considering unit %d student %s", page.unit, student.key().name())
             this_context = self.tokenize(page.context or '')
 
             if last_context is not None:
@@ -716,7 +713,6 @@ class EditDistanceQuery(TableMakerMapper):
 
             last_context = this_context
 
-        logging.debug(repr(row))
         self.add_row(row)
 
     def tokenize(self, string):
