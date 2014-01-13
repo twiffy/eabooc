@@ -716,7 +716,7 @@ class EditDistanceQuery(TableMakerMapper):
         self.add_row(row)
 
     def tokenize(self, string):
-        return string.split(r'\W+')
+        return re.split(r'\W+', Markup(string).striptags())
 
     def _label(self, this_unit):
         last_unit = this_unit - 1
