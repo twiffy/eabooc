@@ -30,6 +30,7 @@ from common import prefetch
 import plag
 from common.crosstab import CrossTab
 from modules.regconf import exit_survey
+from common import edit_distance
 
 def find_can_use_location(student):
     conf_submission = FormSubmission.all().filter('user =', student.key()).filter('form_name =', 'conf').get()
@@ -664,6 +665,69 @@ mapper_queries = OrderedDict()
 mapper_queries['badge_assertions'] = BadgeAssertionMapQuery
 mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevoked
 mapper_queries['unit_all_comments'] = UnitCommentQuery
+
+
+class EditDistanceQuery(TableMakerMapper):
+    KIND = Student
+    FILTERS = [('is_participant', True)]
+    FIELDS = [
+            'email',
+            'wiki_id',
+            'diff2.3',
+            'diff3.4',
+            'diff4.5',
+            'diff5.6',
+            'diff6.7',
+            'diff7.8',
+            'diff8.9',
+            'diff9.10',
+            'diff10.11',
+            ]
+
+    def __init__(self, **kwargs):
+        #for k in kwargs:
+            #setattr(self, k, kwargs[k])
+        super(EditDistanceQuery, self).__init__()
+
+    def map(self, student):
+        row = {
+                'email': student.key().name(),
+                'wiki_id': student.wiki_id,
+                }
+        page_keys = [
+                WikiPage.get_key(student, unit)
+                for unit in range(2, 12)
+                ]
+        logging.debug(repr(page_keys))
+        pages = sorted(db.get(page_keys), key=lambda p: getattr(p, 'unit', 999999))
+        logging.debug(repr(pages))
+
+        last_context = None
+        this_context = None
+        for page in pages:
+            if not page:
+                break
+            logging.debug("Considering unit %d student %s", page.unit, student.key().name())
+            this_context = self.tokenize(page.context or '')
+
+            if last_context is not None:
+                diff = edit_distance.levenshtein(last_context, this_context)
+                row[self._label(page.unit)] = diff
+
+            last_context = this_context
+
+        logging.debug(repr(row))
+        self.add_row(row)
+
+    def tokenize(self, string):
+        return string.split(r'\W+')
+
+    def _label(self, this_unit):
+        last_unit = this_unit - 1
+        return "diff%d.%d" % (last_unit, this_unit)
+
+mapper_queries['context_edit_distance'] = EditDistanceQuery
+
 
 class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
     TITLE = 'HIIIII'
