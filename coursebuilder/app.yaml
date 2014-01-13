@@ -24,6 +24,8 @@ libraries:
   version: "1.2.3"
 - name: lxml
   version: "latest"
+- name: numpy
+  version: "latest"
 
 handlers:
 - url: /favicon\.ico
