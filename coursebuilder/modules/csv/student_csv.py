@@ -685,7 +685,7 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
             urllib.urlencode(params)))
 
     def get_prep(self):
-        if not users.is_current_user_admin():
+        if not Roles.is_course_admin(self.app_context):
             self.abort(403)
         self.render_form(self.NavForm())
 
@@ -701,7 +701,7 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
         self.render('csv_form.html')
 
     def post_start(self):
-        if not users.is_current_user_admin():
+        if not Roles.is_course_admin(self.app_context):
             self.abort(403)
 
         form = self.NavForm(self.request.POST)
@@ -717,7 +717,7 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
         self.redirect(self._action_url('watch', job_id=job_id))
         
     def get_watch(self):
-        if not users.is_current_user_admin():
+        if not Roles.is_course_admin(self.app_context):
             self.abort(403)
 
         job_id = self.request.GET.get('job_id', None)
@@ -740,7 +740,7 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
         self.render('csv_watch.html')
 
     def get_download(self):
-        if not users.is_current_user_admin():
+        if not Roles.is_course_admin(self.app_context):
             self.abort(403)
 
         job_id = self.request.GET.get('job_id', None)
@@ -752,7 +752,7 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
         self.render_as_csv(fields, result)
 
     def get_view(self):
-        if not users.is_current_user_admin():
+        if not Roles.is_course_admin(self.app_context):
             self.abort(403)
 
         job_id = self.request.GET.get('job_id', None)
