@@ -9,23 +9,31 @@ def levenshtein(source, target):
     if len(target) == 0:
         return len(source)
 
+    # We call tuple() to force strings to be used as sequences
     source = np.array(tuple(source))
     target = np.array(tuple(target))
+
     # We use a dynamic programming algorithm, but with the
     # added optimization that we only need the last two rows
     # of the matrix.
     previous_row = np.arange(target.size + 1)
-    current_row = previous_row + 1
-    # s = source[i], t = target[j]
-    for i, s in enumerate(source):
+    for s in source:
+        # Insertion (target grows longer than source):
         current_row = previous_row + 1
-        current_row[1:] = np.minimum(current_row[1:],
-                np.add(previous_row[:-1], target != s))
-        current_row[1:] = np.minimum(current_row[1:],
-            current_row[0:-1] + 1)
 
-        # Swap current and previous rows
-        (previous_row, current_row) = (current_row, previous_row)
+        # Substitution or matching:
+        # Target and source items are aligned, and either
+        # are different (cost of 1), or are the same (cost of 0).
+        current_row[1:] = np.minimum(
+                current_row[1:],
+                np.add(previous_row[:-1], target != s))
+
+        # Deletion (target grows shorter than source):
+        current_row[1:] = np.minimum(
+                current_row[1:],
+                current_row[0:-1] + 1)
+
+        previous_row = current_row
 
     return previous_row[-1]
 
@@ -52,4 +60,17 @@ class LevenshteinTest(TestCase):
         self.assertEqual(levenshtein(source, 'zbzde'), 2)
         self.assertEqual(levenshtein(source, 'bzde'), 2)
         self.assertEqual(levenshtein(source, 'aabzde'), 2)
+        self.assertEqual(levenshtein(source, 'azde'), 2)
+        self.assertEqual(levenshtein(source, 'zzde'), 3)
+        self.assertEqual(levenshtein(source, 'de'), 3)
+        self.assertEqual(levenshtein(source, 'ae'), 3)
+        self.assertEqual(levenshtein(source, 'ecde'), 2)
+        self.assertEqual(levenshtein(source, 'azbcd'), 2)
 
+    def test_deletions(self):
+        source = 'abcdefghihgfedcba'
+        for i in range(1, len(source)):
+            dest = source[:-i]
+            # deletions
+            self.assertEqual(levenshtein(source, dest), i)
+            self.assertEqual(levenshtein(source, source[:i-1] + source[i:]), 1)
