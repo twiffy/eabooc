@@ -673,15 +673,25 @@ class EditDistanceQuery(TableMakerMapper):
     FIELDS = [
             'email',
             'wiki_id',
+            'words2',
             'diff2.3',
+            'words3',
             'diff3.4',
+            'words4',
             'diff4.5',
+            'words5',
             'diff5.6',
+            'words6',
             'diff6.7',
+            'words7',
             'diff7.8',
+            'words8',
             'diff8.9',
+            'words9',
             'diff9.10',
+            'words10',
             'diff10.11',
+            'words11',
             ]
 
     def __init__(self, **kwargs):
@@ -706,6 +716,7 @@ class EditDistanceQuery(TableMakerMapper):
             if not page:
                 break
             this_context = self.tokenize(page.context or '')
+            row['words%d' % page.unit] = len(this_context)
 
             if last_context is not None:
                 diff = edit_distance.levenshtein(last_context, this_context)
