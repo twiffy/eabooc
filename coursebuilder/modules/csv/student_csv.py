@@ -466,7 +466,7 @@ class TableRenderingHandler(BaseHandler):
         for item in items:
             for p in item.keys():
                 if type(item[p]) is list:
-                    item[p] = u", ".join(item[p])
+                    item[p] = u", ".join([unicode(i) for i in item[p]])
             out.writerow(item)
 
     def render_as_table(self, fields, items):
