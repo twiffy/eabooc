@@ -19,6 +19,11 @@ Finished!
   <h2>{{ result.query_name }}</h2>
   {% endif %}
   
+  {% if not result.is_finished %}
+  Please wait while your query runs...<br>
+  If you want, you can switch away from this tab, and wait until the title changes to Finished.
+  {% endif %}
+
   <div>
     Finished?  {{ result.is_finished }}<br>
     Batches done?  {{ result.batch_count }}

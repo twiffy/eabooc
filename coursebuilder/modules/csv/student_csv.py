@@ -671,6 +671,7 @@ class EditDistanceQuery(TableMakerMapper):
     KIND = Student
     FILTERS = [('is_participant', True)]
     FIELDS = [
+            'name',
             'email',
             'wiki_id',
             'words2',
@@ -701,6 +702,7 @@ class EditDistanceQuery(TableMakerMapper):
 
     def map(self, student):
         row = {
+                'name': student.name,
                 'email': student.key().name(),
                 'wiki_id': student.wiki_id,
                 }
