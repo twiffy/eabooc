@@ -629,9 +629,8 @@ class TermPaperQuery(TableMakerMapper):
 
         badge_assertions = badge_models.BadgeAssertion.all().filter('recipient', wiki_page.author)
         badge_assertions.filter('revoked', False)
-        any_paper_assertions = bool(
-                filter(lambda ass: self._term_paper_slug_matcher(ass.badge_name),
-                    badge_assertions))
+        any_paper_assertions = any(
+                [self._term_paper_slug_matcher(ass.badge_name) for ass in badge_assertions])
         row['badge_issued'] = any_paper_assertions
         self.add_row(row)
 
