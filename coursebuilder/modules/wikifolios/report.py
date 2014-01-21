@@ -85,9 +85,9 @@ class PartReport(db.Model):
     assessment_scores_json = db.TextProperty()
     student = db.ReferenceProperty(Student, indexed=True)
     timestamp = db.DateTimeProperty(indexed=False, auto_now_add=True)
-    units_are_public = db.BooleanProperty(default=True)
+    units_are_public = db.BooleanProperty(indexed=False, default=True)
     exam_display = db.StringProperty(indexed=False)
-    review_is_public = db.BooleanProperty(indexed=False)
+    review_is_public = db.BooleanProperty(indexed=False, default=True)
 
     @classmethod
     def on(cls, student, course, part, force_re_run=False, put=False):
