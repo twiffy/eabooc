@@ -56,6 +56,14 @@
           title="This page is not 'done' according to the author.">DRAFT</abbr>
         {% endif %}
         by {{ student_link(author) }}</div>
+        {% if editor_role and review %}
+        <div>
+          <div class="highlight-box">
+            <strong>{{ review.who.name }} reviewed this work:</strong><p>
+            {{ review.reason }}
+          </div>
+        </div>
+        {% endif %}
       {% if editing %}
       <form action="{{ action_url('save') }}" method="POST" id="wiki-form">
         <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">

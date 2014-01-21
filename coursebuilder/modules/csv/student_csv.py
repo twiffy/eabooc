@@ -599,6 +599,43 @@ class BadgeAssertionMapQuery(TableMakerMapper):
 class BadgeAssertionMapQueryWithRevoked(BadgeAssertionMapQuery):
     FILTERS = []
 
+class TermPaperQuery(TableMakerMapper):
+    _term_paper_unit_number = 12
+    _term_paper_slug_matcher = lambda s: s.startswith('paper')
+    _link_template = Markup('<a href="%s">link</a>')
+    KIND = WikiPage
+    FILTERS = [('unit', _term_paper_unit_number)]
+    FIELDS = [
+            'email',
+            'paper_link',
+            'badge_issued',
+            'badge_edit_link',
+            ]
+
+    def __init__(self, **kwargs):
+        self.course = kwargs['course']
+        self.unit = kwargs['unit']
+        self.host_url = kwargs['host_url']
+        super(TermPaperQuery, self).__init__()
+
+    def map(self, wiki_page):
+        row = {
+                'email': wiki_page.author_email,
+                'paper_link': self._link_template % (
+                    self.host_url + '/' + wiki_page.link),
+                'badge_edit_link': self._link_template % (
+                    self.host_url + '/badges/custom?' + urllib.urlencode({'email': wiki_page.author_email})),
+                }
+
+        badge_assertions = badge_models.BadgeAssertion.all().filter('recipient', wiki_page.author)
+        badge_assertions.filter('revoked', False)
+        any_paper_assertions = bool(
+                filter(lambda ass: self._term_paper_slug_matcher(ass.badge_name),
+                    badge_assertions))
+        row['badge_issued'] = any_paper_assertions
+        self.add_row(row)
+
+
 class UnitCommentQuery(TableMakerMapper):
     FIELDS = [
             'orig_row_number',
@@ -665,6 +702,7 @@ mapper_queries = OrderedDict()
 mapper_queries['badge_assertions'] = BadgeAssertionMapQuery
 mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevoked
 mapper_queries['unit_all_comments'] = UnitCommentQuery
+mapper_queries['term_paper'] = TermPaperQuery
 
 
 class EditDistanceQuery(TableMakerMapper):

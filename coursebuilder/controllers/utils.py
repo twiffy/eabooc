@@ -561,7 +561,7 @@ class StudentProfileHandler(BaseHandler):
             HUMAN_READABLE_DATE_FORMAT)
         self.template_value['score_list'] = course.get_all_scores(student)
         self.template_value['overall_score'] = course.get_overall_score(student)
-        self.template_value['part_reports'] = [PartReport.on(student, course, p) for p in (1,2,3)]
+        self.template_value['part_reports'] = [PartReport.on(student, course, p) for p in (1,2,3,4)]
         self.template_value['expert_report'] = ExpertBadgeReport.on(student, course)
         self.template_value['student_edit_xsrf_token'] = (
             XsrfTokenManager.create_xsrf_token('student-edit'))

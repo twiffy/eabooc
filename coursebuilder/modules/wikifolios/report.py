@@ -6,6 +6,7 @@ from wiki_models import WikiPage, WikiComment, Annotation
 from models.models import Student
 from models import transforms
 from modules.badges.badge_models import *
+from webapp2 import cached_property
 COUNT_LIMIT = 100
 
 _parts = {
@@ -25,7 +26,6 @@ _parts = {
             'slug': 'principles',
             'deadline': datetime.datetime(year=2013, month=11, day=6, hour=0, minute=0, second=0),
             },
-
         3: {
             'assessments': ['Policies'],
             'assessments_required': False,
@@ -33,6 +33,14 @@ _parts = {
             'name': 'Assessment Policies',
             'slug': 'policies',
             'deadline': datetime.datetime(year=2013, month=12, day=4, hour=0, minute=0, second=0),
+            },
+        4: {
+            'assessments': [],
+            'assessments_required': False,
+            'units': [12],
+            'name': 'Assessment Expert',
+            'slug': 'paper',
+            'deadline': datetime.datetime(year=2014, month=1, day=4, hour=0, minute=0, second=0),
             },
         }
 
@@ -79,6 +87,7 @@ class PartReport(db.Model):
     timestamp = db.DateTimeProperty(indexed=False, auto_now_add=True)
     units_are_public = db.BooleanProperty(default=True)
     exam_display = db.StringProperty(indexed=False)
+    review_is_public = db.BooleanProperty(indexed=False)
 
     @classmethod
     def on(cls, student, course, part, force_re_run=False, put=False):
@@ -112,7 +121,7 @@ class PartReport(db.Model):
         if not self.is_saved():
             self._run(course)
 
-        (b, a) = find_badge_and_assertion(self.student, self._config['slug'])
+        (b, a) = find_badge_and_assertion(self.student, self.slug)
         self.badge = b
         self.badge_assertion = a
 

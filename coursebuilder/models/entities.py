@@ -73,9 +73,9 @@ class BaseEntity(db.Model):
         return super(BaseEntity, cls).get(keys)
 
     @classmethod
-    def get_by_key_name(cls, key_names):
+    def get_by_key_name(cls, key_names, **kwargs):
         DB_GET.inc()
-        return super(BaseEntity, cls).get_by_key_name(key_names)
+        return super(BaseEntity, cls).get_by_key_name(key_names, **kwargs)
 
     def put(self):
         DB_PUT.inc()
