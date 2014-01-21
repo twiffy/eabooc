@@ -39,7 +39,10 @@ Unit {{ unit.unit_id }}
           {% endfor %}
           <p>{# At the badge issuance time, {{ report.timestamp.strftime('%Y-%m-%d') }}, #}
           This assignment was endorsed as complete by {{ report.endorsements }} participants.
-          The discussion generated {{ report.comments }} comments.</p>
+          {% if report.comments %}
+            The discussion generated {{ report.comments }} comments.
+          {% endif %}
+          </p>
         </div>
       </div>
       {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
