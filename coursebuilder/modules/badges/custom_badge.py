@@ -92,8 +92,13 @@ class CustomBadgeEditHandler(BaseHandler, ReflectiveRequestHandler):
         page = WikiPage.get_page(student, unit=UNIT_NUMBER)
         if not page:
             self.abort(404, Markup('Could not find unit %d wikifolio for student "%s"') % (UNIT_NUMBER, student_email))
+
+        old_reviews = Annotation.reviews(whose=student, unit=UNIT_NUMBER).run()
+        db.delete(old_reviews)
         Annotation.review(page, who=user, text=comments_form.public_comments.data)
-        Annotation.endorse(page, who=user, optional_done=True)
+
+        if not Annotation.endorsements(what=page, who=user).count(limit=1):
+            Annotation.endorse(page, who=user, optional_done=True)
         
         badge_form.populate_obj(badge)
         badge.put()
