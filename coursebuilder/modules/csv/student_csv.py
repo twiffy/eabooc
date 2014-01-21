@@ -601,7 +601,6 @@ class BadgeAssertionMapQueryWithRevoked(BadgeAssertionMapQuery):
 
 class TermPaperQuery(TableMakerMapper):
     _term_paper_unit_number = 12
-    _term_paper_slug_matcher = lambda s: s.startswith('paper')
     _link_template = Markup('<a href="%s">link</a>')
     KIND = WikiPage
     FILTERS = [('unit', _term_paper_unit_number)]
@@ -633,6 +632,9 @@ class TermPaperQuery(TableMakerMapper):
                 [self._term_paper_slug_matcher(ass.badge_name) for ass in badge_assertions])
         row['badge_issued'] = any_paper_assertions
         self.add_row(row)
+
+    def _term_paper_slug_matcher(self, s):
+        return s.startswith('paper')
 
 
 class UnitCommentQuery(TableMakerMapper):
