@@ -19,6 +19,8 @@ BadgeForm = model_form(Badge)
 class CommentsForm(wtf.Form):
     public_comments = wtf.TextAreaField(
             '''Public comments, which will be shown at the top of the term paper.''')
+    review_source = wtf.TextField(
+            "E-mail address of the user who the public comments came from")
 
 def custom_badge_name(student):
     return 'paper.%d' % student.wiki_id
@@ -59,6 +61,7 @@ class CustomBadgeEditHandler(BaseHandler, ReflectiveRequestHandler):
         comments_form = CommentsForm()
         if review:
             comments_form.public_comments = review.reason
+            comments_form.review_source = review.who.key().name()
         self.render_edit(badge_form, comments_form)
 
     def render_edit(self, badge_form, comments_form):
@@ -89,13 +92,20 @@ class CustomBadgeEditHandler(BaseHandler, ReflectiveRequestHandler):
             self.render_edit(badge_form, comments_form)
             return
 
+        comments_form.validate()
+        reviewer = Student.get_by_email(comments_form.review_source.data)
+        if not reviewer:
+            comments_form.review_source.errors.append("Could not find a user with that e-mail address")
+            self.render_edit(badge_form, comments_form)
+            return
+
         page = WikiPage.get_page(student, unit=UNIT_NUMBER)
         if not page:
             self.abort(404, Markup('Could not find unit %d wikifolio for student "%s"') % (UNIT_NUMBER, student_email))
 
         old_reviews = Annotation.reviews(whose=student, unit=UNIT_NUMBER).run()
         db.delete(old_reviews)
-        Annotation.review(page, who=user, text=comments_form.public_comments.data)
+        Annotation.review(page, who=reviewer, text=comments_form.public_comments.data)
 
         if not Annotation.endorsements(what=page, who=user).count(limit=1):
             Annotation.endorse(page, who=user, optional_done=True)
