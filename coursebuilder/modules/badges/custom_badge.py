@@ -1,4 +1,5 @@
 from google.appengine.ext import db
+import logging
 from urlparse import urljoin
 from models.roles import Roles
 import urllib
@@ -60,8 +61,11 @@ class CustomBadgeEditHandler(BaseHandler, ReflectiveRequestHandler):
         review = Annotation.reviews(whose=student, unit=UNIT_NUMBER).get()
         comments_form = CommentsForm()
         if review:
+            logging.debug('Found a review: %s', review.reason[:30])
             comments_form.public_comments = review.reason
             comments_form.review_source = review.who.key().name()
+        else:
+            logging.debug('Did not found no review')
         self.render_edit(badge_form, comments_form)
 
     def render_edit(self, badge_form, comments_form):
