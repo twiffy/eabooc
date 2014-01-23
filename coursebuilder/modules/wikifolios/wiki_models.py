@@ -205,7 +205,7 @@ class Annotation(models.BaseEntity):
 
     # for exemplaries:
     # for flags:
-    reason = db.StringProperty()
+    reason = db.TextProperty()
 
     @classmethod
     def flag(cls, what, who, reason):
