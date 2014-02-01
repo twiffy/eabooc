@@ -636,6 +636,26 @@ class TermPaperQuery(TableMakerMapper):
     def _term_paper_slug_matcher(self, s):
         return s.startswith('paper')
 
+class CommentCountQuery(TableMakerMapper):
+    KIND = WikiComment
+    FIELDS = [ 'c%d' % n for n in range(20) ]
+
+    def __init__(self, **kwargs):
+        TableMakerMapper.__init__(self)
+        self.tab = CrossTab()
+
+    def map(self, comment):
+        email = comment.author_email
+        unit = comment.topic.unit
+        if unit is None:
+            unit = 'Profile'
+        self.tab.add(email=email, unit=unit)
+        return ([], [])
+
+    def finish(self):
+        for row in self.tab.table('email', 'unit'):
+            self.add_row(dict(zip(self.FIELDS, row)))
+
 
 class UnitCommentQuery(TableMakerMapper):
     FIELDS = [
@@ -704,7 +724,7 @@ mapper_queries['badge_assertions'] = BadgeAssertionMapQuery
 mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevoked
 mapper_queries['unit_all_comments'] = UnitCommentQuery
 mapper_queries['term_paper'] = TermPaperQuery
-
+mapper_queries['comments_made_per_unit'] = CommentCountQuery
 
 class EditDistanceQuery(TableMakerMapper):
     KIND = Student
