@@ -27,7 +27,7 @@ class CrossTab(object):
     def table(self, row, col=None):
         col_values = sorted(self.values(col))
         row_values = sorted(self.values(row))
-        yield ('',) + tuple(':'.join((col, c)) for c in col_values) + ('Total',)
+        yield ('',) + tuple(':'.join((col, str(c))) for c in col_values) + ('Total',)
         for r in row_values:
             label = ':'.join((row, str(r)))
             yield (label,) + tuple(
@@ -101,3 +101,9 @@ class CrossTabTest(unittest.TestCase):
         #print '\n'.join((str(row) for row in ct.table('cat', 'who')))
         #print '\n'.join((str(row) for row in ct.table('dog', 'who')))
         #print '\n'.join((str(row) for row in ct.table('bunny', 'who')))
+
+    def test_none(self):
+        ct = CrossTab()
+        ct.add(foo='a', bar=None)
+        list(ct.table('foo', 'bar'))
+        list(ct.table('bar', 'foo'))
