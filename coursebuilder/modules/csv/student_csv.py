@@ -654,6 +654,9 @@ class CommentCountQuery(TableMakerMapper):
 
     def finish(self):
         for row in self.tab.table('email', 'unit'):
+            row = list(row)
+            if ':' in row[0]:
+                row[0] = row[0].split(':', 1)[1]
             self.add_row(dict(zip(self.FIELDS, row)))
 
 
