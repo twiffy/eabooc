@@ -660,6 +660,50 @@ class CommentCountQuery(TableMakerMapper):
             self.add_row(dict(zip(self.FIELDS, row)))
 
 
+class PromotionQuery(TableMakerMapper):
+    KIND = Student
+    FIELDS = [
+            'name',
+            'email',
+            ]
+    for u in range(1,13):
+        FIELDS.append('u%d promoted' % u)
+        FIELDS.append('u%d promoted email' % u)
+        FIELDS.append('u%d text' % u)
+
+    def __init__(self, **kwargs):
+        self._names = {}
+        TableMakerMapper.__init__(self)
+
+    def name(self, email):
+        name = self._names.get(email, None)
+        if name:
+            return name
+        else:
+            stud = Student.get_by_email(email)
+            self._names[email] = stud.name
+            return stud.name
+
+    def map(self, student):
+        row = {
+                'name': student.name,
+                'email': student.key().name()
+                }
+
+        self._names[student.key().name()] = student.name
+
+        promos = Annotation.exemplaries(who=student).fetch(limit=30)
+        promos = sorted(promos, key=lambda p: p.unit)
+
+        for promo in promos:
+            u = promo.unit
+            email = promo.whose_email
+            row['u%d promoted email' % u] = email
+            row['u%d promoted' % u] = self.name(email)
+            row['u%d text' % u] = promo.reason
+            self.add_row(row)
+
+
 class UnitCommentQuery(TableMakerMapper):
     FIELDS = [
             'orig_row_number',
@@ -726,6 +770,7 @@ mapper_queries = OrderedDict()
 mapper_queries['badge_assertions'] = BadgeAssertionMapQuery
 mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevoked
 mapper_queries['unit_all_comments'] = UnitCommentQuery
+mapper_queries['promotions'] = PromotionQuery
 mapper_queries['term_paper'] = TermPaperQuery
 mapper_queries['comments_made_per_unit'] = CommentCountQuery
 

@@ -207,6 +207,10 @@ class Annotation(models.BaseEntity):
     # for flags:
     reason = db.TextProperty()
 
+    @cached_property
+    def whose_email(self):
+        return Annotation.whose.get_value_for_datastore(self).name()
+
     @classmethod
     def flag(cls, what, who, reason):
         ann = Annotation()
