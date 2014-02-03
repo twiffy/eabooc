@@ -209,7 +209,15 @@ class Annotation(models.BaseEntity):
 
     @cached_property
     def whose_email(self):
-        return Annotation.whose.get_value_for_datastore(self).name()
+        key = Annotation.whose.get_value_for_datastore(self)
+        if not key:
+            # wat.
+            logging.info('Doing extra slow query, %s has no .whose',
+                    str(self.key()))
+            self.whose = self.what.author
+            self.put()
+            return self.whose.key().name()
+        return key.name()
 
     @classmethod
     def flag(cls, what, who, reason):

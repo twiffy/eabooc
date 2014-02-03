@@ -696,7 +696,7 @@ class PromotionQuery(TableMakerMapper):
         promos = sorted(promos, key=lambda p: p.unit)
 
         for promo in promos:
-            u = promo.unit
+            u = promo.unit or promo.what.unit
             email = promo.whose_email
             row['u%d promoted email' % u] = email
             row['u%d promoted' % u] = self.name(email)
