@@ -701,7 +701,7 @@ class PromotionQuery(TableMakerMapper):
             row['u%d promoted email' % u] = email
             row['u%d promoted' % u] = self.name(email)
             row['u%d text' % u] = promo.reason
-            self.add_row(row)
+        self.add_row(row)
 
 
 class UnitCommentQuery(TableMakerMapper):
