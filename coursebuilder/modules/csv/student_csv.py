@@ -673,7 +673,8 @@ class WikifolioWordCountQuery(TableMakerMapper):
     def map(self, page):
         email = page.author_email
         if email not in self.names:
-            self.names[email] = page.author.name
+            if page.author:
+                self.names[email] = page.author.name
 
         # Switch None (indicating the profile page) to 0 (for array index)
         unit = page.unit or 0
