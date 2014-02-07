@@ -12,6 +12,12 @@ class CrossTab(object):
         for k, v in kwargs.iteritems():
             self._seen_values[k].add(v)
 
+    def add_count(self, count, **kwargs):
+        for combo in self._all_key_combos(kwargs.items()):
+            self._counter[combo] += count
+        for k, v in kwargs.iteritems():
+            self._seen_values[k].add(v)
+
     def _all_key_combos(self, keys):
         for r in xrange(len(keys) + 1):
             for combo in combinations(keys, r):
@@ -57,6 +63,16 @@ class CrossTabTest(unittest.TestCase):
         self.assertEqual(ct.count(dogs='walk'), 2)
         self.assertEqual(ct.count(bunnies='hold'), 1)
         self.assertEqual(ct.count(cats='milk'), 1)
+
+    def test_add_count(self):
+        ct = CrossTab()
+        ct.add(cats='milk', dogs='woof')
+        ct.add_count(5, cats='purr', dogs='woof')
+        self.assertEqual(ct.count(), 6)
+        self.assertEqual(ct.count(dogs='woof'), 6)
+        self.assertEqual(ct.count(cats='woof'), 0)
+        self.assertEqual(ct.count(cats='milk'), 1)
+        self.assertEqual(ct.count(cats='purr'), 5)
 
     def test_table_totals(self):
         ct = CrossTab()
