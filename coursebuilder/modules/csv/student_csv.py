@@ -636,6 +636,66 @@ class TermPaperQuery(TableMakerMapper):
     def _term_paper_slug_matcher(self, s):
         return s.startswith('paper')
 
+
+
+def wordcount_zeros():
+    return [0] * 13
+class WikifolioWordCountQuery(TableMakerMapper):
+    KIND = WikiPage
+    FIELDS = [
+            'name',
+            'email',
+            'profile',
+            'unit1',
+            'unit2',
+            'unit3',
+            'unit4',
+            'unit5',
+            'unit6',
+            'unit7',
+            'unit8',
+            'unit9',
+            'unit10',
+            'unit11',
+            'unit12',
+            ]
+
+
+    def __init__(self, **kwargs):
+        TableMakerMapper.__init__(self, **kwargs)
+        self.counts = defaultdict(wordcount_zeros)
+        self.names = {}
+
+    _re_word_boundaries = re.compile(r'\b')
+    def num_words(self, string):
+        return len(self._re_word_boundaries.findall(string)) >> 1
+
+    def map(self, page):
+        email = page.author_email
+        if email not in self.names:
+            self.names[email] = page.author.name
+
+        # Switch None (indicating the profile page) to 0 (for array index)
+        unit = page.unit or 0
+
+        count = 0
+        for pname in page.dynamic_properties():
+            text = getattr(page, pname)
+            if text:
+                count += self.num_words(
+                        Markup(text).striptags())
+
+        self.counts[email][unit] = count
+
+    def finish(self):
+        for email,counts in self.counts.iteritems():
+            row = [
+                    self.names.get(email, ''),
+                    email,
+                    ] + counts
+            self.add_row(dict(zip(self.FIELDS, row)))
+
+
 class CommentCountQuery(TableMakerMapper):
     KIND = WikiComment
     FIELDS = [ 'c%d' % n for n in range(40) ]
@@ -797,6 +857,8 @@ mapper_queries['unit_all_comments'] = UnitCommentQuery
 mapper_queries['promotions'] = PromotionQuery
 mapper_queries['term_paper'] = TermPaperQuery
 mapper_queries['comments_made_per_unit'] = CommentCountQuery
+mapper_queries['wikifolio_word_counts'] = WikifolioWordCountQuery
+
 
 class EditDistanceQuery(TableMakerMapper):
     KIND = Student
