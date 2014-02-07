@@ -638,25 +638,49 @@ class TermPaperQuery(TableMakerMapper):
 
 class CommentCountQuery(TableMakerMapper):
     KIND = WikiComment
-    FIELDS = [ 'c%d' % n for n in range(20) ]
+    FIELDS = [ 'c%d' % n for n in range(40) ]
 
     def __init__(self, **kwargs):
         TableMakerMapper.__init__(self)
         self.tab = CrossTab()
+        self.word_tab = CrossTab()
+        self.names = {}
+
+    _re_word_boundaries = re.compile(r'\b')
+    def num_words(self, string):
+        return len(self._re_word_boundaries.findall(string)) >> 1
+
 
     def map(self, comment):
         email = comment.author_email
+        if email not in self.names:
+            self.names[email] = comment.author.name
         unit = comment.topic.unit
         if unit is None:
             unit = 'Profile'
-        self.tab.add(email=email, unit=unit)
+        self.tab.add(email=email, comments_in_unit=unit)
+        comment_text = Markup(comment.text).striptags()
+        self.word_tab.add_count(
+                self.num_words(comment_text),
+                email=email, words_in_unit=unit)
         return ([], [])
 
     def finish(self):
-        for row in self.tab.table('email', 'unit'):
-            row = list(row)
-            if ':' in row[0]:
-                row[0] = row[0].split(':', 1)[1]
+        for comments_row, words_row in itertools.izip(
+                self.tab.table('email', 'comments_in_unit'),
+                self.word_tab.table('email', 'words_in_unit')):
+            blank_or_email = comments_row[0]
+
+            if ':' in blank_or_email:
+                blank_or_email = blank_or_email.split(':', 1)[1]
+
+            name = self.names.get(blank_or_email, '')
+
+            row = [name, blank_or_email]
+            for comment_cell, word_cell in zip(
+                    comments_row[1:], words_row[1:]):
+                row.extend([comment_cell, word_cell])
+
             self.add_row(dict(zip(self.FIELDS, row)))
 
 
