@@ -24,7 +24,8 @@ deploy: no-sandbox
 	git diff --cached --quiet --exit-code
 	git diff deployed --stat
 	@echo
-	@echo "Going to deploy to PRODUCTION: https://eabooc.appspot.com/"
+	@echo "Going to deploy to PRODUCTION:"
+	@head -1 app.yaml
 	@echo
 	sleep 7
 	appcfg update . --email booc.class
