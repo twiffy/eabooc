@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import wtforms as wtf
 import bleach
 from jinja2 import Markup
