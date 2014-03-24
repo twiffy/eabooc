@@ -101,6 +101,33 @@ class UnitFourPageForm(wtf.Form):
     advantages_disadvantages = BleachedTextAreaField()
     describe = BleachedTextAreaField()
     create_rubric = BleachedTextAreaField()
+    rank_criteria = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('Generalizability', Markup("""<b>Generalizability</b>: Is there a
+                    high likelihood the students' performance on the task or
+                    activity will generalize to a comparable task or
+                    activity?""")),
+                ('Authenticity', Markup("""<b>Authenticity</b>: Is the task or
+                    activity similar to what students might encounter in the
+                    real world as opposed to encounter only in school?""")),
+                ('Multiple foci', Markup("""<b>Multiple foci</b>: Does the task
+                    or activity assess multiple instructional outcomes instead of
+                    only one?""")),
+                ('Teachability', Markup(u"""<b>Teachability</b>: Is the task or
+                    activity one that students can become more proficient in as
+                    a consequence of a teacher’s instructional efforts?""")),
+                ('Fairness', Markup(u"""<b>Fairness</b>: Is the task or activity
+                    fair to all students--that is, does it avoid bias based on
+                    such personal characteristics as students’ gender,
+                    ethnicity, or socioeconomic status?""")),
+                ('Feasibility', Markup(u"""<b>Feasibility</b>: Is the task or
+                    activity realistically implementable in relation to its
+                    cost, space, time, and equipment requirements?""")),
+                ('Scorability', Markup("""<b>Scorability</b>: Is the task
+                    likely to elicit student responses that can be reliably and
+                    accurately evaluated?""")),
+                ])
     evaluate = BleachedTextAreaField()
     big_ideas = BleachedTextAreaField()
     sources_of_error = BleachedTextAreaField()
