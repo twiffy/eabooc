@@ -24,7 +24,7 @@ deploy: no-sandbox
 	git diff --cached --quiet --exit-code
 	git diff deployed --stat
 	@echo
-	@echo "Going to deploy to PRODUCTION: https://booc-iu.appspot.com/"
+	@echo "Going to deploy to PRODUCTION: https://eabooc.appspot.com/"
 	@echo
 	sleep 7
 	appcfg update . --email booc.class
@@ -38,7 +38,7 @@ badge-dep:
 	git diff --cached --quiet --exit-code
 	git diff badge-dep --stat
 	@echo
-	@echo "Going to deploy to BADGE-ish PRODUCTION-ish: https://badges-dot-booc-iu.appspot.com/"
+	@echo "Going to deploy to BADGE-ish PRODUCTION-ish: https://badges-dot-eabooc.appspot.com/"
 	@echo
 	sleep 5
 	appcfg update . --email booc.class -V badges
