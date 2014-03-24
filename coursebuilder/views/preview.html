@@ -6,9 +6,20 @@
 
       {% include 'summary.html' %}
 
+      {% if loginUrl %}
+      <div class="gcb-col-5">
+        <center>
+          <a class="gcb-button gcb-button-large" href="register" role="button">
+            Register
+          </a><br>
+
+          <small><a href="http://www.indiana.edu/~booc/faqs/#pre-reg" target="_blank">What if I don't have a Google account?</a></small>
+        </center>
+      </div>
+      {% endif %}
+
       <div class="gcb-col-5 gcb-product-headers">
         <center>
-          <div>Registration is now closed.</div>
           {% if loginUrl %}
           <div>
             If you're already in the course,<br>
@@ -17,14 +28,14 @@
           {% endif %}
         </center>
       </div>
-      <div class="gcb-col-5">
+      {# <div class="gcb-col-5">
         <center>
           <div>
             If you're not in the course, you can try
             <a href="https://booc-demo.appspot.com/preview" class="gcb-button" role="button">our demo site</a>
           </div>
         </center>
-      </div>
+      </div> #}
     </div>
   </div>
   {{course_info.preview.after_top_content_ends | safe}}

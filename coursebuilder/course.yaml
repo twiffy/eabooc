@@ -144,7 +144,7 @@ preview:
 
 reg_form:
   # Whether to allow new students to register for the course.
-  can_register: False
+  can_register: True
 
 
 ##############################
