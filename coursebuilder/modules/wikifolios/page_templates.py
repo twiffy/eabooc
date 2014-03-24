@@ -57,7 +57,15 @@ class UnitTwoPageForm(wtf.Form):
     context = BleachedTextAreaField()
     ranking = BleachedTextAreaField()
     create_items = BleachedTextAreaField()
-    commandments = BleachedTextAreaField()
+    rank_commandments = IntegerRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                'Thou shall not provide opaque directions to students regarding how to respond to your assessment instruments.',
+                'Thou shall not employ ambiguous statements in your assessment items.',
+                'Thou shall not provide students with unintentional clues regarding appropriate responses.',
+                'Thou shall not employ complex syntax in your assessment items.',
+                'Thou shall not use vocabulary that is more advanced than required.',])
+    explain_commandments = BleachedTextAreaField()
     big_ideas = BleachedTextAreaField()
     self_check = BleachedTextAreaField()
     pondertime = BleachedTextAreaField()
