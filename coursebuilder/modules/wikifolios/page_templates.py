@@ -180,6 +180,19 @@ class UnitSevenPageForm(wtf.Form):
     context = BleachedTextAreaField()
     define_formative = BleachedTextAreaField()
     learning_progression = BleachedTextAreaField()
+    rank_obstacles = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('Misunderstanding', '''Educators have considerable
+                    misunderstandings about the nature of formative
+                    assessment.'''),
+                ('Resisting', '''Educators are resistant to changing their
+                    ways.'''),
+                ('Not Externally Visible', u'''Despite the fact that formative
+                    assessment can improve students’ achievement, and improve
+                    it dramatically, this improved achievement may not show up
+                    on many external accountability tests.'''),
+                ])
     obstacles = BleachedTextAreaField()
     big_ideas = BleachedTextAreaField()
     implementing = BleachedTextAreaField()
