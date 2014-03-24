@@ -158,6 +158,13 @@ class UnitSixPageForm(wtf.Form):
     types_of_validity = BleachedTextAreaField()
     validity_evidence = BleachedTextAreaField()
     face_and_consequential = BleachedTextAreaField()
+    rank_types = IntegerRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                'Content-related',
+                'Critereon-related',
+                'Construct-related',
+                ])
     apply_types = BleachedTextAreaField()
     big_ideas = BleachedTextAreaField()
     consequential_validity = BleachedTextAreaField()
