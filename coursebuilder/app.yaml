@@ -6,6 +6,7 @@ threadsafe: false
 
 env_variables:
   GCB_PRODUCT_VERSION: '1.4.1'
+  REQUESTS_CA_BUNDLE: 'lib/cacert.pem'
 
 #inbound_services:
 #- warmup

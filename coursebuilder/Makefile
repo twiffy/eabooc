@@ -1,6 +1,9 @@
 # Makefile for deploying to stage and production
 #
 
+certs:
+	curl http://ci.kennethreitz.org/job/ca-bundle/lastSuccessfulBuild/artifact/cacerts.pem -o lib/cacert.pem
+
 
 no-sandbox:
 	if [ -f controllers/sandbox.py ]; then exit 1; fi
