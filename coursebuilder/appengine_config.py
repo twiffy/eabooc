@@ -74,7 +74,7 @@ THIRD_PARTY_LIBS = [
     _Library('python-gflags-2.0.zip', relative_path='python-gflags-2.0'),
     _Library('pyparsing-1.5.7.zip'),
     _Library('mailsnake-1.6.2.zip'),
-    _Library('requests-1.2.3.zip'),
+    _Library('requests-2.2.1.zip', relative_path='requests-2.2.1'),
     _Library('bleach-1.2.2.zip'),
     _Library('WTForms-1.0.4.zip', relative_path='WTForms-1.0.4'),
     _Library('python-unicodecsv.zip', relative_path='python-unicodecsv'),
