@@ -22,7 +22,28 @@ class UnitOnePageForm(wtf.Form):
     curricular_aim = BleachedTextAreaField()
     instructional_context = BleachedTextAreaField()
     educational_standards = BleachedTextAreaField()
-    what_to_assess = BleachedTextAreaField()
+    rank_what_to_assess = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('Your Aims', Markup("""<b>Curricular Aims
+                developed by you, for your class or setting.</b>
+                In some settings, educators have a lot or even total control
+                over the curricular aims.""")),
+                ('Government Standards', Markup("""<b>Content Standards mandated by a
+                state, country, or government body.</b> In many settings, government
+                agencies define content standards that educators are expected
+                to follow.""")),
+                ('Professional Standards', Markup("""<b>Content Standards suggested by
+                national subject-matter/professional organizations.</b>  In
+                some settings, professional organization or subject matter
+                experts have a great deal of influence in what should be
+                assessed.""")),
+                ('Colleagues', Markup("""<b>Advice/input from colleagues.</b>  In some
+                settings, advice and input from colleagues will be most
+                important.  This is particularly the case when multiple
+                educators teach the same course."""))
+                ])
+    explain_what_to_assess = BleachedTextAreaField()
     big_ideas = BleachedTextAreaField()
     self_check = BleachedTextAreaField()
     pondertime = BleachedTextAreaField()
