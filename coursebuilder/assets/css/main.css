@@ -762,8 +762,10 @@ h1.ui-state-default, h2.ui-state-default, h3.ui-state-default, h4.ui-state-defau
 .wiki-area h2 {
   text-align: center; }
 
-.wiki-area .ui-accordion-content h1, .wiki-area .ui-accordion-content h2, .wiki-area .ui-accordion-content h3, .wiki-area .ui-accordion-content h4, .wiki-area .ui-accordion-content h5, .wiki-area .ui-accordion-content h6 {
-  margin-left: 0; }
+.wiki-area .ui-accordion-content {
+  font-size: 11pt; }
+  .wiki-area .ui-accordion-content h1, .wiki-area .ui-accordion-content h2, .wiki-area .ui-accordion-content h3, .wiki-area .ui-accordion-content h4, .wiki-area .ui-accordion-content h5, .wiki-area .ui-accordion-content h6 {
+    margin-left: 0; }
 
 div#alerts-bar {
   background-color: #ffffB7;
