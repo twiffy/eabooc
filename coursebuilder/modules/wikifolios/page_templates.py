@@ -81,11 +81,39 @@ class UnitThreePageForm(wtf.Form):
     context = BleachedTextAreaField()
     ranking = BleachedTextAreaField()
     create_short_answer = BleachedTextAreaField()
-    short_answer_guidelines = BleachedTextAreaField()
+    rank_short_answer = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('direct-questions', 'Usually employ direct questions rather than incomplete statements, particularly for young students.'),
+                ('concise-response', 'Structure the item so that a response should be concise.'),
+                ('blank-placement', 'Place blanks in the margin for direct questions or near the end of incomplete statements.'),
+                ('few-blanks', 'For incomplete statements, use only one or, at most, two blanks.'),
+                ('equal-length-blanks', 'Make sure blanks for all items are equal in length.'),
+                ])
+    justify_short_answer = BleachedTextAreaField()
     create_essay = BleachedTextAreaField()
-    essay_guidelines = BleachedTextAreaField()
+    rank_essay = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('length-expectations', 'Convey to students a clear idea regarding the extensiveness of the response desired.'),
+                ('describe-task', u'Construct items so that the student’s task is explicitly described.'),
+                ('effort-expectations', u'Provide students with the approximate time to be expended on each item as well as each item’s value.'),
+                ('no-optional', 'Do not employ optional items.'),
+                ('write-own-response', u'Precursively judge an item’s quality by composing, mentally or in writing, a possible response.'),
+
+            ])
+    justify_essay = BleachedTextAreaField()
     essay_key = BleachedTextAreaField()
-    essay_scoring_guidelines = BleachedTextAreaField()
+    rank_essay_key = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('holistic-analytic', u'Score responses holistically and/or analytically.'),
+                ('key-in-advance', u'Prepare a tentative scoring key in advance of judging students’ responses.'),
+                ('importance-of-mechanics', u'Make decisions regarding the importance of the mechanics of writing prior to scoring.'),
+                ('item-by-item', u'Score all responses to one item before scoring responses to the next item.'),
+                ('anonymous-scoring', u'Insofar as possible, evaluate responses anonymously.'),
+            ])
+    justify_essay_key = BleachedTextAreaField()
     big_ideas = BleachedTextAreaField()
     flawed_item = BleachedTextAreaField()
     item_format_pros_cons = BleachedTextAreaField()
