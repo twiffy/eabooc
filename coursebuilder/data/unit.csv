@@ -1,21 +1,21 @@
 id,type,unit_id,title,release_date,now_available
 1,O,,<b>Part One - Assessment Practices</b>,,False
-2,U,1,Curricular Aim and Standard Selection (chapter 2),opens September 9,True
-3,U,2,Selected-Response Formats (ch. 6),opens September 16,True
-4,U,3,Constructed-Response Formats (ch. 7),opens September 23,True
-5,U,4,"Performance and Portfolio Assessment (ch. 8, 9)",opens September 30,True
-6,A,Practices,<i>Assessment Practices Exam (open October 9 through 19)</i>,,True
+2,U,1,Curricular Aim and Standard Selection (chapter 2),opens May 13,True
+3,U,2,Selected-Response Formats (ch. 6),opens May 19,True
+4,U,3,Constructed-Response Formats (ch. 7),opens May 26,True
+5,U,4,"Performance and Portfolio Assessment (ch. 8, 9)",opens June 2,True
+6,A,Practices,<i>Assessment Practices Exam (open June 9-11)</i>,,True
 7,O,,<b>Part Two - Assessment Principles</b>,,False
-8,U,5,"Reliability and Bias (ch. 3, 5)",opens October 7,True
-9,U,6,Validity (ch. 4),opens October 14,True
-10,U,7,Formative Assessment (ch. 12),opens October 21,True
-11,A,Principles,<i>Assessment Principles Exam (open October 30 through November 6)</i>,,True
+8,U,5,"Reliability and Bias (ch. 3, 5)",opens June 9,True
+9,U,6,Validity (ch. 4),opens June 16,True
+10,U,7,Formative Assessment (ch. 12),opens June 23,True
+11,A,Principles,<i>Assessment Principles Exam (open June 30-July 2)</i>,,True
 12,O,,<b>Part Three - Assessment Policies</b>,,False
-13,U,8,Standardized Testing (ch. 13),opens October 28,True
-14,U,9,Test Preparation (ch. 14),opens November 4,True
-15,U,10,Evaluation of Instruction and Teaching (ch. 15),opens November 11,True
-16,U,11,Assessment-Based Grading (ch. 16),opens November 18,True
-17,A,Policies,<i>Assessment Policies Exam (open November 25 through December 4)</i>,,True
-18,A,Final,<i>Comprehensive Exam (open December 2 through 11)</i>,,True
+13,U,8,Standardized Testing (ch. 13),opens June 30,True
+14,U,9,Test Preparation (ch. 14),opens July 7,True
+15,U,10,Evaluation of Instruction and Teaching (ch. 15),opens July 14,True
+16,U,11,Assessment-Based Grading (ch. 16),opens July 21,True
+17,A,Policies,<i>Assessment Policies Exam (open July 28-30)</i>,,True
+18,A,Final,<i>Comprehensive Exam (open July 29-August 1)</i>,,True
 19,O,/survey,Exit Survey (required for final badge or Certificate),,True
-20,U,12,Optional Term Paper,due by December 20,True
+20,U,12,Optional Term Paper,due by July 30,True
