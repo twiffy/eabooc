@@ -25,7 +25,7 @@ biu-deploy: no-sandbox
 	git status
 	git diff --quiet --exit-code
 	git diff --cached --quiet --exit-code
-	git diff deployed --stat
+	git diff biu-deployed --stat
 	@echo
 	@echo "Going to deploy to OLD PRODUCTION: booc-iu.appspot.com"
 	@echo
@@ -34,7 +34,7 @@ biu-deploy: no-sandbox
 	#git stash apply stash^{/APPSTATS2}
 	#appcfg update . --email booc.class -V stats
 	#git checkout -- app.yaml appengine_config.py
-	git push . -f HEAD:deployed
+	git push . -f HEAD:biu-deployed
 
 deploy: no-sandbox
 	git status
