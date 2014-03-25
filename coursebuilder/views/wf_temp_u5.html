@@ -87,27 +87,29 @@
 
   <div>
     <p class="c3"><span class="c0">Go back to your previous wikifolios and
-      examine the assessments you created for issues of reliability. State
-      which type of reliability evidence (stability, alternate form, or
+      examine the assessments you created for issues of reliability. <b>Select
+        which type</b> of reliability evidence (stability, alternate form, or
       internal consistency) seems most relevant for each of the assessments you
-      previously created. Then state what you might do to increase the
+      previously created. <b>Then state what you might do</b> to increase the
       reliability of YOUR assessments. This must be specific. Evaluate your
       assessments carefully in light of the ideas in the chapter.</span></p>
-
-    <p class="c1"><span class="c6 c0">A. &nbsp;Selected-Response
-      Items</span></p>
-
-    <p class="c1"><span class="c6 c0">B. &nbsp;Constructed-Response
-      Items</span></p>
-
-    <p class="c1"><span class="c6 c0">C. &nbsp;Essay Items</span></p>
-
-    <p class="c1"><span class="c6 c0">D. &nbsp;Performance
-      Assessment OR Portfolio Assessment</span></p>
-
   </div>
 </div>
-<div class="wiki-user-content">{{ fields.types_of_reliability }}</div>
+<div class="wiki-user-content">
+  <ul>
+    <li>Selected-Response Items:
+    {{ fields.sel_resp_reliability }}</li>
+    <li>Constructed-Response Items:
+    {{ fields.const_resp_reliability }}</li>
+    <li>Essay Items:
+    {{ fields.essay_reliability }}</li>
+    <li>Performance Assessment:
+    {{ fields.performance_reliability }}</li>
+    <li>Portfolio Assessment:
+    {{ fields.portfolio_reliability }}</li>
+  </ul>
+</div>
+<div class="wiki-user-content">{{ fields.increase_reliability }}</div>
 
 
 <div class="wiki-question">
@@ -134,33 +136,32 @@
 
   <div>
     <p class="c3 c10"><span class="c0">For each of the assessment
-      formats listed below, write a short paragraph that discusses (a)
-      which type of bias (offensiveness versus unfair penalization)
-      seems like the biggest risk and (b) which approach to reducing
-      bias (panel judgement, per item judgement, overall judgement, or
-      empirical) seems most appropriate. &nbsp;Then state what you
-      could to do decrease bias. &nbsp;Popham discusses bias in</span>
+      formats listed below, select which approach to reducing bias seems most
+      appropriate.  For each assessment format, write a short paragraph that
+      discusses which type of bias (offensiveness versus unfair penalization)
+      seems like the biggest risk, and why you chose the approach for reducing
+      bias.  Then state what you could to do decrease bias in your own items.
+      &nbsp;Popham discusses bias in</span>
     <span class="c8"><a class="c12" href=
         "http://ati.pearson.com/downloads/chapters/Popham_Bias_BK04.pdf">this
         article</a></span><span class="c0">. You should be specific here
       and if you can't think of a way to decrease bias, you need to say
       so.</span></p>
-
-    <p class="c1 c10"><span class="c6 c0">A. &nbsp;Selected-Response
-      Items</span></p>
-
-    <p class="c1 c10"><span class="c6 c0">B.
-      &nbsp;Constructed-Response Items</span></p>
-
-    <p class="c1 c10"><span class="c6 c0">C. &nbsp;Essay
-      Items</span></p>
-
-    <p class="c1"><span class="c6 c0">D. &nbsp;Performance
-      Assessment</span></p>
-
-    <p class="c1"><span class="c6 c0">E. &nbsp;Portfolio
-      Assessment</span></p>
   </div>
+</div>
+<div class="wiki-user-content">
+  <ul>
+    <li>Selected-Response Items:
+    {{ fields.sel_resp_bias }}</li>
+    <li>Constructed-Response Items:
+    {{ fields.const_resp_bias }}</li>
+    <li>Essay Items:
+    {{ fields.essay_bias }}</li>
+    <li>Performance Assessment:
+    {{ fields.performance_bias }}</li>
+    <li>Portfolio Assessment:
+    {{ fields.portfolio_bias }}</li>
+  </ul>
 </div>
 <div class="wiki-user-content">{{ fields.absence_of_bias }}</div>
 

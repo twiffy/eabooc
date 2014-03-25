@@ -11,6 +11,15 @@ from ranking import IntegerRankingField, StringRankingField
 templates = {}
 forms = {}
 
+class ViewableSelectField(wtf.SelectField):
+    def read_only_view(self):
+        value = '(none selected)'
+        if self.data:
+            choice_dict = dict(self.choices)
+            value = choice_dict[self.data]
+
+        return value
+
 class ProfilePageForm(wtf.Form):
     text = BleachedTextAreaField('Introduction')
     curricular_aim = BleachedTextAreaField('Curricular Aim')
@@ -167,10 +176,65 @@ class UnitFourPageForm(wtf.Form):
 forms[4] = UnitFourPageForm
 templates[4] = 'wf_temp_u4.html'
 
+reliability_evidence_types = [
+        ('', '---'),
+        ('stability', 'Stability'),
+        ('alternate-form', 'Alternate Form'),
+        ('internal-consistency', 'Internal Consistency'),
+        ]
+bias_reduction_strategies = [
+        ('', '---'),
+        ('panel', 'Panel Judgment'),
+        ('per-item', 'Per-Item Judgment'),
+        ('overall', 'Overall Judgment'),
+        ('empirical', 'Empirical'),
+        ]
+
 class UnitFivePageForm(wtf.Form):
     context = BleachedTextAreaField()
-    types_of_reliability = BleachedTextAreaField()
+    # TODO: "none" option?
+    sel_resp_reliability = ViewableSelectField(
+            "Selected-Response Items",
+            validators=[wtf.validators.Optional()],
+            choices=reliability_evidence_types)
+    const_resp_reliability = ViewableSelectField(
+            "Constructed-Response Items",
+            validators=[wtf.validators.Optional()],
+            choices=reliability_evidence_types)
+    essay_reliability = ViewableSelectField(
+            "Essay Items",
+            validators=[wtf.validators.Optional()],
+            choices=reliability_evidence_types)
+    performance_reliability = ViewableSelectField(
+            "Performance Assessment",
+            validators=[wtf.validators.Optional()],
+            choices=reliability_evidence_types)
+    portfolio_reliability = ViewableSelectField(
+            "Portfolio Assessment",
+            validators=[wtf.validators.Optional()],
+            choices=reliability_evidence_types)
+    increase_reliability = BleachedTextAreaField()
     standard_error = BleachedTextAreaField()
+    sel_resp_bias = ViewableSelectField(
+            "Selected-Response Items",
+            validators=[wtf.validators.Optional()],
+            choices=bias_reduction_strategies)
+    const_resp_bias = ViewableSelectField(
+            "Constructed-Response Items",
+            validators=[wtf.validators.Optional()],
+            choices=bias_reduction_strategies)
+    essay_bias = ViewableSelectField(
+            "Essay Items",
+            validators=[wtf.validators.Optional()],
+            choices=bias_reduction_strategies)
+    performance_bias = ViewableSelectField(
+            "Performance Assessment",
+            validators=[wtf.validators.Optional()],
+            choices=bias_reduction_strategies)
+    portfolio_bias = ViewableSelectField(
+            "Portfolio Assessment",
+            validators=[wtf.validators.Optional()],
+            choices=bias_reduction_strategies)
     absence_of_bias = BleachedTextAreaField()
     big_ideas = BleachedTextAreaField()
     external_resource = BleachedTextAreaField()
