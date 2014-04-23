@@ -1,8 +1,32 @@
+<script>
+function sendShare(name) {
+  ga('send', 'event', 'course-share', 'click', name);
+}
+</script>
 Share this course with your friends and colleagues!<br>
+
 <a id="facebook:course" href="https://www.facebook.com/sharer/sharer.php?u={{ 
-  gcb_course_base | urlencode }}" target="_blank">
+  gcb_course_base | urlencode }}" target="_blank"
+  onclick="sendShare('facebook');" onkeydown="sendShare('facebook');"
+  >
   <img src="/assets/img/share/facebook.png" alt="Facebook"></a>
+
 <a id="twitter:course" href="https://twitter.com/share?url={{ 
   gcb_course_base | urlencode }}&amp;text={{ 'Educational Assessment course' | urlencode
-  }}" target="_blank">
+  }}" target="_blank"
+  onclick="sendShare('twitter');" onkeydown="sendShare('twitter');"
+  >
   <img src="/assets/img/share/twitter_icon.png" alt="Twitter"></a>
+
+<a id="gplus:course" href="https://plus.google.com/share?url={{
+  gcb_course_base|urlencode }}" target="_blank"
+  onclick="sendShare('gplus');" onkeydown="sendShare('gplus');"
+  >
+  <img src="/assets/img/share/GooglePlus.png" alt="Google Plus"></a>
+
+<a id="email:course" href="mailto:?subject={{ 'Educational Assessment Online Course' | urlencode
+  }}&amp;body={{ 'Look at this free course on educational assessment!  ' + gcb_course_base
+  | urlencode }}" target="_blank"
+  onclick="sendShare('email');" onkeydown="sendShare('email');"
+  >
+  <img src="/assets/img/share/email.png" alt="E-mail"></a>
