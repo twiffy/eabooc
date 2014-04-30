@@ -43,6 +43,7 @@ class ConfirmationForm(wtf.Form):
                     "http://www.coursesmart.co.uk/classroom-assessment-what-teachers-need-to/w-james-popham/dp/9780133492514"
                     target="_blank">CourseSmart UK</a>.'''),
                 ('paperback-6th', '6th edition paperback (2010, currently $14 used on Amazon)'),
+                ('no-book', 'No book (this will make the course very difficult!)'),
                 ])
     book_other = wtf.TextField()
     accept_location = wtf.BooleanField("Location", default=True)
