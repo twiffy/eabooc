@@ -34,6 +34,7 @@ handlers:
   upload: assets/img/favicon\.ico
 - url: /assets
   static_dir: assets
+  application_readable: true
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
