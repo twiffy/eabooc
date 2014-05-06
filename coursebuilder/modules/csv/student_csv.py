@@ -483,14 +483,18 @@ class TableRenderingHandler(BaseHandler):
 class AnalyticsHandler(TableRenderingHandler):
     class NavForm(wtf.Form):
         query = wtf.RadioField('Analytics query',
-                choices=[(k, k) for k in analytics_queries.keys()])
+                choices=[(k, k) for k in analytics_queries.keys()],
+                id='AHquery')
         view = wtf.RadioField('View',
                 choices=[('csv', 'csv'), ('table', 'table'), ('debug', 'debug')],
+                id='AHview',
                 default='table')
         unit = wtf.IntegerField('Unit Number (for unit queries)',
-                [wtf.validators.Optional()])
+                [wtf.validators.Optional()],
+                id='AHunit')
         student = wtf.StringField('Student email (for edit history query)',
-                [wtf.validators.Optional()])
+                [wtf.validators.Optional()],
+                id='AHstudent')
 
     def _get_nav(self):
         form = self.NavForm(self.request.GET)
@@ -940,9 +944,11 @@ class MapperTableHandler(TableRenderingHandler, ReflectiveRequestHandler):
 
     class NavForm(wtf.Form):
         query = wtf.RadioField('Analytics query',
-                choices=[(k, k) for k in mapper_queries.keys()])
+                choices=[(k, k) for k in mapper_queries.keys()],
+                id='MTquery')
         unit = wtf.IntegerField('Unit Number (for unit queries)',
-                validators=[wtf.validators.Optional()])
+                validators=[wtf.validators.Optional()],
+                id='MTunit')
 
     def _action_url(self, action, **kwargs):
         params = dict(kwargs)
