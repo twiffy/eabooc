@@ -17,6 +17,12 @@
   .c9{margin-left:30pt}
 </style>
 
+{% if not layout_template %}
+<div class="highlight-box big-note">Take a look at the <a
+    href="/classwiki?unit={{ unit.unit_id }}">shared resources page</a> for
+this unit!</div>
+{% endif %}
+
 <div class="wiki-info-collapsible">
   <h2>Overview</h2>
 
@@ -134,6 +140,11 @@
       that your groupmate’s will find interesting and worthy of
       comment, and</span> <span class="c5">something that lends itself
       to a variety of assessments</span><span>.</span></p>
+
+    <p class="c1 c11"><span>Your response, and your classmates', will
+      be visible on <a class="c13" target="_blank"
+        href="/classwiki?unit={{ unit.unit_id }}">this page</a>.
+    </span></p>
   </div>
 </div>
 <div class="wiki-user-content">{{ fields.curricular_aim }}</div>
