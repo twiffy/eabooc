@@ -59,6 +59,7 @@ class UnitOnePageForm(wtf.Form):
     self_check = BleachedTextAreaField()
     pondertime = BleachedTextAreaField()
     reflection = BleachedTextAreaField()
+    question = BleachedTextAreaField()
 
 forms[1] = UnitOnePageForm
 templates[1] = 'wf_temp_u1.html'

@@ -35,6 +35,10 @@
   });
 </script>
 <link rel="stylesheet" href="assets/lib/jquery-ui-1.10.3.custom/css/booc-theme/jquery-ui-1.10.3.custom.min.css">
+{% if editing %}
+  <form action="{{ action_url('save') }}" method="POST" id="wiki-form">
+  <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
+{% endif %}
 <div class="gcb-aux">
   <div class="gcb-cols">
     <div class="gcb-col-11 wiki-area wiki-grey-theme">
@@ -65,8 +69,6 @@
         </div>
         {% endif %}
       {% if editing %}
-      <form action="{{ action_url('save') }}" method="POST" id="wiki-form">
-        <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
         <small>You can get help with accessibility and keyboard shortcuts by clicking in an editor box and pressing Alt-0 (zero).</small>
         {% endif %}
         {# HERE IS THE CONTENT that is filled in by e.g. wf_temp_u1.html #}
@@ -179,18 +181,24 @@
   <div class="gcb-cols">
     <div class="gcb-col-11 wiki-area" id="comment-area">
       <span class="wiki-grey-theme">
+        {# this block now also contains a response textarea! #}
         {% block comment_instructions %}
         {% endblock %}
       </span>
 
       {% if editing %}
       <div>
-        You need to finish editing, and save your wikifolio, before you can comment (or post a question).
+        You need to finish editing, and save your wikifolio, before you can comment.
       </div>
       {% endif %}
       {% include "comment_area.html" %}
     </div>
   </div>
+  {% if editing %}
+</form>
+{% endif %}
+</div>
+<div class="gcb-aux">
   <center><a onclick="$(this).next().toggle()" style="color: #c33;">Flag inappropriate content</a>
     <div id="flag-form" style="display: none;">
       <form action="{{ action_url('flag') }}" method="POST">
