@@ -36,6 +36,7 @@ class ConfirmationForm(wtf.Form):
     accept_terms = wtf.BooleanField("Terms of Use", validators=[wtf.validators.Required()])
     page = wtf.HiddenField(default="conf")
     book_option = wtf.RadioField("Book Option",
+            validators=[wtf.validators.Optional()],
             choices=[
                 ('paperback-7th', '7th edition paperback (2014, currently $93 new at Amazon, $110 at Pearson)'),
                 ('coursesmart', '''7th edition e-text from CourseSmart (currently 180-day rental with options to print, $42).

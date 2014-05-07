@@ -35,28 +35,6 @@
   }
 </style>
 
-<script>
-  $(document).ready(function() {
-    function updateBooks() {
-      isForCredit = $('input:radio[value="for-credit"]').attr('checked');
-
-      bookChoices = $('input:radio[name="book_option"]');
-      bookChoices.removeAttr('disabled');
-      $('label.disabled').removeClass('disabled');
-      if (isForCredit) {
-        bookChoices.filter('[value="courseload"]').click();
-        bookChoices.filter('[value!="courseload"]').attr('disabled', true).next('label').addClass('disabled')
-      } else {
-        bookChoices.filter('[value="courseload"]').attr('disabled', true).attr('checked', false).next('label').addClass('disabled');
-      }
-    }
-
-    updateBooks();
-    $('input:radio[name="participation_level"]').click(updateBooks);
-  });
-
-</script>
-
 {% endblock %}
 
 {% block main_content %}
@@ -144,7 +122,9 @@
               not all) chapters were completely rewritten for the 7th Edition.
               If you use the 6th edition, you will need to draw from your
               classmates' wikifolios and the online resources linked in the 
-              assignments.<br>Which version of the textbook will you be getting
+              assignments.  <b>You are responsible for purchasing the book, this
+                question is only to help us understand your plans.</b>
+              <br>Which version of the textbook will you be getting
               for the course?<br>
               {{ form.book_option }}
             </div>
