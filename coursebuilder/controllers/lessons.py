@@ -177,75 +177,9 @@ class UnitHandler(BaseHandler):
         unit, lesson = extract_unit_and_lesson(self)
         unit_id = unit.unit_id
 
-        # If the unit is not currently available, and the user is not an admin,
-        # redirect to the main page.
-        if (not unit.now_available and
-            not Roles.is_course_admin(self.app_context)):
-            self.redirect('/')
-            return
-
-        # Set template values for nav bar and page type.
-        self.template_value['navbar'] = {'course': True}
-        self.template_value['page_type'] = UNIT_PAGE_TYPE
-
-        lessons = self.get_lessons(unit_id)
-
-        # Set template values for a unit and its lesson entities
-        self.template_value['unit'] = unit
-        self.template_value['unit_id'] = unit_id
-        self.template_value['lesson'] = lesson
-
-        if lesson:
-            self.template_value['objectives'] = lesson.objectives
-
-        self.template_value['lessons'] = lessons
-
-        # If this unit contains no lessons, return.
-        if not lesson:
-            self.render('unit.html')
-            return
-
-        lesson_id = lesson.lesson_id
-        self.template_value['lesson_id'] = lesson_id
-
-        index = lesson.index - 1  # indexes are 1-based
-
-        # Format back button.
-        if index == 0:
-            self.template_value['back_button_url'] = ''
-        else:
-            prev_lesson = lessons[index - 1]
-            if prev_lesson.activity:
-                self.template_value['back_button_url'] = (
-                    'activity?unit=%s&lesson=%s' % (
-                        unit_id, prev_lesson.lesson_id))
-            else:
-                self.template_value['back_button_url'] = (
-                    'unit?unit=%s&lesson=%s' % (unit_id, prev_lesson.lesson_id))
-
-        # Format next button.
-        if lesson.activity:
-            self.template_value['next_button_url'] = (
-                'activity?unit=%s&lesson=%s' % (
-                    unit_id, lesson_id))
-        else:
-            if index >= len(lessons) - 1:
-                self.template_value['next_button_url'] = ''
-            else:
-                next_lesson = lessons[index + 1]
-                self.template_value['next_button_url'] = (
-                    'unit?unit=%s&lesson=%s' % (
-                        unit_id, next_lesson.lesson_id))
-
-        # Set template values for student progress
-        self.template_value['is_progress_recorded'] = (
-            CAN_PERSIST_ACTIVITY_EVENTS.value)
-        if CAN_PERSIST_ACTIVITY_EVENTS.value:
-            self.template_value['progress'] = (
-                self.get_progress_tracker().get_lesson_progress(
-                    student, unit_id))
-
-        self.render('unit.html')
+        # Disabled: Wikifolios are units now.
+        self.redirect('/wiki?unit=%s' % unit_id)
+        return
 
 
 class ActivityHandler(BaseHandler):
