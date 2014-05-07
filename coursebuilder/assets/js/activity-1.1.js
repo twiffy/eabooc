@@ -39,11 +39,39 @@ var activity = [
 
   '<table border="2"><tr><td><b>Note:</b><p>These self-assessments are mainly intended for you to check your undersanding about the concepts covered on each unit. They do not affect your final grade.<p></tr></td></table><br>',
 
-  'another line',
+  "<h2>Question 1</h2>Consider the following curricular aim: “At the end of the 10-week unit on narrative writing, students will be able to write an acceptable narrative essay on any assigned topic dealing with an historical event with which they are familiar.”  Is this a small-scope curricular aim or a broad-scope curricular aim?<br>",
   {
     questionType: 'freetext',
     correctAnswerRegex: /[]{1}/, // Never matches!
-    incorrectAnswerOutput: "This should always show"
+    incorrectAnswerOutput: "A broad-scope curricular aim.",
+    correctAnswerOutput: "bug"
+  },
+
+
+  "<h2>Question 2</h2>What is the significant difference, if any, between a “curricular aim” and a “content standard?”<br>",
+  {
+    questionType: 'freetext',
+    correctAnswerRegex: /[]{1}/, // Never matches!
+    incorrectAnswerOutput: "There is no significant difference.",
+    correctAnswerOutput: "bug"
+  },
+
+
+  "<h2>Question 3</h2>Is there substantial agreement among educators regarding the concept of “alignment” between curriculum and assessment?  If so, what is the agreed meaning?  If not, why is there disagreement regarding this concept?<br>",
+  {
+    questionType: 'freetext',
+    correctAnswerRegex: /[]{1}/, // Never matches!
+    incorrectAnswerOutput: "There is considerable disagreement among educators regarding the meaning of “alignment” largely because of variations in the stringency required for genuine alignment.",
+    correctAnswerOutput: "bug"
+  },
+
+
+  "<h2>Question 4</h2>Why is it technically inaccurate to refer to a “criterion-referenced test” or a “norm-referenced test?”<br>",
+  {
+    questionType: 'freetext',
+    correctAnswerRegex: /[]{1}/, // Never matches!
+    incorrectAnswerOutput: "It is the inference, not the test, that is norm- or criterion-referenced.",
+    correctAnswerOutput: "bug"
   },
 
 ];
