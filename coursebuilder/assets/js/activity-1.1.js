@@ -29,21 +29,22 @@
 //    asks for help. For more information on how to specify the object, please
 //    see http://code.google.com/p/course-builder/wiki/CreateActivities.
 
+//
+// This is not "real" javascript.  The Python code must be able to parse it,
+// and gives parse errors (not semantic errors) if you (e.g.) use different
+// fields than it expects.
+//
+
 var activity = [
 
   '<table border="2"><tr><td><b>Note:</b><p>These self-assessments are mainly intended for you to check your undersanding about the concepts covered on each unit. They do not affect your final grade.<p></tr></td></table><br>',
 
-  { questionType: 'multiple choice group',
-    questionsList: [{questionHTML: 'Which of the following is NOT a reason for assessing, according to Yesteryears.',
-                     choices: ['Diagnosing student\'s strengths and weaknesses', 'Monitoring student\'s progress', 'Promoting competition among students','Assigning grades to students'], correctIndex: 2},
-					 
-                    {questionHTML: 'According to Yesteryears, teacher should not be concerned about knowing how to interpret standardized test results',
-                     choices: ['True', 'False'], correctIndex: 1},
-                    ],
-    allCorrectOutput: 'Well done.',
-    someIncorrectOutput: 'Please try again.'},
-
-  
+  'another line',
+  {
+    questionType: 'freetext',
+    correctAnswerRegex: /[]{1}/, // Never matches!
+    incorrectAnswerOutput: "This should always show"
+  },
 
 ];
 
