@@ -1353,7 +1353,8 @@ class NotificationListHandler(WikiBaseHandler):
 
 class ClassWikiHandler(WikiBaseHandler):
     resource_field_name = {
-            8: ['resources']
+            1: ['educational_standards'],
+            8: ['resources'],
             }
 
     def get(self):
