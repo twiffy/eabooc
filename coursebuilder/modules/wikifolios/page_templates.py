@@ -33,6 +33,7 @@ class UnitOnePageForm(wtf.Form):
     curricular_aim = BleachedTextAreaField()
     instructional_context = BleachedTextAreaField()
     educational_standards = BleachedTextAreaField()
+    educational_standards_resource = BleachedTextAreaField()
     rank_what_to_assess = StringRankingField(
             validators=[wtf.validators.Optional()],
             choices=[
