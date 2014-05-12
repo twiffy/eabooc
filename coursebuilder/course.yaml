@@ -42,8 +42,8 @@ course:
    Practices, Assessment Principles, and Assessment Policies.  For more
    info, visit <a href="http://www.indiana.edu/~booc/" target="_blank">these
    resource pages</a> and watch this short <a
-   href="https://www.youtube.com/watch?v=dBKGdDkBbU8">introductory video</a> about
-   this web site.
+   href="https://www.youtube.com/watch?v=dBKGdDkBbU8"
+   target="_blank">introductory video</a> about this web site.
 
   # Information about the instructor to display on the main page.
   instructor_details: 'Daniel Hickey, Ph.D.'
