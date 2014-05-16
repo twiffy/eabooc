@@ -90,6 +90,7 @@ class UnitTwoPageForm(wtf.Form):
     self_check = BleachedTextAreaField()
     pondertime = BleachedTextAreaField()
     reflection = BleachedTextAreaField()
+    question = BleachedTextAreaField()
 
 forms[2] = UnitTwoPageForm
 templates[2] = 'wf_temp_u2.html'
