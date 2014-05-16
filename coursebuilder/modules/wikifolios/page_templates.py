@@ -68,7 +68,14 @@ templates[1] = 'wf_temp_u1.html'
 
 class UnitTwoPageForm(wtf.Form):
     context = BleachedTextAreaField()
-    ranking = BleachedTextAreaField()
+    rank_formats = IntegerRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                'Binary-Choice Items',
+                'Multiple-Binary-Choice Items',
+                'Multiple-Choice Items',
+                'Matching Items',])
+    justify_formats = BleachedTextAreaField()
     create_items = BleachedTextAreaField()
     rank_commandments = IntegerRankingField(
             validators=[wtf.validators.Optional()],
