@@ -25,6 +25,14 @@ Edit Comment
   <textarea name="text" id="editor" rows="20" cols="80">{{ content | safe }}</textarea>
   <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('save') }}">
   <br>
+  {% if can_set_author_question %}
+    <div>
+    <label><input type="checkbox"
+      name="is_author_question" {% if is_author_question %}checked{% endif -%}
+      > Is this your
+      <span class="evoke-author-question">discussion question</span>?</label>
+  </div>
+  {% endif %}
   <input type="submit" class="gcb-button" value="Save">
 </form>
 <script src="/assets/ckeditor/ckeditor.js"></script>

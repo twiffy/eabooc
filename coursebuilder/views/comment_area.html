@@ -75,7 +75,14 @@
         <textarea name="text" id="comment_editor" rows="10" cols="50"></textarea>
         <p>
         <input type="hidden" name="xsrf_token" value="{{ create_xsrf_token('comment') }}">
-        <input type="submit" class="gcb-button" value="Comment">
+        {% if editor_role == 'author' %}
+        <div style="float:left">
+          <label><input type="checkbox"
+            name="is_author_question"> Is this your
+            <span class="evoke-author-question">discussion question</span>?</label>
+        </div>
+        {% endif %}
+        <div style="float: right"><input type="submit" class="gcb-button" value="Comment"> </div>
       </fieldset>
     </form>
   </div>

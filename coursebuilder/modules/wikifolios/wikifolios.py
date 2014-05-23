@@ -231,19 +231,24 @@ class WikiBaseHandler(BaseHandler):
         if not page:
             self.abort(404)
 
-
+        is_author_question = bool(self.request.get('is_author_question', False))
+        if is_author_question and not self._editor_role(query, user):
+            logging.warning("Attempt to comment as author-question when not author")
+            self.abort(403, "You're not the author, you can't make the author-question")
 
         # TODO: use wtforms for comments
         comment = WikiComment(
                 author=user,
                 topic=page,
                 parent_comment=parent,
+                is_author_question=is_author_question,
                 text=bleach_comment(self.request.get('text', '')))
         comment.put()
 
         EventEntity.record(
                 'wiki-comment', users.get_current_user(), transforms.dumps({
                     'page-author': page.author.key().name(),
+                    'is-author-question': is_author_question,
                     'page': str(page.key()),
                     'unit': page.unit,
                     'commenter': user.key().name(),
@@ -342,6 +347,10 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         return comment
 
+    def _can_set_author_question(self, comment, user):
+        return (comment.topic.author_email == comment.author_email
+                and user.key().name() == comment.author_email)
+
     def get_edit(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
@@ -358,6 +367,10 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 'comment_id': comment.key().id(),
                 }
         self.assert_editor_role(query, user)
+
+        self.template_value['can_set_author_question'] = (
+                self._can_set_author_question(comment, user))
+        self.template_value['is_author_question'] = comment.is_author_question
 
         self.template_value['ckeditor_allowed_content'] = (
                 ckeditor.allowed_content(COMMENT_TAGS,
@@ -394,6 +407,10 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 'comment_id': comment.key().id(),
                 }
         self.assert_editor_role(query, user)
+
+        if self._can_set_author_question(comment, user):
+            comment.is_author_question = bool(
+                    self.request.get('is_author_question', False))
 
         old_text = comment.text
         comment.text = bleach_comment(self.request.get('text', ''))
