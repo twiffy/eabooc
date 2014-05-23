@@ -707,16 +707,27 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
         page = self._find_page(query)
 
-        previous_exemplary = Annotation.exemplaries(page, user).get()
 
-        if previous_exemplary:
-            if 'undo' in self.request.POST:
+        if 'undo' in self.request.POST:
+            exemp_to_undo = Annotation.exemplaries(page, user).get()
+            if exemp_to_undo:
                 logging.info("Undoing an exemplary")
-                previous_exemplary.delete()
+                exemp_to_undo.delete()
                 self.redirect(self._create_action_url(query, 'view'))
                 return
-            logging.warning("Attempt to mark exemplary multiple times.")
-            self.redirect(self._create_action_url(query, 'view'))
+            else:
+                self.abort(403, "Maybe you already undid that exemplary?")
+
+        previous_exemplary = Annotation.exemplaries(who=user, unit=page.unit).get()
+        if previous_exemplary:
+            self.template_value['content'] = '''
+            <div class="gcb-aside">
+              You've already promoted <a href="{link}">another page</a> as exemplary!  You can't
+              promote more than one page per unit.  You could go back to that other page,
+              and <b>undo</b> the promotion, if you want.
+            </div>
+            '''.format(link=previous_exemplary.what.link)
+            self.render('bare.html')
             return
 
         reason = bleach_comment(self.request.get('comment'))
