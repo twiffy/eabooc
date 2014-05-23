@@ -848,11 +848,11 @@ li.comment p {
   // &:before {
     // content: "The author's question: ";
   // }
-  border: 5px solid #da6564;
+  border: 5px solid #65da64;
 }
 
-#comment-area .evoke-author-question {
-  border-bottom: 3px solid #da6564;
+.evoke-author-question {
+  border-bottom: 3px solid #65da64;
 }
 
 #admin-comment-list #comment-area li.is-reply {
