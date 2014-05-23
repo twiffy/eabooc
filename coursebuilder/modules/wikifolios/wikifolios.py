@@ -110,7 +110,13 @@ def sort_comments(comments):
       reply-2.
 
     This is a flat list, the template notices whether they are replies at a later point.
+
+    It is a list, unfortunately, not a lazily-evaluated thingy.
     """
+    # We sort first by date, and then by thread.
+    # This exploits the fact that python has a stable sort,
+    # So we end up with comments sorted by date WITHIN threads,
+    # And the threads are sorted by parent-date.
     first_sort = sorted(comments, key=attrgetter('added_time'))
     def final_sort_key(comment):
         if comment.parent_added_time:
@@ -783,15 +789,16 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.assert_editor_role(query, user)
 
         # We call with create=True to eliminate a conditional on how
-        # to set the author_name later.  But we don't .put() it.
+        # to set the author_name later.  But we don't .put() it, since
+        # this is the GET and not the POST handler.
         page = self._find_page(query, create=True)
 
         self.show_unit(query)
         self.show_comments(page)
         self.show_all_endorsements(page)
 
-        form_init = page_templates.forms[query['unit']]
-        self.template_value['fields'] = form_init(None, page)
+        form_class = page_templates.forms[query['unit']]
+        self.template_value['fields'] = form_class(None, page)
 
         self.template_value['author'] = page.author
         self.template_value['is_draft'] = page.is_draft if page.is_saved() else True
