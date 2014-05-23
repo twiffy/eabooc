@@ -217,9 +217,33 @@
 <script src="/assets/ckeditor/adapters/jquery.js"></script>
 <script>
   $(document).ready( function() {
-    $('#wiki-form textarea').ckeditor({
+    $('#wiki-form textarea').ckeditor(
+      function() {
+        this.on('blur', function(){ setConfirmUnload(true); });
+      }, {
       allowedContent: '{{ ckeditor_allowed_content }}'
-    });
+      }
+    );
+
+    $(':submit').click(
+      function() { setConfirmUnload(false); });
+
+    function setConfirmUnload(yesno) {
+      window.onbeforeunload = yesno ? unloadMessage : null;
+    }
+
+    function unloadMessage() {
+      return ('You have entered new data on this page. ' +
+        'If you navigate away from this page without ' +
+        'first saving your assignment, the changes will be lost.');
+    }
+
+    window.onerror = UnspecifiedErrorHandler;
+    function UnspecifiedErrorHandler()
+    {
+      return true;
+    }
+
   });
 </script>
 {% endif %}
