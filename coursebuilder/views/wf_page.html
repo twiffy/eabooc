@@ -3,11 +3,8 @@
 {% macro inline_save() %}
 {% if editing %}
 <div class="inline-save">
-{%   if is_draft %}
 <input type="submit" name="Draft" value="Save page as DRAFT" class="gcb-button">
-{%   else %}
 <input type="submit" name="Post" value="Save page and POST" class="gcb-button post-button">
-{%   endif %}
 </div>
 {% endif %}
 {% endmacro %}
