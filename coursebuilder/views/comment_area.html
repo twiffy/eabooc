@@ -56,6 +56,9 @@
   {% endif %}
   </li>
   {% if loop.last %}
+  {# The 'if not loop.first' above catches all the other places you could reply,
+    by putting in a placeholder before the start of each new thread.  But you
+    could also reply to the last thread.  So that's this. #}
   {{   reply_placeholder(parent_id) }}
   {% endif %}
   {% else %}
