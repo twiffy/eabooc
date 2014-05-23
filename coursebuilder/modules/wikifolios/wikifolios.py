@@ -478,6 +478,7 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
                     'text': comment.text,
                     }))
 
+        comment.is_author_question = False
         comment.is_deleted = True
         comment.is_edited = True
         comment.editor = user
