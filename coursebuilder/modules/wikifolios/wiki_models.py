@@ -123,6 +123,8 @@ class WikiComment(models.BaseEntity):
     parent_comment = db.SelfReferenceProperty(collection_name="replies")
     parent_added_time = db.DateTimeProperty()
 
+    is_author_question = db.BooleanProperty(default=False)
+
     #def __init__(self, *args, **kwargs):
         #super(WikiComment, self).__init__(*args, **kwargs)
         ## the default thred of a comment is the comment itself

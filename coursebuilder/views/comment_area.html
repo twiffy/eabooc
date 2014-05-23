@@ -27,7 +27,10 @@
   {%   endif %}
   {%   set parent_id = comment.key().id() %}
   {% endif %}
-  <li class="comment {% if comment.is_reply() %}is-reply{% endif %}"><b><a name="comment-{{ comment.key().id() }}"
+  <li class="comment
+  {%- if comment.is_reply() %} is-reply {% endif -%}
+  {%- if comment.is_author_question %} author-question {% endif -%}
+  "><b><a name="comment-{{ comment.key().id() }}"
       href="wikiprofile?student={{comment.author.wiki_id}}">{{comment.author.name}}</a></b>
   {% if comment.is_reply() %}replied{% else %}said{% endif %}:
   {% if comment.is_deleted %}
