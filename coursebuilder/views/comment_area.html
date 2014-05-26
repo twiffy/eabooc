@@ -67,9 +67,6 @@
 </ol>
 
 {% if can_comment %}
-<div class="accordion-reply">
-  <div class="comment-expand-heading">Click here to <span
-  class="comment-em">comment</span> and start a new thread.</div>
   <div>
     <form action="{{ action_url('comment') }}" method="POST">
       <fieldset>
@@ -89,7 +86,6 @@
       </fieldset>
     </form>
   </div>
-</div>
 <script src="assets/lib/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
 <script src="/assets/ckeditor/ckeditor.js"></script>
 <script src="/assets/ckeditor/adapters/jquery.js"></script>
