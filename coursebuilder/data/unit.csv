@@ -3,7 +3,7 @@ id,type,unit_id,title,release_date,now_available
 2,U,1,Curricular Aim and Standard Selection (chapter 2),opens May 13,True
 3,U,2,Selected-Response Formats (ch. 6),opens May 19,True
 4,U,3,Constructed-Response Formats (ch. 7),opens May 26,True
-5,U,4,"Performance and Portfolio Assessment (ch. 8, 9)",opens June 2,False
+5,U,4,"Performance and Portfolio Assessment (ch. 8, 9)",opens June 2,True
 6,A,Practices,<i>Assessment Practices Exam (open June 9-11)</i>,,False
 7,O,,<b>Part Two - Assessment Principles</b>,,False
 8,U,5,"Reliability and Bias (ch. 3, 5)",opens June 9,False
