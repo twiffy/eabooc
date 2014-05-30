@@ -146,6 +146,12 @@ templates[3] = 'wf_temp_u3.html'
 class UnitFourPageForm(wtf.Form):
     context = BleachedTextAreaField()
     advantages_disadvantages = BleachedTextAreaField()
+    rank_performance_portfolio = StringRankingField(
+            validators=[wtf.validators.Optional()],
+            choices=[
+                ('performance', 'Performance Assessment'),
+                ('portfolio', 'Portfolio Assessment'),
+                ])
     describe = BleachedTextAreaField()
     create_rubric = BleachedTextAreaField()
     rank_criteria = StringRankingField(
