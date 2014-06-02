@@ -1,212 +1,66 @@
-// Copyright 2012 Google Inc. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-
-// When the assessment page loads, activity-generic.js will render the contents
-// of the 'assessment' variable into the enclosing HTML webpage.
-
-// For information on modifying this page, see
-// https://code.google.com/p/course-builder/wiki/CreateAssessments.
-
-
 var assessment = {
-  // HTML to display at the start of the page
-  preamble: '',
-
-  // An ordered list of questions, with each question's type implicitly determined by the fields it possesses:
-  //   choices              - multiple choice question (with exactly one correct answer)
-  //   correctAnswerString  - case-insensitive string match
-  //   correctAnswerRegex   - freetext regular expression match
-  //   correctAnswerNumeric - freetext numeric match
-  questionsList: [
-
-    {questionHTML: 'Which of the following statements represents the significant difference between a “content standard” and a “performance standard”?',
-      choices: [
-        'The content standard represents what educators what students to do and the performance standard represents what educators want students to learn.',
-        'The performance standard represents the academic knowledge and the content standards represent the achieved proficiency.',
-        'The content standard represents the measurable skills and the performance standards represents behaviors that can be described only.',
-        correct('The content standard represents what educators want students to learn academically and the performance standard represents the desired level of proficiency educators want to students to achieve.'),],
-
-    },
-
-	 
-
-    {questionHTML: 'Which of the following is NOT a What-to-Assess Consideration?',
-     choices: ['One useful point of advice for what to assess could come from your colleagues.',
-               'A useful framework for assessment can be a few key curricular aims.',
-               correct('You can mirror your classroom assessments on the assessments for state content standards.'),
-               'You can do an analysis of the psychomotor, cognitive, and affective behaviors you want to focus on.',
-               ],
-     },
-	 
-	    {questionHTML: 'Which of the following statements is true:',
-     choices: [
-       'Curriculum is the <i>means</i> teachers employ to promote student achievement and instruction is the sought-for <i>ends</i> of instruction.',
-       correct('Instruction is the <i>means</i> teachers employ to promote student achievement and curriculum is the sought-for <i>ends</i> of instruction.'), ],
-     },	 
-	 
-    {questionHTML: 'Which of the following is NOT part of the General Item-Writing Guidelines?',
-     choices: ['Check your items for unintentional cues that easily direct students to the correct responses.',
-               'Use vocabulary familiar to your students because difficult vocabulary could make the items too confusing.',
-               correct('Write perplexing directions to direct test takers into choosing an incorrect response.'),
-               'Write items using simple sentence structure so not to unintentionally confuse your students.',],
-     },	
-
-	 
-    {questionHTML: 'Which of the following is the greatest weakness of binary items?',
-     choices: [
-       correct('Students have a 50-50 chance of guessing the correct answer.'),
-       'They are time-consuming assessments.',
-       'It is impossible to cover a large amount of material.',
-       'There is only one type of binary-choice item: true or false items.',
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Multiple Binary-Choice Items are considered good test items for a number of reasons. Which of the following reasons is true for Multiple Binary-Choice Items?',
-     choices: [
-       'They are slightly easier than multiple-choice items.',
-       'They are more valid than other selected-response items.',
-       correct('They help instructors efficiently gather information on student achievement.'),
-       'They are the easiest type of selected-response item to write.'
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Which of the following presents the three parts of a Multiple-Choice Item according to Popham?',
-     choices: [
-       'Question, correct responses, and incorrect responses.',
-       correct('Stem, item alternatives, and distractors.'),
-       'Question, correct responses, and distractors.',
-       'None-of-the-above.',
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Which of the following is a disadvantage of Matching Items?',
-     choices: [
-       correct('They encourage memorization of low-level factual information.'),
-       'They can be scored easily by holding a test key next to the responses.',
-       'They do not take up much room on the test page.',
-       'They allow for a lot of information to be tested quickly.',
-
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Which of the following statements could be considered an advantage of Short-Answer Items?',
-     choices: [
-       'Issues of reliability may occur due to the possibility of inaccurate scoring.',
-       'Longer responses lead to difficulties in scoring.',
-       'Scoring short-answer items is fairly problematic.',
-       correct('Longer responses lead to more optimal measurement of learning outcomes.'),
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'True or false. Essay items should elicit extended responses where students have complete freedom to determine how much to write.',
-     choices: [
-       'True',
-       correct('False'),
-               ],
-     },	 
-   
-	 
-    {questionHTML: '<em>For the next three questions, determine whether or not the statement is Accurate or Inaccurate. A statement’s accuracy depends on whether it represents a verbatim or appropriately paraphrased rendition of statements drawn from Chapter 7.</em><br>To best assess students’ ability to respond to essay items, allow students to choose among optional items.',
-      choices: ['Accurate', correct('Inaccurate')],
-     },	 
-	 
-    {questionHTML: 'For short-answer items, place blanks for incomplete statements near the beginning of the statement.',
-      choices: ['Accurate', correct('Inaccurate')],
-     },	 
-   
-	 
-    {questionHTML: 'Insofar as possible, classroom teachers should evaluate their students’ essay responses anonymously, that is, without knowing which student wrote which response.',
-     choices: [
-       correct('Accurate'), 'Inaccurate',
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Which of the following demonstrates the relationships between key curricular aims, student status inferences, and student responses to performance assessment tasks?',
-     choices: [
-       'Student responses to performance assessment tasks are derived from student status inferences, which are evidence for key curricular aims.',
-       'Key curricular aims are derived from student status inferences, which are evidence for student response to performance assessment tasks.',
-       'Student responses to performance assessment tasks are derived from key curricular aims, which are evidence for student status inferences.',
-       correct('None-of-the-above.')
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Which of the following is the primary issue with performance assessments in most settings?',
-     choices: [
-       'Choosing which curricular aim is the best one to assess using a performance assessment.',
-       correct('The ability to generalize accurately about what skills and knowledge are possessed by the student.'),
-       'Finding someone to assist in the scoring of the performance assessment.',
-       'None-of-the-above.'
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Which of the following is an important feature of the scoring rubric?',
-     choices: [
-       'The objectives to be analyzed.',
-       correct('Descriptions of the evaluative criteria.'),
-       'The numerical value of each item.',
-       'The curricular aim to be assessed using the rubric.',
-
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Which of the following is a source of error in scoring student performance?',
-     choices: [
-       'Bias coming from the test items.',
-     'Unintentional cues in test items.',
-     correct('Bias coming from the teacher.'),
-     'Scantron machines.'
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'When held, portfolio conferences should not only deal with the evaluation of a student’s work products, but should also improve the student’s self-evaluation abilities.',
-     choices: [
-       correct('True'), 'False'
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Students should be asked to review their own work products only near the end of the school year so their self-evaluations can be more accurate.',
-     choices: [
-       'True', correct('False')
-               ],
-     },	 
-   
-	 
-    {questionHTML: 'Because students’ parents can ordinarily become heavily involved in portfolio assessment, a teacher’s first task is to make sure parents “own” their child’s portfolio.',
-     choices: [
-       'True', correct('False')
-               ],
-     },	 
-   
-  ],
-
-  // The assessmentName key is deprecated in v1.3 of Course Builder, and no
-  // longer used. The assessment name should be set in the unit.csv file or via
-  // the course editor interface.
-  assessmentName: 'Practices', // unique name submitted along with all of the answers
-
-  checkAnswers: false     // render a "Check your Answers" button to allow students to check answers prior to submitting?
-}
-
+  preamble: "",
+  questionsList: [{
+    questionHTML: "One negative influence of the pressures of accountability on schools is that it encourages teachers to",
+    choices: ["show students how to make educated guesses on difficult multiple choice test questions.",correct("put less emphasis on important instructional topics not on the test."),"stress the importance of test scores on students\u2019 overall academic career.","organize into grade level teams in order to co-teach curriculum."]
+  },{
+    questionHTML: "An advantage of performance assessment over the traditional objective formats is that performance assessment",
+    choices: [correct("requires students to apply their knowledge and skills in doing things."),"is more objective than the traditional formats.","is more related to abstract knowledge than traditional formats."]
+  },{
+    questionHTML: "A single performance assessment task assesses a number of learning objectives while a traditional test item assesses only one learning objective.",
+    choices: [correct("TRUE"),"FALSE"]
+  },{
+    questionHTML: "Which of the following demonstrates the relationships between key curricular aims, student status inferences, and student responses to performance assessment tasks?",
+    choices: ["Student responses to performance assessment tasks are derived from student status inferences, which are evidence for key curricular aims.","Key curricular aims are derived from student status inferences, which are evidence for student response to performance assessment tasks.","Student responses to performance assessment tasks are derived from key curricular aims, which are evidence for student status inferences.",correct("None-of-the-above.")]
+  },{
+    questionHTML: "True or false. Essay items should elicit extended responses where students have complete freedom to determine how much to write.",
+    choices: ["TRUE",correct("FALSE")]
+  },{
+    questionHTML: "Which of the following is of particular concern regarding the interpretation of students\u2019 test scores?",
+    choices: ["that students were given adequate time to take the test","that the test did not contain any open-response questions","that the test was administered in the morning",correct("that the test results do not lead to stereotyping or labeling students")]
+  },{
+    questionHTML: "Which of the following is an important feature of the scoring rubric?",
+    choices: ["The objectives to be analyzed.",correct("Descriptions of the evaluative criteria."),"The numerical value of each item.","The curricular aim to be assessed using the rubric."]
+  },{
+    questionHTML: "A good assessment task should help you to distinguish clearly between less knowledgeable and knowledgeable students.",
+    choices: [correct("TRUE"),"FALSE"]
+  },{
+    questionHTML: "A good performance task should give students the details on how their performance will be evaluated.",
+    choices: [correct("TRUE"),"FALSE"]
+  },{
+    questionHTML: "Ms. Jones's students keep all of their week's seatwork and homework assignments in a folder. At the end of the week they bring it home. Is Ms. Jones using a portfolio assessment method?",
+    choices: ["Yes",correct("No")]
+  },{
+    questionHTML: "Which of the following summarizes the main difference between content standards and performance standards?",
+    choices: [correct("Content standards define what will be learned while performance standards define how things will be learned."),"Content standards define how things will be learned while performance standards define what will be learned.","Content standards measure student effort while performance standards measure the quality of the student performance.","Content standards are gender specific while performance standards are specific to certain minority groups."]
+  },{
+    questionHTML: "Which of the following best illustrates an appropriately stated learning objective?",
+    choices: ["The student will know the parts of an airplane.","The student will understand the parts of an airplane.",correct("The student will explain how airplanes fly.")]
+  },{
+    questionHTML: "Which of the following is an advantage of the matching set over multiple-choice items?",
+    choices: ["Matching sets can be objectively scored.",correct("Matching sets save space."),"Matching sets measure more complex learning outcomes."]
+  },{
+    questionHTML: "Because students\u2019 parents can ordinarily become heavily involved in portfolio assessment, a teacher\u2019s first task is to make sure parents \u201cown\u201d their child\u2019s portfolio.",
+    choices: ["TRUE",correct("FALSE")]
+  },{
+    questionHTML: "If a student has a good command of a learning objective, you should expect that the student would answer a test item about that objective correctly even if the item were worded rather ambiguously.",
+    choices: ["TRUE",correct("FALSE")]
+  },{
+    questionHTML: "Which of the following is a source of error in scoring student performance?",
+    choices: ["Bias coming from the test items.","Unintentional cues in test items.",correct("Bias coming from the teacher."),"Scantron machines."]
+  },{
+    questionHTML: "When writing a matching exercise, it is important to ensure that the number of responses is equal to the number of premises.",
+    choices: ["TRUE",correct("FALSE")]
+  },{
+    questionHTML: "Suppose correctness of spelling is not part of the learning objective being assessed with an essay test. How should spelling be handled when scoring the essays?",
+    choices: ["Let spelling correctness influence the students\u2019 scores because other learning objectives require the ability to spell correctly.",correct("Score spelling separately but give it a weight of zero in the students' total score."),"Ignore spelling as best you can while scoring the relevant factors."]
+  },{
+    questionHTML: "Which of the following procedures is LEAST practical for a teacher to use as a way of improving the quality of assessment tasks?",
+    choices: ["Requesting a colleague in the same subject area to review the tasks.",correct("Trying out the tasks on a sample of current students before using them for evaluating the full group."),"Revising the tasks for use next year based on students' performance this year."]
+  },{
+    questionHTML: "Externally mandated testing and assessment programs are often appealing to policy makers because they",
+    choices: ["are popular with teachers.","are written by teachers in the child\u2019s given school or school system.",correct("indicate whether a given school or school district is effective."),"indicate high or low teacher quality."]
+  }],
+  checkAnswers: false,
+  assessmentName: "Practices"
+};
