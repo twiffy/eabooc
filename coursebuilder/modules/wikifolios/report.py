@@ -7,6 +7,8 @@ from models.models import Student
 from models import transforms
 from modules.badges.badge_models import *
 from webapp2 import cached_property
+import page_templates
+
 COUNT_LIMIT = 100
 
 _parts = {
@@ -260,7 +262,7 @@ class UnitReport(db.Model):
     @cached_property
     def wiki_fields(self):
         page = self._page
-        return {k: getattr(page, k) for k in page.dynamic_properties()}
+        return page_templates.viewable_model(page)
 
     @property
     def is_complete(self):
