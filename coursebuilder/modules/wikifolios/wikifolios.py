@@ -1390,6 +1390,7 @@ class NotificationListHandler(WikiBaseHandler):
 class ClassWikiHandler(WikiBaseHandler):
     resource_field_name = {
             1: ['educational_standards_resource'],
+            5: ['external_resource'],
             8: ['resources'],
             }
 
