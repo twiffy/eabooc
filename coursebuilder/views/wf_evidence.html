@@ -52,6 +52,7 @@ Unit {{ unit.unit_id }}
   </div>
 </div>
 <script>
+  $('.booc-ranking li').addClass('ui-state-default');
   ga('send', 'event', 'evidence', 'view', '{{ badge_slug }}:{{ unit.unit_id }}');
 </script>
 {% endblock %}
