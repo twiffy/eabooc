@@ -90,15 +90,15 @@ class FixedUnitRankingQuery(TableMakerMapper):
         # want to tabulate:
         #   ranks of each item: dogs=1, cats=2, bunnies=3
         #   networking group of the student
-        ranks = {'group_id': author.group_id}
         for field in self.ranking_fields:
+            ranks = {'group_id': author.group_id}
             value = getattr(page, field)
             if not value:
                 continue
             for r in value:
                 self.vals_by_field[field].add(r)
             ranks.update((item, n) for n, item in enumerate(value, start=1))
-        self.ct.add(**ranks)
+            self.ct.add(**ranks)
 
     def finish(self):
         # go over each field of the page
