@@ -69,6 +69,48 @@ class CurricularAimQuery(object):
                     'curricular_aim': Markup(submission.curricular_aim),
                     }
 
+class FixedUnitRankingQuery(TableMakerMapper):
+    FIELDS = ['c%d' % n for n in xrange(30)]
+
+    KIND = WikiPage
+    FILTERS = []
+
+    def __init__(self, **kwargs):
+        self.unit = kwargs['unit']
+        if not self.unit:
+            raise ValueError('"unit" parameter is required for this query')
+        self.FILTERS = [('unit', self.unit)]
+        self.ct = CrossTab()
+        self.vals_by_field = defaultdict(set)
+        self.ranking_fields = [field.name for field in forms[self.unit]() if isinstance(field, BaseRankingField)]
+        super(FixedUnitRankingQuery, self).__init__()
+
+    def map(self, page):
+        author = page.author
+        # want to tabulate:
+        #   ranks of each item: dogs=1, cats=2, bunnies=3
+        #   networking group of the student
+        for field in self.ranking_fields:
+            ranks = {'group_id': author.group_id}
+            value = getattr(page, field)
+            if not value:
+                continue
+            for r in value:
+                self.vals_by_field[field].add(r)
+            ranks.update((item, n) for n, item in enumerate(value, start=1))
+            self.ct.add(**ranks)
+
+    def finish(self):
+        # go over each field of the page
+        for field, values in self.vals_by_field.iteritems():
+            self.add_row(dict(zip(self.FIELDS, [field])))
+            # Go over each value, giving its rankings
+            for v in values:
+                for row in self.ct.table(v, 'group_id'):
+                    self.add_row(dict(zip(self.FIELDS, row)))
+                self.add_row({})
+
+
 class UnitRankingQuery(object):
     fields = ['c%d' % n for n in xrange(30)]
 
@@ -355,7 +397,7 @@ analytics_queries['student_quiz_answers'] = StudentQuizScoresQuery
 analytics_queries['current_group_ids'] = CurrentGroupIDQuery
 analytics_queries['initial_curricular_aim'] = CurricularAimQuery
 analytics_queries['unit_completion_and_full_text'] = UnitCompletionQuery
-analytics_queries['unit_ranking'] = UnitRankingQuery
+#analytics_queries['unit_ranking'] = UnitRankingQuery # use FixedUnitRanking now.
 analytics_queries['unit_ranking_raw'] = UnitRawRankingQuery
 analytics_queries['unit_plagiarism_detector'] = UnitTextSimilarityQuery
 analytics_queries['one_student_wiki_edit_history'] = StudentEditHistoryQuery
@@ -863,6 +905,7 @@ mapper_queries['promotions'] = PromotionQuery
 mapper_queries['term_paper'] = TermPaperQuery
 mapper_queries['comments_made_per_unit'] = CommentCountQuery
 mapper_queries['wikifolio_word_counts'] = WikifolioWordCountQuery
+mapper_queries['fixed_unit_ranking_query'] = FixedUnitRankingQuery
 
 
 class EditDistanceQuery(TableMakerMapper):
