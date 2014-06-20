@@ -58,7 +58,12 @@ ASSESSMENT_PASSING_SCORE = 80
 
 def find_badge_and_assertion(student, base_slug):
     # in order of preference for issuing
-    slugs = (base_slug + '.leader', base_slug)
+    slugs = (
+            base_slug + '.expertise.leader',
+            base_slug + '.leader',
+            base_slug + '.expertise',
+            base_slug
+            )
     badge_keys = [db.Key.from_path(Badge.kind(), s) for s in slugs]
     badge_ents = db.get(badge_keys)
 
@@ -75,10 +80,10 @@ def find_badge_and_assertion(student, base_slug):
                         assertion.key())
 
     # otherwise, we show the default badge.
-    if not badge_ents[1]:
+    if not badge_ents[-1]:
         logging.warning('No badges found with key_name %s (or .leader)', base_slug)
 
-    return (badge_ents[1], None)
+    return (badge_ents[-1], None)
 
 
 class PartReport(db.Model):
@@ -176,14 +181,16 @@ class PartReport(db.Model):
                 return r
         return None
 
-    @property
-    def is_complete(self):
+    def completion(self):
         units_done = all((
             u.is_complete for u in self.unit_reports))
         assessments_done = all((
             e['did_pass'] for e in self.assessment_scores))
-        assessments_required = self._config['assessments_required']
-        return units_done and (assessments_done or not assessments_required)
+        #assessments_required = self._config['assessments_required']
+        return {
+                'units': units_done,
+                'assessments': assessments_done,
+                }
 
     @property
     def incomplete_reasons(self):
