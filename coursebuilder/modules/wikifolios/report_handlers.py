@@ -378,6 +378,22 @@ class ExpertEvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         self.render('wf_expert_evidence.html')
 
 
+def combine_badge_slug_parts(*parts):
+    return '.'.join(parts)
+
+
+def choose_badge_version(slug, completion):
+    # Choose the base badge version - normal vs expertise.
+    # Doesn't choose Leader vs. normal - that is later.
+
+    if not completion['units']:
+        return None
+    elif not completion['assessments']:
+        return slug
+    else:
+        return combine_badge_slug_parts(slug, 'expertise')
+
+
 class SingleIssueHandler(BaseHandler):
     class Form(wtf.Form):
         part = wtf.IntegerField('Which part of the course to issue a badge for? (1,2,3)')
@@ -411,20 +427,21 @@ class SingleIssueHandler(BaseHandler):
                 force_re_run=form.re_run.data,
                 put=form.really_save.data)
 
-        badge = Badge.get_by_key_name(part_config[form.part.data]['slug'])
-        if not badge:
-            self.response.write(' There is no badge with key_name %s (so I cannot issue a badge)' % report.slug)
 
-        if report.is_complete:
+        badge_version = choose_badge_version(part_config[form.part.data]['slug'], report.completion())
+        if badge_version:
+            badge = Badge.get_by_key_name(badge_version)
+            if not badge:
+                self.response.write(' There is no badge with key_name %s (so I cannot issue a badge)' % badge_version)
             if form.really_save.data and badge:
-                b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
+                b = Badge.issue(badge, student, put=False)
                 b.evidence = self.request.host_url + '/badges/evidence?id=%d' % report.key().id()
                 b.put()
-                self.response.write('Issued the badge!')
+                self.response.write('Issued badge %s!' % badge_version)
             else:
-                self.response.write('Would have issued the badge!')
+                self.response.write('Would have issued badge %s!' % badge_version)
         else:
-            self.response.write('Not issuing because: %s' % (', '.join(report.incomplete_reasons)))
+            self.response.write('Not issuing because at least one of: %s' % (', '.join(report.incomplete_reasons)))
 
 
 class BulkIssueMapper(LoggingMapper):
@@ -445,27 +462,31 @@ class BulkIssueMapper(LoggingMapper):
         report = PartReport.on(student, course=self.course, part=self.part,
                 force_re_run=self.re_run, put=self.really)
 
-        self.log.append(' Passed? %s.' % report.is_complete)
+        completion = report.completion()
+        self.log.append(' Passed? %s.' % str(completion))
 
-        badge = Badge.get_by_key_name(part_config[self.part]['slug'])
-        if not badge:
-            self.log.append(' There is no badge with key_name %s (so I cannot issue a badge)' % report.slug)
+        badge_version = choose_badge_version(part_config[form.part.data]['slug'], completion)
 
-        if report.is_complete:
+        if badge_version:
+            badge = Badge.get_by_key_name(badge_version)
+            if not badge:
+                self.log.append(' There is no badge with key_name %s (so I cannot issue a badge)' % badge_version)
+
             self.num_issued += 1
             if self.really and badge:
                 b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
                 b.evidence = self.host_url + '/badges/evidence?id=%d' % report.key().id()
                 b.put()
                 self.log.append(' Issued badge, name=%s, assertion id=%d' % (
-                    badge.key().name(), b.key().id()))
+                    badge_version, b.key().id()))
                 return ([b], [])
             else:
                 self.log.append(' WOULD issue badge.')
         else:
-            self.log.append('Not issuing because: %s' % (', '.join(report.incomplete_reasons)))
+            self.log.append('Not issuing because at least one of: %s' % (', '.join(report.incomplete_reasons)))
 
             if self.really and badge:
+                # TODO: this is not comprehensive: they could still have .expertise or .leader versions.
                 Badge.ensure_not_issued(badge, student)
         return ([], [])
 
