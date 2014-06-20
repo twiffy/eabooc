@@ -633,7 +633,7 @@ class BadgeAssertionMapQuery(TableMakerMapper):
         d['id'] = ass.key().id()
         logging.warning('Considering %s issued to %s', d['badge_name'], d['email'])
 
-        if 'expert' not in ass.badge_name:
+        if not ass.badge_name.startswith('expert'):
             part_num = get_part_num_by_badge_name(ass.badge_name)
             report = PartReport.on(student, self.course, part_num)
             unit_reps = report.unit_reports
