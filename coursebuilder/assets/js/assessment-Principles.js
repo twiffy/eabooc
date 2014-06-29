@@ -25,11 +25,11 @@ var assessment = {
     questionHTML: "The term reliability, as used in testing and assessment, refers to which of the following?",
     choices: ["accuracy of test construction","method of test interpretation",correct("test or assessment results"),"method of test construction"]
   },{
-    questionHTML: "A middle-grade social studies teacher, Ms. Graves, has created a 40-item test covering what she believes is supposed to be taught by middle-grade social studies teachers. As students conclude their middle-school educations, they must complete (according to district policy) a basic skills test in reading, mathematics, and language arts. Because the scores for all of the school\u2019s students are available to her, Ms. Graves computes correlation coefficients for her students\u2019 scores on her own social studies test versus each of the three district required tests. She finds only moderate correlations between her 40-item social studies test and the other three tests. Thus, she argues that her test is, sensibly, measuring something other than reading, mathematics, and language arts.",
+    questionHTML: "A middle-grade social studies teacher, Ms. Graves, has created a 40-item test covering what she believes is supposed to be taught by middle-grade social studies teachers. As students conclude their middle-school educations, they must complete (according to district policy) a basic skills test in reading, mathematics, and language arts. Because the scores for all of the school\u2019s students are available to her, Ms. Graves computes correlation coefficients for her students\u2019 scores on her own social studies test versus each of the three district required tests. She finds only moderate correlations between her 40-item social studies test and the other three tests. Thus, she argues that her test is, sensibly, measuring something other than reading, mathematics, and language arts. What is the kind of validity evidence Ms. Graves is gathering?",
     choices: ["Content-related evidence of validity","Criterion-related evidence of validity",correct("Construct-related evidence of validity"),"None of the above"]
   },{
-    questionHTML: "Reliability refers to the",
-    choices: [correct("consistency of the test scores."),"relevancy of the test scores.","usefulness of the test scores."]
+    questionHTML: "Which one of the following types of tests is most frequently, but mistakenly, pushed by its developers as formative assessments",
+    choices: ["Nationally standardized achievement test",correct("Interim assessments"),"Statewide annual accountability tests","Tests in the National Assessment of Educational Progress"]
   },{
     questionHTML: "Why is understanding typical learning progressions in a certain content area important for formative assessment?",
     choices: [correct("Learning progressions help teachers interpret students\u2019 work in relation to the intended learning goal."),"Learning progressions help teachers grade student work in manner that is fair to all the students in the class.","Learning progressions help students see that their mistakes are all part of the process."]
@@ -49,10 +49,10 @@ var assessment = {
     questionHTML: "Which of the following procedures should a general science teacher use to help validate her end-of-year classroom grades?",
     choices: ["Use the end-of-year test as a criterion.",correct("Compare the grades with students\u2019 test performance on several different assessments over the year."),"Correlate the scores from the first half of the end-of-year test with scores from the second half."]
   },{
-    questionHTML: "Test scores that have a high degree of reliability (e.g., .90) are also valid.",
-    choices: ["TRUE",correct("FALSE")]
+    questionHTML: "Of the following options, which one is\u2014by far\u2014the most integral to the implementation of formative assessment in a classroom?",
+    choices: ["A teacher\u2019s willingness to try new procedures in clas",correct("Use of assessment-elicited evidence to make adjustments"),"Teachers\u2019 willingness to refrain from grading most of their students\u2019 exams","Teachers\u2019 use of a variety of both selected-response and constructed-response items"]
   },{
-    questionHTML: "Which of the following is not a likely reason that formative assessment is employed less frequently in our schools than the proponents of formative assessment would prefer?",
+    questionHTML: "Which of the following is NOT a likely reason that formative assessment is employed less frequently in our schools than the proponents of formative assessment would prefer?",
     choices: ["Misunderstandings by teachers regarding the nature of formative assessment","Teachers\u2019 reluctance to alter their current practices","The prevalence of instructionally insensitive accountability tests",correct("The absence of truly definitive evidence that formative assessment improves students\u2019 learning")]
   },{
     questionHTML: "Assessment accommodations require the creation of a substantially new test, hopefully equated to the original test.",
