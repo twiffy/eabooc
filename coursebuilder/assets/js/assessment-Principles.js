@@ -50,7 +50,7 @@ var assessment = {
     choices: ["Use the end-of-year test as a criterion.",correct("Compare the grades with students\u2019 test performance on several different assessments over the year."),"Correlate the scores from the first half of the end-of-year test with scores from the second half."]
   },{
     questionHTML: "Of the following options, which one is\u2014by far\u2014the most integral to the implementation of formative assessment in a classroom?",
-    choices: ["A teacher\u2019s willingness to try new procedures in clas",correct("Use of assessment-elicited evidence to make adjustments"),"Teachers\u2019 willingness to refrain from grading most of their students\u2019 exams","Teachers\u2019 use of a variety of both selected-response and constructed-response items"]
+    choices: ["A teacher\u2019s willingness to try new procedures in class",correct("Use of assessment-elicited evidence to make adjustments"),"Teachers\u2019 willingness to refrain from grading most of their students\u2019 exams","Teachers\u2019 use of a variety of both selected-response and constructed-response items"]
   },{
     questionHTML: "Which of the following is NOT a likely reason that formative assessment is employed less frequently in our schools than the proponents of formative assessment would prefer?",
     choices: ["Misunderstandings by teachers regarding the nature of formative assessment","Teachers\u2019 reluctance to alter their current practices","The prevalence of instructionally insensitive accountability tests",correct("The absence of truly definitive evidence that formative assessment improves students\u2019 learning")]
