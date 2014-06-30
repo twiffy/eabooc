@@ -9,9 +9,9 @@ id,type,unit_id,title,release_date,now_available
 8,U,5,"Reliability and Bias (ch. 3, 5)",opens June 9,True
 9,U,6,Validity (ch. 4),opens June 16,True
 10,U,7,Formative Assessment (ch. 12),opens June 23,True
-11,A,Principles,<i>Assessment Principles Exam (open June 30-July 4)</i>,,False
+11,A,Principles,<i>Assessment Principles Exam (open June 30-July 4)</i>,,True
 12,O,,<b>Part Three - Assessment Policies</b>,,False
-13,U,8,Standardized Testing (ch. 13),opens June 30,False
+13,U,8,Standardized Testing (ch. 13),opens June 30,True
 14,U,9,Test Preparation (ch. 14),opens July 7,False
 15,U,10,Evaluation of Instruction and Teaching (ch. 15),opens July 14,False
 16,U,11,Assessment-Based Grading (ch. 16),opens July 21,False
