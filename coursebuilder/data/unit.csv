@@ -18,4 +18,4 @@ id,type,unit_id,title,release_date,now_available
 17,A,Policies,<i>Assessment Policies Exam (open July 28-31)</i>,,False
 18,A,Final,<i>Comprehensive Exam (open July 29-August 2)</i>,,False
 19,O,/survey,Exit Survey (required for final badge or Certificate),,False
-20,U,12,Optional Term Paper,due by July 30,False
+20,U,12,Optional Term Paper,due by July 30,True
