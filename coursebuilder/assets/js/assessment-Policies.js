@@ -22,8 +22,8 @@ var assessment = {
     questionHTML: "Indicate whether the following statement Appropriately or Inappropriately represents a goal-attainment approach to grading: \u201cFor goal-attainment grading to succeed, especially when used with standards-based report cards, it will often be necessary to meaningfully reduce the number of grade-relevant goals via stringent prioritization.",
     choices: [correct("APPROPRIATELY"),"INAPPRORPIATELY"]
   },{
-    questionHTML: "Standardized achievement tests are a supplementary source of information to support teachers' observations of students' educational development.",
-    choices: [correct("TRUE"),"FALSE"]
+    questionHTML: "Most standardized achievement tests are accompanied by fairly explicit descriptions of what is being measured, such descriptions being sufficiently clear for most teachers\u2019 instructional planning purposes.",
+    choices: ["TRUE",correct("FALSE")]
   },{
     questionHTML: "Indicate whether the following statement Appropriately or Inappropriately represents a goal-attainment approach to grading: \"Insofar as possible, teachers who employ a goal-attainment approach to grading must avoid judgmental decisions when coalescing diverse evidence related o diverse curricular aims\".",
     choices: ["APPROPRIATELY",correct("INAPPRORPIATELY")]
@@ -43,11 +43,11 @@ var assessment = {
     questionHTML: "Which of the following is a property of percentile ranks?",
     choices: ["They can be used to determine what content or skills a student is deficient in.","They describe the level of learning a student has achieved.",correct("They allow comparison of students\u2019 performance.")]
   },{
-    questionHTML: "An advantage of using the tests that come with your curriculum materials is that you shorten the time needed to craft assessments.",
-    choices: [correct("TRUE"),"FALSE"]
+    questionHTML: "A school\u2019s marking and reporting system should be based on which of the following?",
+    choices: ["estimates of students\u2019 learning ability","fixed percentages of grades",correct("instructional objectives"),"a normal curve"]
   },{
-    questionHTML: "Current-form preparation, that is, special instruction based on an existing form of a test, can be appropriate in some situations.",
-    choices: ["TRUE",correct("FALSE")]
+    questionHTML: "Why is it considered unethical to give students practice on the same test items that they are going to be administered later?",
+    choices: [correct("It reduces the achievement inferences you can make from the test results."),"It does not afford the student the opportunity to learn.","It is not the responsibility of the teacher to give practice tests."]
   },{
     questionHTML: "Absolute grading guarantees that at least one student will get a grade of \u201cA\u201d.",
     choices: ["TRUE",correct("FALSE")]
