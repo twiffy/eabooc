@@ -1,3 +1,7 @@
+"""
+Handler and stuff for the custom badges that people are issued
+for completing the term paper.
+"""
 from google.appengine.ext import db
 import logging
 from urlparse import urljoin

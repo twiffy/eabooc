@@ -1,3 +1,4 @@
+"Database models representing Wikifolio-related things"
 from datetime import datetime
 from models import models
 from google.appengine.ext import db
@@ -7,6 +8,17 @@ import urllib
 import logging
 
 class WikiPage(db.Expando):
+    """
+    A page in someone's wikifolio, either a unit or their profile page.
+
+    WikiPages are datastore ancestors of the students who write them,
+    and the key name is either "unit:%d" % unit_id, or 'profile'.  This
+    prevents duplicates, but is also awkward in some ways.  For example,
+    you can't make a link to this page without having the author's datastore
+    object, for their wiki_id number.  Maybe someone should add a permalink
+    method, like the one for comments... but it can't be based on the key ID,
+    because the student's e-mail is encoded in it.  Hmmm.
+    """
     unit = db.IntegerProperty()
     edited_timestamp = db.DateTimeProperty(auto_now=True)
     is_draft = db.BooleanProperty(default=False)
@@ -50,6 +62,7 @@ class WikiPage(db.Expando):
 
     @classmethod
     def get_key(cls, user, unit=None):
+        "Return the key to the wikipage for the given user, and the given unit (or None for profile page)"
         if not user:
             return None
         if unit:
@@ -63,6 +76,7 @@ class WikiPage(db.Expando):
 
     @classmethod
     def get_page(cls, user, unit=None, create=False):
+        "Get a WikiPage object for a given student/unit.  Optionally create it if it doesn't exist"
         key = cls.get_key(user, unit)
         if not key:
             return None
@@ -82,6 +96,7 @@ class WikiPage(db.Expando):
         return super(WikiPage, self).delete()
 
     def put(self):
+        # Put, and update the memcache list of most recent edits.
         key = self._recents_memcached_key()
         models.MemcacheManager.delete(key)
         deferred.defer(WikiPage.most_recent)
@@ -110,6 +125,13 @@ class WikiPage(db.Expando):
 
 
 class WikiComment(models.BaseEntity):
+    """
+    A comment on a wikifolio.
+
+    We cheat slightly when sorting the comments - we don't actually traverse the
+    tree structure when sorting.  We save the parent comment's timestamp in this
+    comment, and then sort using that when viewing the page.
+    """
     author = db.ReferenceProperty(models.Student, collection_name="wiki_comments")
     topic = db.ReferenceProperty(WikiPage, collection_name="comments")
     added_time = db.DateTimeProperty(auto_now_add=True)
@@ -194,7 +216,7 @@ class WikiComment(models.BaseEntity):
         return WikiComment.parent_comment.get_value_for_datastore(self) != None
 
 class Annotation(models.BaseEntity):
-    """Endorsements, flags-as-abuse, and exemplaries."""
+    """Endorsements, flags-as-abuse, exemplaries, Dan reviews, incompletes."""
     why = db.StringProperty()
     timestamp = db.DateTimeProperty(auto_now_add=True)
     who = db.ReferenceProperty(models.Student, collection_name="own_annotations")
@@ -333,6 +355,7 @@ class Annotation(models.BaseEntity):
 
 
 class Notification(models.BaseEntity):
+    "Notifications for users, for example links to announcements"
     recipient = db.ReferenceProperty(models.Student, collection_name="notification_set")
     url = db.StringProperty(indexed=False)
     text = db.StringProperty(indexed=False)

@@ -1,3 +1,7 @@
+"""
+Handlers related to "reports" about students' activity - badge evidence pages
+and badge issuing routines.
+"""
 from controllers.utils import BaseHandler, ReflectiveRequestHandler, XsrfTokenManager
 from common import prefetch
 import pprint
@@ -24,6 +28,7 @@ import logging
 import wtforms as wtf
 
 def exam_display_choices(exam_info):
+    "Decide which display choices are available to a student, depending on their score."
     choices = [
             ('blank', '(Blank)'),
             ]
@@ -42,6 +47,12 @@ def exam_display_choices(exam_info):
 
 
 class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
+    """
+    Handler to show badge evidence - both the 'top' page and the text of each unit's wikifolio.
+
+    Also the display settings for each badge - whether to show the text of the wikifolio
+    and how to display the exam.
+    """
     get_actions = ['view', 'settings']
     default_action = 'view'
     post_actions = ['save_settings']
@@ -236,6 +247,9 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         self.template_value['unit'] = self.find_unit_by_id(self.unit_num)
         self.template_value['report'] = self.unit
         self.template_value['badge_slug'] = self.report.badge.key().name()
+        # THIS is kinda magic - we render a page like wf_temp_u1.html, but have
+        # it inherit from wf_evidence.html rather than wf_page.html.  This
+        # removes the comment section, for instance.
         self.template_value['layout_template'] = 'wf_evidence.html'
         self.template_value['review'] = Annotation.reviews(whose=self.report.student, unit=self.unit_num).get()
         self.render(page_templates.templates[self.unit_num])
@@ -245,6 +259,11 @@ class EvidenceHandler(BaseHandler, ReflectiveRequestHandler):
         self.render('wf_evidence_top.html')
 
 class ExpertEvidenceHandler(BaseHandler, ReflectiveRequestHandler):
+    """
+    Handler for the "expert" badge - issued at the end of the course.
+    This badge has links to all the previous badges, rather than links
+    to the internal units.
+    """
     get_actions = ['view', 'settings']
     default_action = 'view'
     post_actions = ['save_settings']
@@ -395,6 +414,9 @@ def choose_badge_version(slug, completion):
 
 
 class SingleIssueHandler(BaseHandler):
+    """
+    Decide whether to issue a badge to one student, and optionally really issue it.
+    """
     class Form(wtf.Form):
         part = wtf.IntegerField('Which part of the course to issue a badge for? (1,2,3)')
         really_save = wtf.BooleanField('Really issue the badge and freeze the scores?', default=False)
@@ -445,6 +467,9 @@ class SingleIssueHandler(BaseHandler):
 
 
 class BulkIssueMapper(LoggingMapper):
+    """
+    Issue completion badges to many folks!  This includes 'expertise' and 'knowledge' badges.
+    """
     KIND = Student
     FILTERS = [('is_participant', True)]
 
@@ -496,6 +521,9 @@ class BulkIssueMapper(LoggingMapper):
 
 
 class BulkExpertBadgeIssueMapper(LoggingMapper):
+    """
+    Issue end-of-course badges to many folks.
+    """
     KIND = Student
     FILTERS = [('is_participant', True)]
 
@@ -543,6 +571,11 @@ def default_dict_entry():
     return ([NOBODY], -1)
 
 class BulkLeaderIssueMapper(LoggingMapper):
+    """
+    Issue leader badges.  In this one, the badges aren't issued during the main phase
+    of the 'mapper' loop over all the students - instead, the badges are issued
+    in the "finish" phase.
+    """
     KIND = Student
     FILTERS = [('is_participant', True)]
 
@@ -632,6 +665,11 @@ class BulkLeaderIssueMapper(LoggingMapper):
         self._batch_write()
 
 class BulkExpertLeaderIssueMapper(LoggingMapper):
+    """
+    Expert badges go to people who pass all the parts of the course,
+    and do the final exam, and do the survey.  Leaders are calculated
+    based on who gets the most Exemplaries in the entire course.
+    """
     KIND = ExpertBadgeReport
 
     def __init__(self, really, course, part, host_url, re_run):
@@ -718,6 +756,9 @@ issuer_mappers = {
 
 
 class BulkIssuanceHandler(BaseHandler, ReflectiveRequestHandler):
+    """
+    Request handler for kicking off all these different kinds of badge issuing mappers.
+    """
     default_action = 'prep'
     get_actions = ['prep', 'watch']
     post_actions = ['start']

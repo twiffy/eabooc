@@ -1,3 +1,6 @@
+"""
+Code to confirm people's registrations, and ask them tons of questions.
+"""
 import bleach
 import wtforms as wtf
 from modules.wikifolios.wiki_models import WikiPage

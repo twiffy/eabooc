@@ -1,10 +1,23 @@
+"""
+Queries that loop over a bunch of datastore entities, take a LONG time to
+complete.  However, front-end requests and deferred tasks both have pretty
+strict time limits.
+
+So these classes are for breaking up that kind of query into chunks of a
+few entities, processing that chung, and then deferring another task to
+continue working on it.
+
+The basics come from https://developers.google.com/appengine/articles/deferred
+
+Some fixes have been made...
+"""
 from google.appengine.ext import deferred, db
 from google.appengine.runtime import DeadlineExceededError
 import uuid
 from webapp2 import cached_property
 import logging
 
-# straight from google
+# straight from google... but fixed.  See internal comments.
 class Mapper(object):
     # Subclasses should replace this with a model class (eg, model.Person).
     KIND = None
@@ -58,6 +71,7 @@ class Mapper(object):
             # Steps over the results, returning each entity and its index.
             for i, entity in enumerate(q):
                 result = self.map(entity)
+                # allow .map() to return either ([updates], [deletes]) or None
                 map_updates, map_deletes = result or ([], [])
                 self.to_put.extend(map_updates)
                 self.to_delete.extend(map_deletes)
@@ -71,7 +85,10 @@ class Mapper(object):
             self._batch_write()
         except DeadlineExceededError:
             # Write any unfinished updates to the datastore.
-            # There is not enough time for this.
+            # There is not enough time for this - Google pls.
+            # When we get DeadlineExceededError, we are already
+            # down to less than a second, which is too short
+            # to do a batch write.
             #self._batch_write()
             # Queue a new task to pick up where we left off.
             deferred.defer(self._continue, start_key, batch_size)
@@ -81,6 +98,12 @@ class Mapper(object):
     def _do_finish(self):
         self.finish()
         self._batch_write()
+
+
+"""
+LogEntity, LoggingMapper - Give async output from a Mapper,
+that can be looked at while the Mapper continues on subsequent batches.
+"""
 
 
 class LogEntity(db.Model):
@@ -138,6 +161,11 @@ try:
     import cPickle as pickle
 except ImportError:
     import pickle
+
+
+"""
+Similar to LoggingMapper, but this creates CSV tables while it goes!  Cool!
+"""
 
 
 class ObjLogEntity(db.Model):

@@ -1,5 +1,10 @@
 #!/usr/bin/env python
+"""
+Helpers for rendering the badge information to JSON.
 
+This is a clunky way to do it, it could really use a
+refactor.
+"""
 # generate badges for use with Mozilla Open Badge system
 # usage: badger.py < list_of_emails.txt
 
@@ -23,6 +28,7 @@ ASSERTION_URL = '/badges/assertion'
 
 
 def compute_hash(email, salt, algorithm=None):
+    "Compute a hash of an e-mail, for badge assertions."
     m = hashlib.new(algorithm)
     m.update(email)
     m.update(salt)
@@ -30,6 +36,7 @@ def compute_hash(email, salt, algorithm=None):
         m.hexdigest()]
 
 def recipient_section(email):
+        "The dictionary/string structure that represents a badge recipient"
         hashed = compute_hash(email, salt, algorithm)
         return {
                 'identity': '$'.join(hashed),
@@ -39,6 +46,7 @@ def recipient_section(email):
                 }
 
 def url_for_key(obj, action='json'):
+    "Find the URL for a badge object of various kinds"
     kind = obj.kind()
     # TODO use dict
     url = None
@@ -56,6 +64,7 @@ def url_for_key(obj, action='json'):
                 'name': obj.id_or_name()})))
 
 class BadgeJSONEncoder(json.JSONEncoder):
+    "This is a dumb way to do it, yuck."
     def __init__(self, baseurl, **kwargs):
         super(BadgeJSONEncoder, self).__init__(**kwargs)
         self.baseurl = baseurl

@@ -1,3 +1,23 @@
+"""
+Wtforms-based Widgets and Fields for ranking items.
+
+Widgets are callables that render a field to HTML.  Fields are more
+complicated, they handle the transition of the data between the form's POST
+wire format, Python-understandable data structures, and the database.  For more
+on them, see the wtforms documentation on making custom fields.
+
+The Integer-based ranking field is the first one I wrote.  The text value of
+the ranked choices is stored in the database, and represented in bold in the
+user interface.  You can also have a labels=[...] argument, to set more text to
+go in the box.  The ranked list is sent between the browser and the server as a
+comma-separated list of integers.
+
+The String-based ranking field disconnects the internal database value of the
+field from anything that happens in the user interface.  So you aren't required
+to have any part of the box's text in bold, or anything.
+
+For a bunch of examples of both kinds, see page_templates.py.
+"""
 import wtforms as wtf
 from jinja2 import Markup
 from wtforms.widgets.core import html_params, HTMLString, TextInput

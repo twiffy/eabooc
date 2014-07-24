@@ -1,8 +1,26 @@
+"""
+prefetch.py - functions for speeding up the fetching of objects from
+the datastore.
+
+The datastore is super slow.  But it's much slower in latency than
+it is in read speed once you've got a query going.
+
+"""
 from webapp2 import cached_property
 from models.models import MemcacheManager
 from google.appengine.ext import db
 import logging
+
+
 def prefetch_refprops(entities, *props):
+    """
+    Given some datastore model objects, and some ReferenceProperties
+    (ModelClass.property rather than model_object.property),
+    fetch all the referenced objects at once, to avoid a situation
+    where they are fetched one at a time, with tons of latency.
+
+    http://blog.notdot.net/2010/01/ReferenceProperty-prefetching-in-App-Engine
+    """
     fields = [(entity, prop) for entity in entities for prop in props]
     ref_keys = [prop.get_value_for_datastore(x) for x, prop in fields]
     ref_entities = dict((x.key(), x) for x in db.get(set(ref_keys)))
@@ -13,6 +31,18 @@ def prefetch_refprops(entities, *props):
 NO_OBJECT = object()
 
 class CachingPrefetcher(object):
+    """
+    Loosely based on prefetch_refprops above, this prefetcher
+    keeps track of all the entities that will need to fetched
+    to render an entire page - comments, page and comment authors,
+    etc.
+
+    I tried really hard to use memcached for more, but it's
+    just so hard to keep the cache updated in all the situations
+    where the underlying data changes.  I gave up and worked
+    on just fetching datastore items with as little latency
+    as possible.
+    """
     def __init__(self, top_key=None, already_have=[]):
         self.top_key = top_key
         self.cache = { x.key(): x for x in already_have }
@@ -86,6 +116,12 @@ class CachingPrefetcher(object):
                     ttl=60*60*48)
 
 def ensure_key(it):
+    """
+    Turn something into a db.Key.
+
+    Currently handles keys, strings that encode keys,
+    and model objects.
+    """
     key = None
     if isinstance(it, db.Key):
         key = it

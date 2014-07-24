@@ -1,3 +1,19 @@
+"""
+An enormous collection of queries into the state of the course, and students'
+activities.  Also, the request handlers that run the queries when the course
+admins request them.
+
+There are two kinds of query - "classic queries" that inherit from `object`,
+and run by calling .run(), and "fancy queries" that inherit from
+common.TableMakerMapper.  The "classic" ones are limited by the time they
+can take - 60 seconds.  You also have to decide whether you want an html table
+or a CSV file at the time you start the query.  Fancy ones, on the other hand,
+don't have these restrictions, but are slightly more limited in the kind of
+queries they can run - they have to iterate over some kind of model object.
+
+To make it onto the menu for a user to run it, an entry needs to be defined in
+either the 'mapper_queries' or 'analytics_queries' dicts.
+"""
 from models import custom_modules
 from common.querymapper import TableMakerMapper, TableMakerResult
 from controllers.utils import ReflectiveRequestHandler

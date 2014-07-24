@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+"""
+Some template filters for wikifolios.
+"""
 import jinja2
 from google.appengine.api.app_identity import get_application_id
 import urllib

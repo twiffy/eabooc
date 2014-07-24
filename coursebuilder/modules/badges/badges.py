@@ -1,3 +1,14 @@
+"""
+badges.py - request handlers for the badges.
+
+There is a different handler class for each kind of item that's related to
+badges - issuers, badges, and badge assertions.  Each handler inherits from
+BadgeItemHandler.  This works reasonably well, but there are a fair number of
+special cases, so maybe some refactoring would help.
+
+In each handler, we have "json", "view", "edit", and "list" views.
+
+"""
 from models import custom_modules
 import urlparse
 from google.appengine.ext import deferred

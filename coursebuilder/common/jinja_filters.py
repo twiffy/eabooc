@@ -1,4 +1,4 @@
-# Copyright 2013 Google Inc. All Rights Reserved.
+# Portions Copyright 2013 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Custom Jinja2 filters used in Course Builder."""
+"""Custom Jinja2 filters used in Course Builder. Some additions by Thomas."""
 
 __author__ = 'John Orr (jorr@google.com)'
 

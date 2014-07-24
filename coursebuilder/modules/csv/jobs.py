@@ -1,3 +1,11 @@
+"""
+These are some different kinds of admin tasks.  Most of them
+are database migrations, and so they're obsolete if you are starting a
+new course from scratch.  But they're nice examples of Mappers.
+
+You set which of these jobs is runnable by setting the variable at the
+very bottom - this is silly I know.
+"""
 from google.appengine.ext import deferred
 from google.appengine.runtime import DeadlineExceededError
 from common.querymapper import Mapper

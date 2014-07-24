@@ -1,3 +1,8 @@
+"""
+Badge Models - these models are pretty much dumped straight to JSON.
+
+They also contain the lowest-level machinery for issuing badges, etc.
+"""
 from google.appengine.ext import db
 from models.models import BaseEntity, Student
 from webapp2 import cached_property

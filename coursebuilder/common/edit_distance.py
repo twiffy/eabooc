@@ -1,3 +1,9 @@
+"""
+An optimized dynamic programming algorithm for calculating the Levenshtein
+"editing" distance between two strings.  Used to see how much people's
+Curricular Aims have been changed between units.
+"""
+
 import numpy as np
 from unittest import TestCase
 

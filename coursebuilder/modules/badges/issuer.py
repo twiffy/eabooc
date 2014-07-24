@@ -1,3 +1,7 @@
+"""
+This is just a demo!  In the BOOC, the badges are actually
+issued by modules/wikifolios/report_handlers.py!
+"""
 from google.appengine.ext import db
 from common.querymapper import Mapper
 import models.models as m_models

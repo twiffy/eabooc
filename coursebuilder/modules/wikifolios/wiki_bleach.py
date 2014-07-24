@@ -1,13 +1,29 @@
+"""
+Lots of stuff for sanitizing input text, removing XSS vulnerabilities and stuff.
+
+There might be holes in this, but I think the worst they can do is make
+the page look wonky - not that bad.
+
+There are some tricks related to CKEditor - it *really* wants to be able to
+make <p> tags, for instance.  So make sure things look alright after you make
+any changes.  Check the git log for this file to see me messing with it.
+
+Some tags are allowed in wikifolio posts, a smaller set are allowed in
+comments.
+
+Also monkey-patches wtforms, lulz.  This adds a "title" attribute to all
+form input elements, to help out with accessibility.
+"""
 import wtforms as wtf
 import bleach
 from markupsafe import Markup
 
 ALLOWED_TAGS = (
-        # bleach.ALLOWED_TAGS:
+        # bleach.ALLOWED_TAGS has default:
         'a', 'abbr', 'acronym', 'b',
         'blockquote', 'code', 'em', 'i',
         'li', 'ol', 'strong', 'ul',
-        # more:
+        # my additions:
         'p', 'strike', 'img', 'table',
         'thead', 'tr', 'td', 'th',
         'hr', 'caption', 'summary',
@@ -16,11 +32,11 @@ ALLOWED_TAGS = (
         'div', 'big', 'small', 'tt', 'pre',
         )
 ALLOWED_ATTRIBUTES = {
-        # bleach.ALLOWED_ATTRIBUTES:
+        # default bleach.ALLOWED_ATTRIBUTES:
         'a': ['href', 'title'],
         'abbr': ['title'],
         'acronym': ['title'],
-        # more:
+        # my additions:
         'img': ['src', 'alt', 'title'],
         'table': ['border', 'cellpadding', 'cellspacing', 'style',
             'bordercolor'],

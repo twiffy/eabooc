@@ -1,6 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+This file defines a form for each wikifolio page, using wtforms.  It also lists
+the templates to be used for each wikifolio page.  Note that the a user's
+profile page is also a wikifolio page.
+
+Wtforms defines how the form data is processed by the request handler, with
+validation and stuff.  There are some custom form fields, including the ones
+defined in ranking.py and wiki_bleach.py.
+
+At the very end of the file is also viewable_model().  This is important, it's
+used for read-only views of wikifolio pages. 
+"""
+
 import wtforms as wtf
 import bleach
 from jinja2 import Markup
@@ -539,6 +552,12 @@ forms[12] = TermPaperForm
 templates[12] = 'wf_temp_term_paper.html'
 
 def viewable_model(model):
+    """
+    Why do we need this?  Because for many of our form fields, the data that's
+    stored in the database is not directly human-readable.  For instance, the
+    ranking fields need special help to show up as boxes with text in them,
+    rather than a list of terse strings or integers.
+    """
     unit = model.unit
     if not unit:
         unit = 'profile'

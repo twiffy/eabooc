@@ -1,3 +1,6 @@
+"""
+Just render the "booc tools!" page!
+"""
 from modules.regconf.regconf import get_student_count
 from models import custom_modules
 from controllers.utils import BaseHandler

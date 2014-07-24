@@ -1,3 +1,20 @@
+"""
+CrossTab - a contingency table.
+
+You add properties of some event to it, and it keeps track of how many of each
+combination of properties has occurred.  For example, if you tell it that you
+ate a sandwich and also ate ice cream, and then you tell it that you ate a
+sandwich and also ate an apple, it will know that the count of apples is 1, ice
+cream is 1, sandwiches is 2, "sandwich and apple" is 1, and "sandwich and ice
+cream" is 1.
+
+As you might imagine, the storage scaling is quite bad as you add additional
+properties - something like n^2?  This has led to Out of Memory problems on the
+server.  If you won't need to keep track of two things together, add them
+separately.
+
+The main use of this is in showing the way students rank various options.
+"""
 from itertools import combinations, chain
 from collections import Counter, defaultdict
 

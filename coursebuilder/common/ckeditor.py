@@ -1,3 +1,11 @@
+"""
+ckeditor.py - translate from Bleach's allowed content to CKEditor's.
+
+Both Bleach (python library for sanitizing user input) and CKEditor (WYSIWYG
+editor in HTML + JS) have ways to specify what tags, styles, etc. are allowed.
+This function translates from Bleach's format to CKEditor's format, so that the
+editor doesn't let the users do something that Bleach then discards.
+"""
 import StringIO
 
 def allowed_content(tags, attributes={}, styles=()):

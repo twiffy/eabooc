@@ -1,5 +1,7 @@
 """
-Wikifolios module for Google Course Builder
+Wikifolios module for Google Course Builder.  Handlers for
+all kinds of things - viewing, commenting, editing wikifolio
+pages, endorsing and promoting, etc.
 """
 
 from models import custom_modules, transforms
@@ -127,8 +129,18 @@ def sort_comments(comments):
     return sorted(first_sort, key=final_sort_key)
 
 class WikiBaseHandler(BaseHandler):
+    """
+    Methods that are useful on all or most kinds of wikifolio page.
+    """
     # I don't like how leaky this is, always having to check for the None return.
     def personalize_page_and_get_wiki_user(self):
+        """
+        Calls personalize_page_and_get_enrolled(), sets up the navbar, etc.
+        Also sets up a bunch of template values that are useful for wikifolios.
+        Should be called in almost every handler.  This method binds together a
+        LOT of different details about how templates are rendered on wikifolio
+        pages.
+        """
         user = self.personalize_page_and_get_enrolled()
         self.template_value['navbar'] = {'wiki': True}
         self.template_value['content'] = ''
@@ -151,12 +163,23 @@ class WikiBaseHandler(BaseHandler):
         return user
 
     def show_notifications(self, current_student):
+        "Add notifications to the template"
         notes = current_student.notification_set.filter('seen', False).run(limit=20)
         self.template_value['notifications'] = sorted(notes,
                 key=Notification.sort_key_func,
                 reverse=True)
 
     def _editor_role(self, query, current_student, template=True):
+        """
+        Find out whether the current user can edit the current page.
+
+        If so, returns (and optionally sets a template value) a string
+        describing *why* the user can edit the page: because they are
+        the 'author' or because they are an 'admin'.
+
+        If you're gonna deny a *view* of the page if the user can't
+        edit, use .assert_editor_role() instead.
+        """
         if not (query and current_student):
             return None
         if current_student:
@@ -176,6 +199,7 @@ class WikiBaseHandler(BaseHandler):
         return role
 
     def assert_editor_role(self, *args, **kwargs):
+        "If the user can't edit something, return HTTP 403 and abort the request handler."
         role = self._editor_role(*args, **kwargs)
         if not role:
             logging.warning("Denying edit, no editor role.")
@@ -184,20 +208,31 @@ class WikiBaseHandler(BaseHandler):
         return role
 
     def _can_view(self, query, current_student):
+        """Determine whether the current user can view a page.  The user must
+        be enrolled in the course or an admin."""
         if current_student:
             assert current_student.key().name() == users.get_current_user().email()
         is_enrolled = (current_student and current_student.is_enrolled)
         return is_enrolled or Roles.is_course_admin(self.app_context)
 
     def _user_can_edit_comment(self, user, comment):
+        "Determine if a user can edit a particular comment (they wrote it or are admin)."
         # would be great to use the same code as _editor_role above...
         author_id = str(WikiComment.author.get_value_for_datastore(comment))
         return str(user.key()) == author_id or Roles.is_course_admin(self.app_context)
 
     def _can_comment(self, query, current_student):
+        "Determine if a user can comment on this page."
+        # (if they can view, they can comment, for now.)
         return self._can_view(query, current_student)
 
     def _create_action_url(self, query, action="view"):
+        """
+        You see this pattern quite a lot.  This makes a URL based on the
+        current page's, but with a different action (view->edit, for example).
+
+        For more on actions, see ReflectiveRequestHandler in /controllers.
+        """
         params = dict(query)
         params.update({
                 'action': action,
@@ -207,12 +242,18 @@ class WikiBaseHandler(BaseHandler):
                 urllib.urlencode(params)))
 
     def show_comments(self, page):
+        """
+        Non-optimized way to show comments on a page - for the common case
+        of viewing a wikifolio page, there is a faster way, but it's all
+        interleaved with the other bits of rendering the page.
+        """
         the_comments = WikiComment.comments_on_page(page)
         #the_comments = lazy_iter(sort_comments, the_comments)
         the_comments = sort_comments(the_comments)
         self.template_value['comments'] = the_comments
 
     def post_comment(self):
+        "POST handler for action=comment"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -282,6 +323,7 @@ class WikiBaseHandler(BaseHandler):
                 + '#comment-%d' % comment.key().id())
 
     def post_flag(self):
+        "POST handler for action=flag (flag inappropriate content)"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -335,6 +377,7 @@ class WikiBaseHandler(BaseHandler):
         self.render('bare.html')
 
 class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
+    "Handler for editing and permalinking comments."
     default_action = 'edit'
     get_actions = ['edit', 'delete', 'permalink']
     post_actions = ['save', 'delete']
@@ -392,12 +435,17 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.render("wf_comment_edit.html")
 
     def get_permalink(self):
+        """GET handler for action=permalink - a way to link to a comment
+        without having to look up its topic (author and WikiPage - two
+        entities!) at the time you generate a link.  See the model class
+        for comments."""
         comment = self._find_comment()
         root = comment.topic.link
         anchor = '#comment-%d' % comment.key().id()
         return self.redirect(root + anchor)
 
     def post_save(self):
+        "POST handler for action=save"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -437,6 +485,7 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.redirect(comment.topic.link)
 
     def get_delete(self):
+        "GET handler - confirm that someone really wants to delete."
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -458,6 +507,7 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.render("wf_comment_delete.html")
 
     def post_delete(self):
+        "Really delete a comment"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -487,6 +537,7 @@ class WikiCommentHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
 
 class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
+    "Handler for viewing a wikipage for a unit!"
     default_action = "view"
     get_actions = ["view", "edit"]
     post_actions = ["save", "comment", "endorse", "flag", "exemplary", 'incomplete']
@@ -501,7 +552,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             ])
 
     def describe_query(self, query, user):
-        "Describes the query to a particular user"
+        """Describes the query to a particular user."""
         if query['student'] == user.wiki_id:
             whose = "your "
         else:
@@ -512,6 +563,12 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
 
     def _get_query(self, user):
+        """Parse the URL parameters, applying some defaults, to make a query dictionary
+        Here, and in other page-based views, the query is a dict like 
+        { 'student': 1234, #a wiki_id
+          'unit': 3 #a unit number
+          }
+        """
         form = self._NavForm(self.request.params)
         data = None
         if form.validate():
@@ -532,6 +589,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         return data
 
     def _find_page(self, query, create=False, student_model=None):
+        "Get or create a page, depending on options"
         logging.info(query)
         assert query
         # TODO don't have to do this query if it's your own page,
@@ -558,9 +616,11 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         return page
 
     def show_unit(self, query):
+        "Add 'unit' variable to the template, a GCB Unit object/structure"
         self.template_value['unit'] = self.find_unit_by_id(query['unit'])
 
     def show_all_endorsements(self, page):
+        "Add endorsements & exemplaries to the template variables"
         self.template_value['endorsements'] = prefetch.prefetch_refprops(
                 Annotation.endorsements(page), Annotation.who)
 
@@ -568,6 +628,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 Annotation.exemplaries(page), Annotation.who)
 
     def get_view(self):
+        "GET with action=view (the default)"
+        # This method is optimized as much as I can... using prefetching and stuff.
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -655,6 +717,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
             self.render(page_templates.templates[query['unit']])
 
     def post_incomplete(self):
+        "POST for admin marking something incomplete"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -690,6 +753,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
 
     def post_exemplary(self):
+        "POST for a student marking someone else's page as Exemplary"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -748,6 +812,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.redirect(self._create_action_url(query, 'view'))
 
     def post_endorse(self):
+        "POST for someone endorsing someone else's page"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -787,6 +852,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.redirect(self._create_action_url(query, 'view'))
 
     def get_edit(self):
+        "GET for the form to edit your wikifolio"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -818,7 +884,8 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
         self.render(page_templates.templates[query['unit']])
 
     def get_unit(self, unit_id):
-        # TODO find_unit_by_id??
+        "Find the unit structure for a given unit id number"
+        # TODO replace with find_unit_by_id??
         unit_id = unicode(unit_id) # harrumph
         units = self.get_units()
         for unit in units:
@@ -826,6 +893,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
                 return unit
 
     def post_save(self):
+        "POST handler for action=save, save your wiki work"
         user = self.personalize_page_and_get_wiki_user()
         if not user:
             return
@@ -881,6 +949,7 @@ class WikiPageHandler(WikiBaseHandler, ReflectiveRequestHandler):
 
 
 class WikiProfileListHandler(WikiBaseHandler):
+    "Handler for showing a list of students"
     group_names = {
                 'administrator': 'Administrators',
                 'educator': 'Educators (K-12)',
@@ -947,6 +1016,7 @@ class WikiProfileListHandler(WikiBaseHandler):
 
 
 class WikiProfileHandler(WikiBaseHandler, ReflectiveRequestHandler):
+    "Handler for showing someone's public profile (/wikiprofile not /student/home)"
     default_action = "view"
     get_actions = [
             "view",
@@ -1222,6 +1292,7 @@ class EndorsementListHandler(WikiBaseHandler):
 
 
 class WikiUpdateListHandler(WikiBaseHandler):
+    "A list of recent wiki edits"
     def get(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
@@ -1238,6 +1309,7 @@ class WikiUpdateListHandler(WikiBaseHandler):
         self.render('wf_update_list.html')
 
 class ExamResetHandler(BaseHandler):
+    "A way for admins to reset the timer and scores of someone on a particular exam"
     def get(self):
         user = self.personalize_page_and_get_enrolled()
         if not user:
@@ -1295,6 +1367,7 @@ class ExamResetHandler(BaseHandler):
 
 
 class HarrumphHandler(BaseHandler):
+    "Set students' Group IDs"
     def get(self):
         user = self.personalize_page_and_get_enrolled()
         if not user:
@@ -1342,6 +1415,7 @@ class HarrumphHandler(BaseHandler):
 
 
 class NotificationHandler(BaseHandler):
+    "Click through this notification URL to mark it read and go to the URL it points to"
     def get(self):
         user = self.personalize_page_and_get_enrolled()
         if not user:
@@ -1374,6 +1448,7 @@ class NotificationHandler(BaseHandler):
 
 
 class NotificationListHandler(WikiBaseHandler):
+    "A list of all your notifications, including ones you've already read"
     def get(self):
         user = self.personalize_page_and_get_wiki_user()
         if not user:
@@ -1388,6 +1463,7 @@ class NotificationListHandler(WikiBaseHandler):
 
 
 class ClassWikiHandler(WikiBaseHandler):
+    "A page to see certain wikifolio fields aggregated across students"
     resource_field_name = {
             1: ['educational_standards_resource'],
             5: ['external_resource'],
@@ -1437,6 +1513,7 @@ class ClassWikiHandler(WikiBaseHandler):
 
 
 class WarmupHandler(WikiBaseHandler):
+    "Warm up the template cache and stuff... not sure if it's good or bad to do this."
     def get(self):
         # warm up the caches for jinja templates
         self.template_value['fields'] = {}
@@ -1452,6 +1529,7 @@ class WarmupHandler(WikiBaseHandler):
 
 from ranking import IntegerRankingField
 class RankTestHandler(BaseHandler):
+    "For messing with the ranking HTML and stuff."
     class Form(wtf.Form):
         rank = IntegerRankingField(label='My Label',
                 choices=['Batman', 'Robin', 'An Actual Bat'])

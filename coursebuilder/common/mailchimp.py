@@ -1,3 +1,6 @@
+"""
+MailChimp client functions, for subscribing and unsubscribing.
+"""
 from models.config import ConfigProperty
 import mailsnake
 import mailsnake.exceptions

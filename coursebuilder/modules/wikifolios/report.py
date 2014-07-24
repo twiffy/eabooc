@@ -1,3 +1,19 @@
+"""
+Models for keeping track of students' grades and qualifications for badges.
+
+We want the students to see the progress they're making towards getting the
+badges.  But then once the badges are issued, we want to "freeze" their
+progress.
+
+This is implemented by, at first, getting the report's contents directly from
+the inputs (exam scores, endorsements, etc).  Then, when badges are issued, the
+reports are saved to database.  Reports must only be accessed through their
+static method, to ensure you get the right kind - frozen or not.
+
+This is pretty clunky, maybe the database entity should be separated from the
+code that calculates the various attributes.
+"""
+
 from google.appengine.ext import db
 from common.prefetch import ensure_key
 import datetime
@@ -11,6 +27,7 @@ import page_templates
 
 COUNT_LIMIT = 100
 
+# parts of this are actually ignored... sorry.
 _parts = {
         1: {
             'assessments': ['Practices'],
@@ -57,6 +74,7 @@ def get_part_num_by_badge_name(badge_name):
 ASSESSMENT_PASSING_SCORE = 80
 
 def find_badge_and_assertion(student, base_slug):
+    "Find the best badge (if any) that a student has earned for a given section"
     # in order of preference for issuing
     slugs = (
             base_slug + '.expertise.leader',
@@ -64,6 +82,7 @@ def find_badge_and_assertion(student, base_slug):
             base_slug + '.expertise',
             base_slug
             )
+    # TODO: this would be easy to optimize for DB access
     badge_keys = [db.Key.from_path(Badge.kind(), s) for s in slugs]
     badge_ents = db.get(badge_keys)
 
@@ -87,6 +106,18 @@ def find_badge_and_assertion(student, base_slug):
 
 
 class PartReport(db.Model):
+    """
+    The information needed to show two related things:
+     * The student's progress report on /student/home
+     * A badge evidence page
+
+    Always access it through PartReport.on(student, course, part)!  See the
+    comment at the top of this file for more.
+
+    It contains several `UnitReport`s, which are also database entities -
+    if you have to .put() this db model, call .put_all() instead to recursively
+    save all of its parts.
+    """
     part = db.IntegerProperty()
     slug = db.StringProperty()
     assessment_scores_json = db.TextProperty()
@@ -98,6 +129,25 @@ class PartReport(db.Model):
 
     @classmethod
     def on(cls, student, course, part, force_re_run=False, put=False):
+        """
+        Get a report on a student's progress on a part of a course.
+
+        The report may be computed fresh, or may be retrieved from the database.
+
+        Parameters:
+            student - a student model or key
+
+            course - the current course, use .get_course() on the request handler.
+
+            part - number of a part of the course.  
+
+            force_re_run - default False - calculate the report afresh,
+                even if it was already saved to the database.
+
+            put - default False - go ahead and save the report once it's calculated.
+                Note that if this is false, you should call report.put_all(),
+                not just report.put()!
+        """
         q = cls.all()
         q.filter('student', student)
         q.filter('part', part)
@@ -163,6 +213,8 @@ class PartReport(db.Model):
 
     @cached_property
     def student_email(self):
+        # access the student's e-mail without having to fetch
+        # the student model from the db.
         return type(self).student.get_value_for_datastore(self).name()
 
     @cached_property
@@ -208,6 +260,10 @@ class PartReport(db.Model):
         return inc_reasons
 
 class UnitReport(db.Model):
+    """
+    A report on one unit by one student.  Like PartReport, it can be calculated
+    fresh or it can be loaded from the database.
+    """
     student = db.ReferenceProperty(Student, indexed=True)
     unit = db.IntegerProperty(indexed=True)
     timestamp = db.DateTimeProperty(indexed=False, auto_now_add=True)
@@ -268,6 +324,7 @@ class UnitReport(db.Model):
 
     @cached_property
     def wiki_fields(self):
+        # a view of the wiki fields that's ready to be rendered to HTML
         page = self._page
         return page_templates.viewable_model(page)
 
@@ -281,6 +338,7 @@ class UnitReport(db.Model):
 
 FINAL_EXAM_PASSING_SCORE = 70
 class ExpertBadgeReport(db.Model):
+    "Like PartReport, but for the expert badge (issued if you get all the other badges, and pass the exam)"
     # identifying this report
     student = db.ReferenceProperty(Student, indexed=True)
     timestamp = db.DateTimeProperty(auto_now_add=True)
