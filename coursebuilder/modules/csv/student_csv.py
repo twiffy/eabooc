@@ -93,16 +93,16 @@ class PracticeTestAnswerQuery(TableMakerMapper):
 
     def __init__(self, **kwargs):
         self.unit = kwargs['unit']
-        super(TermPaperQuery, self).__init__()
+        super(PracticeTestAnswerQuery, self).__init__()
 
     def map(self, event):
         # Find out whether this event is relevant to this unit.
-        data = json.loads(event.data)
+        data = transforms.loads(event.data)
 
         url = data['location']
         parsed = urlparse.urlparse(url)
-        unit = urlparse.parse_qs(parsed.query)['unit']
-        if unit != self.unit:
+        unit = urlparse.parse_qs(parsed.query)['unit'][0]
+        if int(unit) != int(self.unit):
             return
 
         student = Student.get_student_by_user_id(event.user_id)
