@@ -1,7 +1,7 @@
+# -*- coding: utf-8 -*-
 """
 A survey for the end of the course.
 """
-# -*- coding: utf-8 -*-
 
 import re
 from regconf import FormSubmission
