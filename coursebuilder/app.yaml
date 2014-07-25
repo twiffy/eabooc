@@ -14,7 +14,7 @@ env_variables:
 builtins:
 - remote_api: on
 - deferred: on
-- appstats: on
+- appstats: off
 
 libraries:
 - name: jinja2
