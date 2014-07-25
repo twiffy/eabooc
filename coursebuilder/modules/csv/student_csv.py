@@ -39,7 +39,7 @@ from modules.wikifolios.report import PartReport, get_part_num_by_badge_name
 from modules.wikifolios.page_templates import forms, viewable_model
 from collections import defaultdict, OrderedDict
 from operator import itemgetter
-import urllib
+import urllib, urlparse
 import re
 import itertools
 from common import prefetch
@@ -84,6 +84,35 @@ class CurricularAimQuery(object):
                     'email': FormSubmission.user.get_value_for_datastore(submission).name(),
                     'curricular_aim': Markup(submission.curricular_aim),
                     }
+
+class PracticeTestAnswerQuery(TableMakerMapper):
+    KIND = EventEntity
+    FILTERS = [('source', 'attempt-activity')]
+
+    FIELDS = ['name', 'email', 'index', 'answer']
+
+    def __init__(self, **kwargs):
+        self.unit = kwargs['unit']
+        super(TermPaperQuery, self).__init__()
+
+    def map(self, event):
+        # Find out whether this event is relevant to this unit.
+        data = json.loads(event.data)
+
+        url = data['location']
+        parsed = urlparse.urlparse(url)
+        unit = urlparse.parse_qs(parsed.query)['unit']
+        if unit != self.unit:
+            return
+
+        student = Student.get_student_by_user_id(event.user_id)
+
+        self.add_row({
+            'name': student.name,
+            'email': student.key().name(),
+            'index': data['index'],
+            'answer': data['value'],
+            })
 
 class FixedUnitRankingQuery(TableMakerMapper):
     FIELDS = ['c%d' % n for n in xrange(30)]
@@ -919,6 +948,7 @@ mapper_queries['badge_assertions_with_revoked'] = BadgeAssertionMapQueryWithRevo
 mapper_queries['unit_all_comments'] = UnitCommentQuery
 mapper_queries['promotions'] = PromotionQuery
 mapper_queries['term_paper'] = TermPaperQuery
+mapper_queries['unit_practice_test_answers'] = PracticeTestAnswerQuery
 mapper_queries['comments_made_per_unit'] = CommentCountQuery
 mapper_queries['wikifolio_word_counts'] = WikifolioWordCountQuery
 mapper_queries['fixed_unit_ranking_query'] = FixedUnitRankingQuery
