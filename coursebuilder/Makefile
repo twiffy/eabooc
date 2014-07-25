@@ -15,7 +15,7 @@ stage: no-sandbox
 	git diff staged --stat
 	@echo "Going to deploy to STAGING: https://booc-stage.appspot.com/"
 	sleep 5
-	appcfg update . --email booc.class -A booc-stage
+	appcfg.py update . --email booc.class -A booc-stage
 	#git stash apply stash^{/APPSTATS2}
 	#appcfg update . --email booc.class -A booc-stage -V stats
 	#git checkout -- app.yaml appengine_config.py
@@ -30,7 +30,7 @@ biu-deploy: no-sandbox
 	@echo "Going to deploy to OLD PRODUCTION: booc-iu.appspot.com"
 	@echo
 	sleep 7
-	appcfg update . -A booc-iu --email booc.class
+	appcfg.py update . -A booc-iu --email booc.class
 	#git stash apply stash^{/APPSTATS2}
 	#appcfg update . --email booc.class -V stats
 	#git checkout -- app.yaml appengine_config.py
@@ -46,7 +46,7 @@ deploy: no-sandbox
 	@head -1 app.yaml
 	@echo
 	sleep 7
-	appcfg update . --email booc.class
+	appcfg.py update . --email booc.class
 	#git stash apply stash^{/APPSTATS2}
 	#appcfg update . --email booc.class -V stats
 	#git checkout -- app.yaml appengine_config.py
@@ -60,6 +60,6 @@ badge-dep:
 	@echo "Going to deploy to BADGE-ish PRODUCTION-ish: https://badges-dot-eabooc.appspot.com/"
 	@echo
 	sleep 5
-	appcfg update . --email booc.class -V badges
+	appcfg.py update . --email booc.class -V badges
 	git push . -f HEAD:badge-dep
 
