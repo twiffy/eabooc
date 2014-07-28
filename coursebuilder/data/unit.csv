@@ -15,7 +15,7 @@ id,type,unit_id,title,release_date,now_available
 14,U,9,Test Preparation (ch. 14),opens July 7,True
 15,U,10,Evaluation of Instruction and Teaching (ch. 15),opens July 14,True
 16,U,11,Assessment-Based Grading (ch. 16),opens July 21,True
-17,A,Policies,<i>Assessment Policies Exam (open July 28-31)</i>,,False
+17,A,Policies,<i>Assessment Policies Exam (open July 28-31)</i>,,True
 18,A,Final,<i>Comprehensive Exam (open July 29-August 2)</i>,,False
-19,O,/survey,Exit Survey (required for final badge or Certificate),,False
+19,O,/survey,Exit Survey (required for final badge or Certificate),,True
 20,U,12,Optional Term Paper,due by July 30,True
