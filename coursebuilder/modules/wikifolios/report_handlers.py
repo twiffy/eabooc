@@ -542,8 +542,6 @@ class BulkExpertBadgeIssueMapper(LoggingMapper):
         report = ExpertBadgeReport.on(student, self.course,
                 force_re_run=self.force_re_run, put=self.really)
 
-        self.log.append('Passed? %s.' % report.is_complete)
-
         completion = report.completion()
         self.log.append(' Passed? %s.' % str(completion))
 
@@ -761,8 +759,8 @@ class BulkExpertLeaderIssueMapper(LoggingMapper):
 issuer_mappers = {
         'completion': BulkIssueMapper,
         'leader': BulkLeaderIssueMapper,
-        #'expert': BulkExpertBadgeIssueMapper,
-        #'expert-leader': BulkExpertLeaderIssueMapper,
+        'expert': BulkExpertBadgeIssueMapper,
+        'expert-leader': BulkExpertLeaderIssueMapper,
         }
 
 
