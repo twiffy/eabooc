@@ -336,7 +336,7 @@ class UnitReport(db.Model):
                 not self.incomplete_reasons,
                 ))
 
-FINAL_EXAM_PASSING_SCORE = 70
+FINAL_EXAM_PASSING_SCORE = 80
 class ExpertBadgeReport(db.Model):
     "Like PartReport, but for the expert badge (issued if you get all the other badges, and pass the exam)"
     # identifying this report
