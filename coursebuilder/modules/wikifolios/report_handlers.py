@@ -534,8 +534,6 @@ class BulkExpertBadgeIssueMapper(LoggingMapper):
         self.host_url = host_url
         self.force_re_run = force_re_run
 
-        raise NotImplementedError("Not yet fixed for .expertise badges")
-        self.badge = Badge.get_by_key_name('expert')
         self.num_issued = 0
 
     def map(self, student):
@@ -546,17 +544,30 @@ class BulkExpertBadgeIssueMapper(LoggingMapper):
 
         self.log.append('Passed? %s.' % report.is_complete)
 
-        if report.is_complete:
+        completion = report.completion()
+        self.log.append(' Passed? %s.' % str(completion))
+
+        badge_version = None
+        if completion['badges']:
+            badge_version = 'expert'
+        if badge_version and completion['assessments'] \
+                and all('expertise' in slug for slug in completion['badge_slugs']):
+            badge_version = 'expert.expertise' # lol
+
+        if badge_version:
+            badge = Badge.get_by_key_name(badge_version)
+            if not badge:
+                self.log.append('no such badge! %s' % badge_version)
             self.num_issued += 1
-            if self.really and self.badge:
-                b = Badge.issue(self.badge, student, put=False) # need to include evidence URL here somehow
+            if self.really and badge:
+                b = Badge.issue(badge, student, put=False) # need to include evidence URL here somehow
                 b.evidence = self.host_url + '/badges/expert_evidence?id=%d' % report.key().id()
                 b.put()
                 self.log.append(' Issued badge, name=%s, assertion id=%d' % (
-                    self.badge.key().name(), b.key().id()))
+                    badge.key().name(), b.key().id()))
                 return ([b], [])
             else:
-                self.log.append(' WOULD issue badge.')
+                self.log.append(' WOULD issue badge %s' % badge_version)
         else:
             self.log.append('Incomplete, we are missing: %s' % (', '.join(report.incomplete_reasons())))
         

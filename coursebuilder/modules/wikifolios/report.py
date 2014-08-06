@@ -351,9 +351,9 @@ class ExpertBadgeReport(db.Model):
     # conditions for getting the badge
     final_exam_score_json = db.TextProperty()
     done_with_survey = db.BooleanProperty(indexed=False)
-    earned_practices = db.BooleanProperty(indexed=False)
-    earned_principles = db.BooleanProperty(indexed=False)
-    earned_policies = db.BooleanProperty(indexed=False)
+    practices_badge = db.TextProperty(default="")
+    principles_badge = db.TextProperty(default="")
+    policies_badge = db.TextProperty(default="")
 
     # shown in leader badge page
     exemplary_count = db.IntegerProperty(indexed=False)
@@ -400,11 +400,11 @@ class ExpertBadgeReport(db.Model):
         for ass in assertions:
             slug_root = ass.badge_name.split('.')[0]
             if slug_root == 'practices':
-                self.earned_practices = True
+                self.practices_badge = ass.badge_name
             elif slug_root == 'principles':
-                self.earned_principles = True
+                self.principles_badge = ass.badge_name
             elif slug_root == 'policies':
-                self.earned_policies = True
+                self.policies_badge = ass.badge_name
 
     def _set_survey_flag(self):
         # Here not at top to break import loop
@@ -433,27 +433,29 @@ class ExpertBadgeReport(db.Model):
     def final_exam_score(self):
         return transforms.loads(self.final_exam_score_json)
 
-    @property
-    def is_complete(self):
-        return all((
-                self.earned_practices,
-                self.earned_principles,
-                self.earned_policies,
-                self.done_with_survey,
-                self.final_exam_score['did_pass'],
-                ))
+    def completion(self):
+        badges = (
+                    self.practices_badge,
+                    self.principles_badge,
+                    self.policies_badge,)
+        return {
+                'badge_slugs': badges,
+                'badges': all(badges),
+                'survey': self.done_with_survey,
+                'assessments': self.final_exam_score.get('did_pass', False),
+                }
 
     def incomplete_reasons(self):
         r = []
-        if not self.earned_practices:
+        if not self.practices_badge:
             r.append('Practices')
-        if not self.earned_principles:
+        if not self.principles_badge:
             r.append('Principles')
-        if not self.earned_policies:
+        if not self.policies_badge:
             r.append('Policies')
         if not self.done_with_survey:
             r.append('Survey')
-        if not self.final_exam_score['did_pass']:
+        if not self.final_exam_score.get('did_pass', False):
             r.append('Final')
         return r
 
