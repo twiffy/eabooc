@@ -520,6 +520,15 @@ class BulkIssueMapper(LoggingMapper):
         self._batch_write()
 
 
+def choose_expert_badge_version(completion):
+    badge_version = None
+    if completion['badges']:
+        badge_version = 'expert'
+    if badge_version and completion['assessments'] \
+            and all('expertise' in slug for slug in completion['badge_slugs']):
+        badge_version = 'expert.expertise' # lol
+
+
 class BulkExpertBadgeIssueMapper(LoggingMapper):
     """
     Issue end-of-course badges to many folks.
@@ -545,12 +554,7 @@ class BulkExpertBadgeIssueMapper(LoggingMapper):
         completion = report.completion()
         self.log.append(' Passed? %s.' % str(completion))
 
-        badge_version = None
-        if completion['badges']:
-            badge_version = 'expert'
-        if badge_version and completion['assessments'] \
-                and all('expertise' in slug for slug in completion['badge_slugs']):
-            badge_version = 'expert.expertise' # lol
+        badge_version = choose_expert_badge_version(completion)
 
         if badge_version:
             badge = Badge.get_by_key_name(badge_version)
@@ -688,16 +692,6 @@ class BulkExpertLeaderIssueMapper(LoggingMapper):
         self.host_url = host_url
         self.re_run = re_run
         self.best_by_group = defaultdict(default_dict_entry)
-        self.leader_badge_key = 'expert.leader'
-
-        raise NotImplementedError("Not yet fixed for .expertise badges")
-
-        leader_badge = Badge.get_by_key_name(self.leader_badge_key)
-        if not leader_badge:
-            logging.warning('No badge with key_name: %s', self.leader_badge_key)
-            self.log.append('No badge with key_name: %s'% self.leader_badge_key)
-            if self.really:
-                raise ValueError('No badge with key_name: %s' % self.leader_badge_key)
 
     def map(self, report):
         student = report.student
@@ -709,11 +703,13 @@ class BulkExpertLeaderIssueMapper(LoggingMapper):
         best_so_far = self.best_by_group[student.group_id][1]
         promotions = report.exemplary_count
 
+        completion = report.completion()
+
         if promotions > best_so_far:
             self.log.append('New best for group %s, %d promotions' % (
                 student.group_id, promotions))
 
-            if report.is_complete:
+            if completion['badges']:
                 self.best_by_group[student.group_id] = ([student.key().name()], promotions)
             else:
                 self.log.append('BUT, Skipping, not complete.')
@@ -722,7 +718,7 @@ class BulkExpertLeaderIssueMapper(LoggingMapper):
             self.log.append('TIED best for group %s, %d promotions' % (
                 student.group_id, promotions))
 
-            if report.is_complete:
+            if completion['badges']:
                 self.best_by_group[student.group_id][0].append(student.key().name())
             else:
                 self.log.append('BUT, Skipping, not complete.')
@@ -730,8 +726,8 @@ class BulkExpertLeaderIssueMapper(LoggingMapper):
         return ([], [])
 
     def finish(self):
-        if self.really:
-            leader_badge = Badge.get_by_key_name(self.leader_badge_key)
+        leader_badge_slugs = ('expert.leader', 'expert.expertise.leader')
+        leader_badges = dict((k, Badge.get_by_key_name(k)) for k in leader_badge_slugs)
 
         for group_id, (emails, count) in self.best_by_group.iteritems():
             self.log.append('Considering group %s, best score is %d' % (
@@ -739,19 +735,26 @@ class BulkExpertLeaderIssueMapper(LoggingMapper):
             if count < 1:
                 self.log.append('... Best score is too low, skipping.')
                 continue
-            if self.really:
-                for email in emails:
+            for email in emails:
+                report = ExpertBadgeReport.on(
+                        db.Key.from_path(Student.kind(), email),
+                        course=self.course,
+                        force_re_run=self.re_run)
+                base_badge_version = choose_expert_badge_version(report.completion())
+                if not base_badge_version:
+                    raise AssertionError('They should have passed, wat?')
+                leader_badge_slug = base_badge_version + '.leader'
+                if self.really:
+                    leader_badge = leader_badges[leader_badge_slug]
                     b = Badge.issue(leader_badge,
                             db.Key.from_path(Student.kind(), email), put=False)
-                    report = ExpertBadgeReport.on(
-                            db.Key.from_path(Student.kind(), email),
-                            course=self.course,
-                            force_re_run=self.re_run)
                     b.evidence = self.host_url + '/badges/expert_evidence?id=%d' % report.key().id()
                     b.put()
-                    self.log.append('... ISSUED leader badge to %s, id=%d' % (email, b.key().id()))
-            else:
-                self.log.append('... WOULD ISSUE leader badge to %s' % ' '.join(emails))
+                    self.log.append('... ISSUED %s to %s, id=%d' % (
+                        leader_badge_slug, email, b.key().id()))
+                else:
+                    self.log.append('... WOULD ISSUE %s to %s' % (
+                        leader_badge_slug, email))
         self._batch_write()
 
 
