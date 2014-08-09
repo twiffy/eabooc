@@ -527,6 +527,7 @@ def choose_expert_badge_version(completion):
     if badge_version and completion['assessments'] \
             and all('expertise' in slug for slug in completion['badge_slugs']):
         badge_version = 'expert.expertise' # lol
+    return badge_version
 
 
 class BulkExpertBadgeIssueMapper(LoggingMapper):
